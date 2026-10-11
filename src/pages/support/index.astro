@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Navigation from '../../components/Navigation.astro';
+import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
 
@@ -55,9 +55,9 @@ const projects = [
 ---
 
 <Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
-  <Navigation />
+  <Header />
 
-  <main class="support-page">
+  <main id="main" class="support-page">
     <script is:inline>document.documentElement.classList.add('js');</script>
     <article class="content">
       <header class="page-header">
@@ -273,10 +273,7 @@ const projects = [
 
   :global(html:not(.js)) .js-only { display: none; }
 
-  .support-page {
-    min-height: 100vh;
-    padding-top: calc(4rem + 80px);
-  }
+  .support-page { min-height: 70vh; padding-top: 2rem; }
 
   .content {
     max-width: 720px;
@@ -285,11 +282,12 @@ const projects = [
   }
 
   .page-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2.5rem;
   }
 
   .test-badge {
+    font-family: var(--mono);
     display: inline-block;
     margin-bottom: 1rem;
     padding: 0.25rem 0.75rem;
@@ -304,9 +302,6 @@ const projects = [
   .page-header h1 {
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
 
   .lead {
@@ -318,7 +313,7 @@ const projects = [
   .give-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 15px;
+    border-radius: var(--radius);
     padding: 2rem;
     margin-bottom: 2rem;
   }
@@ -335,7 +330,7 @@ const projects = [
     grid-template-columns: 1fr 1fr;
     gap: 0.25rem;
     padding: 0.25rem;
-    border: 2px solid var(--text-secondary);
+    border: 1.5px solid var(--line-strong);
     border-radius: 12px;
     background: var(--bg-primary);
     margin-bottom: 1.25rem;
@@ -365,8 +360,8 @@ const projects = [
   }
 
   .tab input:checked + span {
-    background: #4f46e5;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-ink);
   }
 
   .tab input:checked + span::before { content: "\2713"; }
@@ -374,7 +369,7 @@ const projects = [
   .callout {
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    border-left: 4px solid #4f46e5;
+    border-left: 4px solid var(--accent);
     background: var(--bg-primary);
     border-radius: 0 8px 8px 0;
     color: var(--text-primary);
@@ -402,7 +397,7 @@ const projects = [
     gap: 0.25rem;
     min-height: 64px;
     padding: 0.5rem;
-    border: 2px solid var(--text-secondary);
+    border: 1.5px solid var(--line-strong);
     border-radius: 12px;
     background: var(--bg-primary);
     color: var(--text-primary);
@@ -421,10 +416,10 @@ const projects = [
   }
 
   .opt input:checked + .opt-face {
-    background: #4f46e5;
-    border-color: #4f46e5;
-    color: #ffffff;
-    box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #4f46e5;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: inset 0 0 0 2px var(--accent-ink);
   }
 
   .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
@@ -432,7 +427,7 @@ const projects = [
   .tab input:focus-visible + span,
   .opt input:focus-visible + .opt-face,
   .fee-label input:focus-visible {
-    outline: 3px solid var(--accent-hover);
+    outline: 3px solid var(--accent);
     outline-offset: 3px;
   }
 
@@ -444,12 +439,12 @@ const projects = [
     min-height: 44px;
     padding: 0.5rem 0.75rem;
     font-size: 1.1rem;
-    border: 2px solid var(--text-secondary);
+    border: 1.5px solid var(--line-strong);
     border-radius: 10px;
     background: var(--bg-primary);
     color: var(--text-primary);
   }
-  .other-row input:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 2px; }
+  .other-row input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .other-row input[aria-invalid="true"] { border-color: #b91c1c; }
   .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #b91c1c; font-size: 0.95rem; }
   :global(:root:not([data-theme="light"])) .error { color: #fca5a5; }
@@ -476,7 +471,7 @@ const projects = [
     width: 24px;
     height: 24px;
     margin: 0;
-    accent-color: #4f46e5;
+    accent-color: var(--accent);
   }
   .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--text-secondary); }
 
@@ -484,17 +479,17 @@ const projects = [
     display: block;
     padding: 1rem 1.5rem;
     border-radius: 12px;
-    background: #4f46e5;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-ink);
     text-align: center;
     text-decoration: none;
     font-size: 1.25rem;
     font-weight: 700;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+
     transition: background 0.2s ease, transform 0.2s ease;
   }
-  .give-button:hover { background: #4338ca; transform: translateY(-2px); }
-  .give-button:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 3px; }
+  .give-button:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+  .give-button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
   .give-button[aria-disabled="true"] { background: #6b7280; box-shadow: none; transform: none; cursor: not-allowed; }
 
   .secure {
@@ -523,7 +518,7 @@ const projects = [
   .why {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 15px;
+    border-radius: var(--radius);
     padding: 2rem;
     margin-bottom: 2rem;
   }
@@ -567,7 +562,7 @@ const projects = [
     text-underline-offset: 3px;
   }
 
-  .project-list a:hover { color: var(--accent-hover); }
+  .project-list a:hover { color: var(--accent); }
 
   .fine-print {
     text-align: center;

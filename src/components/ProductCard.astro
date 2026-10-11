@@ -1,0 +1,98 @@
+---
+import { statusLabel, type Product } from '../data/site';
+export interface Props { product: Product; featured?: boolean; eager?: boolean }
+const { product: p, featured = false, eager = false } = Astro.props;
+const href = p.url ?? '#newsletter';
+const host = p.url ? p.linkLabel : 'adityaaswani.com';
+const sizes = featured ? '(min-width: 960px) 620px, (min-width: 600px) 90vw, 100vw' : '(min-width: 960px) 360px, (min-width: 600px) 45vw, 100vw';
+---
+<article class:list={['card', { featured }]} id={`p-${p.slug}`}>
+  <div class="frame" aria-hidden={p.screenshot ? undefined : 'true'}>
+    <div class="chrome" aria-hidden="true">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url mono">{p.url ? p.linkLabel : 'samvara, soon'}</span>
+    </div>
+    {p.screenshot ? (
+      <img
+        src={p.screenshot.src640}
+        srcset={`${p.screenshot.src640} 640w, ${p.screenshot.src1280} 1280w`}
+        sizes={sizes}
+        width="1280" height="800"
+        alt={p.screenshot.alt}
+        loading={eager ? 'eager' : 'lazy'} decoding="async"
+      />
+    ) : (
+      <div class="placeholder">
+        <svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <g class="grid" stroke="currentColor" stroke-width="1" opacity="0.12">
+            <path d="M0 80H640M0 160H640M0 240H640M0 320H640M80 0V400M160 0V400M240 0V400M320 0V400M400 0V400M480 0V400M560 0V400" />
+          </g>
+          <g stroke-linecap="round" stroke-width="14" fill="none">
+            <path class="rail" d="M200 360 300 40M300 360 400 40" stroke="currentColor" opacity="0.28" />
+            <path class="rung" d="M218 300H318" stroke="currentColor" opacity="0.4" />
+            <path class="rung" d="M233 240H333" stroke="currentColor" opacity="0.5" />
+            <path class="rung" d="M248 180H348" stroke="currentColor" opacity="0.65" />
+            <path class="rung" d="M263 120H363" stroke="currentColor" opacity="0.8" />
+            <path class="rung top" d="M278 60H378" stroke="var(--accent)" />
+          </g>
+        </svg>
+        <span class="soon mono">Coming soon</span>
+      </div>
+    )}
+  </div>
+  <div class="body">
+    <div class="head">
+      <h3>{p.name}</h3>
+      <span class={`pill pill-${p.status}`}>{statusLabel[p.status]}</span>
+    </div>
+    <p class="pitch">{p.pitch}</p>
+    <a class="go" href={href}>{p.url ? `Visit ${host}` : p.linkLabel}<span aria-hidden="true" class="arrow">{p.url ? '↗' : '→'}</span></a>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--accent); }
+  .card:focus-within { border-color: var(--accent); }
+  .frame { margin: 0.65rem 0.65rem 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface-2); }
+  .chrome { display: flex; align-items: center; gap: 0.7rem; height: 28px; padding: 0 0.7rem; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+  .dots { display: inline-flex; gap: 5px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+  .url { color: var(--muted); font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .frame img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; background: var(--surface-2); }
+  .placeholder { position: relative; aspect-ratio: 16 / 10; color: var(--text); background: linear-gradient(160deg, var(--surface-2), var(--accent-soft)); overflow: hidden; }
+  .placeholder svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .soon {
+    position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 0.25rem 0.8rem; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line-strong); color: var(--text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .rung { transform-box: fill-box; animation: rise 3.6s ease-in-out infinite; }
+    .rung.top { animation-delay: 0.2s; }
+    @keyframes rise { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+  }
+  .body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+  h3 { font-size: 1.35rem; }
+  .pitch { color: var(--muted); font-size: 0.97rem; line-height: 1.55; }
+  .go { margin-top: auto; padding-top: 0.35rem; font-weight: 600; text-decoration: none; display: inline-flex; gap: 0.4rem; align-items: center; color: var(--accent-text); min-height: 32px; }
+  .go::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+  .go:focus-visible { outline: none; }
+  .card:has(.go:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .arrow { transition: transform 0.2s; }
+  .card:hover .arrow { transform: translate(2px, -2px); }
+
+  .featured .body { padding: 1.4rem 1.6rem 1.6rem; }
+  .featured h3 { font-size: 1.9rem; }
+  .featured .pitch { font-size: 1.08rem; }
+  @media (min-width: 960px) {
+    .featured { flex-direction: row; align-items: stretch; }
+    .featured .frame { flex: 1.35; margin: 0.8rem 0 0.8rem 0.8rem; align-self: flex-start; }
+    .featured .body { flex: 1; justify-content: center; }
+    .featured .go { margin-top: 0.8rem; }
+  }
+</style>

@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Learn Meditation — Aditya Aswani" description="Get personalized meditation guidance from Aditya on a donation basis." ogImage="/aditya-photo.jpg">
-  <Navigation />
-  <main class="meditation-page">
+  <Header />
+  <main id="main" class="meditation-page">
     <article class="content">
       <header class="page-header">
         <h1>Learn Meditation</h1>
@@ -90,148 +90,26 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <style>
-  .meditation-page {
-    min-height: 100vh;
-    padding-top: calc(2rem + 80px); /* Account for fixed navbar */
-  }
-
-  .content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .page-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-  }
-
-  .prose {
-    color: var(--text-secondary);
-    line-height: 1.8;
-  }
-
-  .prose section {
-    margin-bottom: 2.5rem;
-  }
-
-  .prose h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 2rem;
-  }
-
-  .prose p {
-    margin-bottom: 1.5rem;
-  }
-
-  .prose ul {
-    margin-left: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .prose li {
-    margin-bottom: 0.5rem;
-  }
-
-  .prose a {
-    color: var(--accent-hover);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    transition: color 0.3s ease;
-  }
-
-  .prose a:hover {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  .prose hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 3rem 0;
-  }
-
-  .closing {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .cta-section {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 3rem;
-  }
-
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn:hover {
-    text-decoration: none !important;
-  }
-
-  .btn-primary {
-    background: #4f46e5;
-    color: #ffffff !important;
-    font-weight: 700;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .btn-primary:hover {
-    background: #4338ca;
-    color: #ffffff !important;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-  }
-
-  .btn-secondary {
-    border: 2px solid var(--border);
-    color: var(--text-primary);
-    background: transparent;
-  }
-
-  .btn-secondary:hover {
-    background: var(--bg-secondary);
-    border-color: var(--accent);
-  }
-
-  @media (max-width: 768px) {
-    .meditation-page {
-      padding-top: calc(1rem + 90px);
-    }
-    
-    .content {
-      padding: 1rem;
-    }
-    
-    .cta-section {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+  .meditation-page { padding: 3rem 0 4rem; min-height: 70vh; }
+  .content { max-width: 760px; margin: 0 auto; padding: 0 1.25rem; }
+  .page-header { margin-bottom: 2.5rem; }
+  .page-header h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); margin-bottom: 0.8rem; }
+  .lead { font-size: 1.2rem; color: var(--muted); }
+  .prose { counter-reset: sec; font-size: 1.05rem; line-height: 1.75; }
+  .prose > p:first-child { font-size: 1.15rem; color: var(--text); margin-bottom: 1rem; }
+  .prose section { counter-increment: sec; margin-top: 1rem; padding: 1.6rem 1.5rem 0.4rem; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); }
+  .prose h2 { font-size: 1.35rem; margin-bottom: 0.9rem; display: flex; align-items: baseline; gap: 0.75rem; }
+  .prose h2::before { content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--accent-text); }
+  .prose p { margin-bottom: 1.1rem; color: var(--muted); }
+  .prose ul { margin: 0 0 1.1rem; display: grid; gap: 0.4rem; }
+  .prose li { color: var(--text); padding-left: 1.4rem; position: relative; }
+  .prose li::before { content: ""; position: absolute; left: 0; top: 0.75em; width: 8px; height: 2px; background: var(--accent); border-radius: 2px; }
+  .prose a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+  .prose hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0 1.5rem; }
+  .closing { font-size: 1.2rem; font-weight: 550; }
+  .closing p { color: var(--text); margin: 0; }
+  .cta-section { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .prose .btn { text-decoration: none; }
+  .prose .btn-primary { color: var(--accent-ink); }
+  .prose .btn-secondary { color: var(--text); }
 </style>

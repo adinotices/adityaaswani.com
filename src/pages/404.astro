@@ -1,61 +1,26 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
+import Header from '../components/Header.astro';
+import Wordmark from '../components/Wordmark.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="404 — Page Not Found" description="This page doesn't exist." noindex={true}>
-  <Navigation />
-  <main class="not-found">
-    <h1>404</h1>
+  <Header />
+  <main id="main" class="not-found">
+    <Wordmark mark class="big" />
+    <p class="code">ERROR 404</p>
+    <h1>Page not found</h1>
     <p>This page doesn't exist.</p>
-    <a href="/" class="btn">Go home →</a>
+    <a href="/" class="btn btn-primary">Go home →</a>
   </main>
   <Footer />
 </Layout>
 
 <style>
-  .not-found {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-    gap: 1.5rem;
-  }
-
-  h1 {
-    font-size: clamp(6rem, 20vw, 10rem);
-    font-weight: 700;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-    margin: 0;
-  }
-
-  p {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    background: #4f46e5;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .btn:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-  }
+  .not-found { min-height: 70vh; display: grid; place-content: center; justify-items: start; gap: 1.1rem; padding: 3rem 1.25rem; max-width: 720px; margin: 0 auto; }
+  .big { color: var(--accent); width: min(260px, 60vw); height: auto; }
+  .code { font-family: var(--mono); color: var(--muted); font-size: 0.85rem; letter-spacing: 0.08em; }
+  h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); }
+  p { color: var(--muted); font-size: 1.15rem; }
 </style>
