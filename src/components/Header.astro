@@ -15,6 +15,10 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
       <ul>
         {items.map((n) => <li><a href={n.href} aria-current={n.current ? 'page' : undefined}>{n.label}</a></li>)}
       </ul>
+      <div class="appearance" role="group" aria-labelledby="appearance-label">
+        <span id="appearance-label">Appearance</span>
+        <ThemeToggle />
+      </div>
     </nav>
     <div class="actions">
       <a class="btn support" href={support.href} aria-current={supportActive ? 'page' : undefined}>
@@ -59,6 +63,7 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
   .nav a:hover { color: var(--clay-ink); background: var(--bg-soft); }
   .nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--clay); text-decoration-thickness: 3px; text-underline-offset: 6px; }
   @media (max-width: 420px) { .full { display: none; } .short { display: inline; } :global(.wm) { height: 30px; } }
+  .appearance { display: none; }
   .menu-toggle {
     display: none; width: 44px; height: 44px; place-items: center; border-radius: 50%; padding: 0;
     background: var(--card); color: var(--ink); border: 1px solid var(--line); cursor: pointer;
@@ -72,18 +77,25 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
     .menu-toggle path { transition: transform 0.2s ease, opacity 0.15s ease; }
   }
   /* With the menu button in the bar, the full Support label no longer fits below ~440px */
-  @media (max-width: 520px) {
+  @media (max-width: 439.98px) {
     :global(html.js) .support .full { display: none; }
     :global(html.js) .support .short { display: inline; }
   }
   /* Compact heart-only Support pill on very narrow phones */
-  @media (max-width: 385px) {
+  @media (max-width: 339.98px) {
     :global(html.js) .support { width: 44px; padding: 0; justify-content: center; }
     :global(html.js) .support .full, :global(html.js) .support .short { display: none; }
   }
   /* Collapsed menu: only with JS, only below the desktop breakpoint */
   @media (max-width: 819.98px) {
     :global(html.js) .menu-toggle { display: inline-grid; }
+    /* The theme toggle moves from the bar into the menu's last row */
+    :global(html.js) .actions > :global(.theme-toggle) { display: none; }
+    :global(html.js) .appearance {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      min-height: 60px; padding: 0 0.75rem 0 calc(0.75rem + 4px); border-top: 1px solid var(--line);
+      font-weight: 700; font-size: 1.1rem; color: var(--ink);
+    }
     :global(html.js) .support { white-space: nowrap; }
     :global(html.js) .bar { grid-template-areas: "brand actions"; }
     :global(html.js) .nav {
