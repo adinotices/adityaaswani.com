@@ -1,12 +1,12 @@
 {
-  "mode": "test",
+  "mode": "live",
   "fees": {
     "percent": 2.9,
     "fixedCents": 30
   },
-  "portalUrl": "https://billing.stripe.com/p/login/test_6oU4gyesJ3CR8TOeWS7Vm00",
+  "portalUrl": "https://billing.stripe.com/p/login/cNi28q5Reg366Ry8Sr1wY00",
   "oneTime": {
-    "url": "https://donate.stripe.com/test_eVqcN484lb5j7PK1627Vm03",
+    "url": "https://buy.stripe.com/3cI14mcfC4ko5Nu2u31wY08",
     "minCents": 100,
     "maxCents": 1000000,
     "amounts": [
@@ -22,34 +22,34 @@
     "tiers": [
       {
         "cents": 300,
-        "url": "https://buy.stripe.com/test_28EbJ05Wd4GV4DydSO7Vm06",
+        "url": "https://buy.stripe.com/cNi28q5Reg366Ry8Sr1wY00",
         "feeCents": 340,
-        "feeUrl": "https://buy.stripe.com/test_00w6oG4S9b5j6LG3ea7Vm08"
+        "feeUrl": "https://buy.stripe.com/8x214m6Vi4koa3K1pZ1wY01"
       },
       {
         "cents": 500,
-        "url": "https://buy.stripe.com/test_28E14m0BT8Xb3zu7uq7Vm04",
+        "url": "https://buy.stripe.com/aFabJ03J6dUY6Ry6Kj1wY02",
         "feeCents": 546,
-        "feeUrl": "https://buy.stripe.com/test_3cI6oGfwNehv4Dy1627Vm09"
+        "feeUrl": "https://buy.stripe.com/fZu3cu6Vig362BiecL1wY03"
       },
       {
         "cents": 1000,
-        "url": "https://buy.stripe.com/test_5kQ9ASgAR7T72vqdSO7Vm05",
+        "url": "https://buy.stripe.com/dRmeVcfrO18c1xe3y71wY04",
         "feeCents": 1061,
-        "feeUrl": "https://buy.stripe.com/test_4gMfZg70hflz7PK9Cy7Vm0a"
+        "feeUrl": "https://buy.stripe.com/aFa28qgvScQUfo44Cb1wY05"
       },
       {
         "cents": 2500,
-        "url": "https://buy.stripe.com/test_7sY6oG3O53CR2vq3ea7Vm07",
+        "url": "https://buy.stripe.com/cNifZga7u8AE7VC7On1wY06",
         "feeCents": 2606,
-        "feeUrl": "https://buy.stripe.com/test_6oUbJ00BTddr6LG9Cy7Vm0b"
+        "feeUrl": "https://buy.stripe.com/3cI8wOgvS7wAek01pZ1wY07"
       }
     ]
   },
   "checkout": {
     "endpoint": "https://sutam.org/api/donate/checkout",
     "site": "aditya",
-    "portalUrl": "https://billing.stripe.com/p/login/test_cNi00i5W56Hu71a5iLbMQ00",
+    "portalUrl": "https://billing.stripe.com/p/login/8x214m6Vi4koa3K1pZ1wY01",
     "minCents": 100,
     "maxCents": 100000
   }
