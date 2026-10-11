@@ -33,7 +33,7 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
-      (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();
+      (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js');})();
     </script>
 
     <!-- Open Graph -->

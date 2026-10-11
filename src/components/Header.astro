@@ -2,7 +2,8 @@
 import Wordmark from './Wordmark.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { nav, support } from '../data/site';
-const path = Astro.url.pathname;
+// Static builds see /contact/ while nav hrefs are /contact; compare without the trailing slash.
+const path = Astro.url.pathname.replace(/(.)\/$/, '$1');
 const onHome = path === '/';
 const supportActive = path.startsWith('/support');
 const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') : n.href, current: n.href === path }));
@@ -10,7 +11,7 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
 <header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="Aditya Aswani, home"><Wordmark class="wm" label="" /></a>
-    <nav class="nav" aria-label="Main">
+    <nav class="nav" id="site-nav" aria-label="Main">
       <ul>
         {items.map((n) => <li><a href={n.href} aria-current={n.current ? 'page' : undefined}>{n.label}</a></li>)}
       </ul>
@@ -23,12 +24,26 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
         <span class="sr-only">{support.label}</span>
       </a>
       <ThemeToggle />
+      <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path class="l1" d="M4 6h16"/><path class="l2" d="M4 12h16"/><path class="l3" d="M4 18h16"/></svg>
+        <span class="sr-only">Menu</span>
+      </button>
     </div>
   </div>
 </header>
 
+<script>
+  import { initMobileNav } from '../scripts/mobile-nav.js';
+  const header = document.querySelector('.site-header');
+  const button = header?.querySelector('.menu-toggle');
+  const panel = header?.querySelector('#site-nav');
+  if (header && button && panel) {
+    initMobileNav({ header, button, panel, mql: window.matchMedia('(max-width: 819.98px)'), doc: document });
+  }
+</script>
+
 <style>
-  .site-header { padding: 0.9rem 0 0.4rem; }
+  .site-header { padding: 0.9rem 0 0.4rem; position: relative; z-index: 50; }
   .bar { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "brand actions" "nav nav"; align-items: center; gap: 0.4rem 1rem; }
   .brand { grid-area: brand; display: inline-flex; min-height: 44px; align-items: center; color: var(--ink); justify-self: start; }
   :global(.wm) { height: 34px; width: auto; display: block; }
@@ -44,6 +59,55 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
   .nav a:hover { color: var(--clay-ink); background: var(--bg-soft); }
   .nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--clay); text-decoration-thickness: 3px; text-underline-offset: 6px; }
   @media (max-width: 420px) { .full { display: none; } .short { display: inline; } :global(.wm) { height: 30px; } }
+  .menu-toggle {
+    display: none; width: 44px; height: 44px; place-items: center; border-radius: 50%; padding: 0;
+    background: var(--card); color: var(--ink); border: 1px solid var(--line); cursor: pointer;
+  }
+  .menu-toggle:hover { background: var(--bg-soft); }
+  .menu-toggle path { transform-box: fill-box; transform-origin: center; }
+  .menu-toggle[aria-expanded="true"] .l1 { transform: translateY(6px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] .l2 { opacity: 0; }
+  .menu-toggle[aria-expanded="true"] .l3 { transform: translateY(-6px) rotate(-45deg); }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu-toggle path { transition: transform 0.2s ease, opacity 0.15s ease; }
+  }
+  /* With the menu button in the bar, the full Support label no longer fits below ~440px */
+  @media (max-width: 520px) {
+    :global(html.js) .support .full { display: none; }
+    :global(html.js) .support .short { display: inline; }
+  }
+  /* Compact heart-only Support pill on very narrow phones */
+  @media (max-width: 385px) {
+    :global(html.js) .support { width: 44px; padding: 0; justify-content: center; }
+    :global(html.js) .support .full, :global(html.js) .support .short { display: none; }
+  }
+  /* Collapsed menu: only with JS, only below the desktop breakpoint */
+  @media (max-width: 819.98px) {
+    :global(html.js) .menu-toggle { display: inline-grid; }
+    :global(html.js) .support { white-space: nowrap; }
+    :global(html.js) .bar { grid-template-areas: "brand actions"; }
+    :global(html.js) .nav {
+      display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+      background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
+      padding: 0 max(1.25rem, calc((100% - 1080px) / 2));
+    }
+    :global(html.js) .site-header[data-menu-open] .nav { display: block; }
+    :global(html.js) .nav ul { display: block; margin-inline: 0; }
+    :global(html.js) .nav li + li { border-top: 1px solid var(--line); }
+    :global(html.js) .nav a {
+      display: flex; width: 100%; min-height: 52px; padding: 0 0.75rem; font-size: 1.1rem;
+      border-radius: 0; border-left: 4px solid transparent;
+    }
+    :global(html.js) .nav a:hover { background: var(--bg-soft); }
+    :global(html.js) .nav a[aria-current="page"] {
+      color: var(--clay-ink); background: var(--bg-soft); border-left-color: var(--clay); text-decoration: none;
+    }
+  }
+  @media (max-width: 819.98px) and (prefers-reduced-motion: no-preference) {
+    :global(html.js) .site-header[data-menu-open] .nav { animation: nav-in 0.18s ease-out; }
+  }
+  @keyframes nav-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @media (min-width: 820px) {
     .bar { grid-template-columns: auto 1fr auto; grid-template-areas: "brand nav actions"; gap: 1rem 2rem; }
     .nav ul { justify-content: center; }
