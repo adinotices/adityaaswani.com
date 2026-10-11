@@ -163,7 +163,8 @@ const ph = identity.photo;
     @keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); } 80%, 100% { box-shadow: 0 0 0 8px transparent; } }
   }
   .strip ul { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .strip a { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 40px; padding: 0 0.7rem; border: 1px solid var(--line); border-radius: 10px; color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.95rem; background: var(--bg); transition: border-color 0.15s, transform 0.15s; }
+  .strip a { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 40px; padding: 0 0.6rem; border: 1px solid var(--line); border-radius: 10px; color: var(--text); text-decoration: none; font-weight: 600; font-size: 0.95rem; background: var(--bg); transition: border-color 0.15s, transform 0.15s; }
+  .strip .pill::before { display: none; }
   .strip a:hover { border-color: var(--accent); transform: translateY(-1px); }
   @media (min-width: 900px) { .strip { grid-template-columns: auto 1fr; align-items: center; gap: 1.2rem; } }
 
