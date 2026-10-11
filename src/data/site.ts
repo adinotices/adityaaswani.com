@@ -71,7 +71,7 @@ export const products: Product[] = [
     slug: "pausepal",
     name: "PausePal",
     pitch: "Meditate with a buddy every week. Get matched with one partner and a fixed time, and keep each other showing up.",
-    status: "coming-soon",
+    status: "live",
     url: "https://pausepal.co",
     linkLabel: "pausepal.co",
     screenshot: {
