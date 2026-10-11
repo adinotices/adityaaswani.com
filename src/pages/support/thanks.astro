@@ -4,7 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
 
-const { portalUrl, monthly } = supportLinks;
+const { portalUrl, monthly, checkout } = supportLinks;
 const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
 ---
 
@@ -17,12 +17,12 @@ const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
       <p class="lead">Your support keeps the talks searchable, the meditation buddies matched and the campaign going. It means a lot to me.</p>
       <p>It goes into the servers behind the mindfulness tools and, mostly, into the time to keep fighting for animals and building the practice.</p>
 
-      <p id="monthly-note" hidden>You can <a href={portalUrl}>manage or cancel your monthly support</a> anytime.</p>
+      <p id="monthly-note" hidden data-portal-worker={checkout.portalUrl}>You can <a id="portal-link" href={portalUrl}>manage or cancel your monthly support</a> anytime.</p>
 
       <section id="upsell" class="card" aria-labelledby="upsell-heading" hidden>
         <h2 id="upsell-heading">Would you like to give $5 a month from now on?</h2>
         <div class="actions">
-          <a class="primary" href={monthly5.url}>Yes, give $5 a month</a>
+          <a class="primary" id="upsell-yes" href={monthly5.url}>Yes, give $5 a month</a>
           <button type="button" class="plain" id="upsell-no">No thanks, this is perfect</button>
         </div>
       </section>
@@ -42,10 +42,43 @@ const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
 </Layout>
 
 <script>
-  const type = new URLSearchParams(location.search).get('type');
+  import { startCheckout } from '../../scripts/donate.js';
+
+  const params = new URLSearchParams(location.search);
+  const type = params.get('type');
   const show = (id: string) => { document.getElementById(id)!.hidden = false; };
   if (type === 'once') show('upsell');
-  if (type === 'monthly') show('monthly-note');
+  if (type === 'monthly') {
+    show('monthly-note');
+    // A session_id means the gift went through the Worker checkout, so it lives in the aditya portal.
+    if (params.get('session_id')) {
+      const note = document.getElementById('monthly-note')!;
+      (document.getElementById('portal-link') as HTMLAnchorElement).href = note.dataset.portalWorker!;
+    }
+  }
+
+  const yes = document.getElementById('upsell-yes') as HTMLAnchorElement;
+  const yesLabel = yes.textContent;
+  let yesBusy = false;
+  yes.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (yesBusy) return;
+    const fallback = yes.href;
+    yesBusy = true;
+    yes.textContent = 'Opening secure checkout…';
+    yes.setAttribute('aria-busy', 'true');
+    const res = await startCheckout({ site: 'aditya', amount_cents: 500, interval: 'month', cover_fees: false });
+    if (res.ok) { location.assign(res.url); return; }
+    yesBusy = false;
+    yes.textContent = yesLabel;
+    yes.removeAttribute('aria-busy');
+    location.assign(fallback);
+  });
+  window.addEventListener('pageshow', () => {
+    yesBusy = false;
+    yes.textContent = yesLabel;
+    yes.removeAttribute('aria-busy');
+  });
 
   document.getElementById('upsell-no')!.addEventListener('click', () => {
     document.getElementById('upsell')!.hidden = true;
