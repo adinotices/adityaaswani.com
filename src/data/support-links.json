@@ -49,7 +49,7 @@
   "checkout": {
     "endpoint": "https://sutam.org/api/donate/checkout",
     "site": "aditya",
-    "portalUrl": "https://billing.stripe.com/p/login/cNi28q5Reg366Ry8Sr1wY00",
+    "portalUrl": "https://billing.stripe.com/p/login/8x214m6Vi4koa3K1pZ1wY01",
     "minCents": 100,
     "maxCents": 100000
   }
