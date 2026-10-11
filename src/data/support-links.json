@@ -4,7 +4,7 @@
     "percent": 2.9,
     "fixedCents": 30
   },
-  "portalUrl": "https://billing.stripe.com/p/login/test_6oU4gyesJ3CR8TOeWS7Vm00",
+  "portalUrl": "https://billing.stripe.com/p/login/cNi28q5Reg366Ry8Sr1wY00",
   "oneTime": {
     "url": "https://buy.stripe.com/3cI14mcfC4ko5Nu2u31wY08",
     "minCents": 100,
@@ -49,9 +49,8 @@
   "checkout": {
     "endpoint": "https://sutam.org/api/donate/checkout",
     "site": "aditya",
-    "portalUrl": "https://billing.stripe.com/p/login/test_cNi00i5W56Hu71a5iLbMQ00",
+    "portalUrl": "https://billing.stripe.com/p/login/cNi28q5Reg366Ry8Sr1wY00",
     "minCents": 100,
     "maxCents": 100000
-  },
-  "_note": "portalUrl values are still the TEST portal login links; replace both with the live portal link from Settings > Billing > Customer portal before merging."
+  }
 }
