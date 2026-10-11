@@ -1,0 +1,37 @@
+{
+  "mode": "test",
+  "oneTime": [
+    {
+      "key": "once_5",
+      "label": "$5",
+      "url": "https://buy.stripe.com/test_6oU4gyesJ3CR8TOeWS7Vm00"
+    },
+    {
+      "key": "once_20",
+      "label": "$20",
+      "url": "https://buy.stripe.com/test_6oU4gyesJ3CR3zu01Y7Vm01"
+    },
+    {
+      "key": "once_50",
+      "label": "$50",
+      "url": "https://buy.stripe.com/test_5kQ28q84lc9ngmg7uq7Vm02"
+    },
+    {
+      "key": "once_custom",
+      "label": "Custom",
+      "url": "https://buy.stripe.com/test_eVqcN484lb5j7PK1627Vm03"
+    }
+  ],
+  "monthly": [
+    {
+      "key": "monthly_5",
+      "label": "$5 / month",
+      "url": "https://buy.stripe.com/test_28E14m0BT8Xb3zu7uq7Vm04"
+    },
+    {
+      "key": "monthly_10",
+      "label": "$10 / month",
+      "url": "https://buy.stripe.com/test_5kQ9ASgAR7T72vqdSO7Vm05"
+    }
+  ]
+}
