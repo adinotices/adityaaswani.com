@@ -6,20 +6,12 @@
 </button>
 
 <script>
-  const root = document.documentElement;
-  const sync = () => {
-    const dark = root.getAttribute('data-theme') === 'dark';
-    document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((b) => b.setAttribute('aria-pressed', String(dark)));
-  };
-  sync();
-  document.querySelectorAll('.theme-toggle').forEach((b) =>
-    b.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      sync();
-    })
-  );
+  import { initThemeToggles } from '../scripts/theme-toggle.js';
+  initThemeToggles({
+    root: document.documentElement,
+    buttons: [...document.querySelectorAll<HTMLButtonElement>('.theme-toggle')],
+    storage: localStorage,
+  });
 </script>
 
 <style>

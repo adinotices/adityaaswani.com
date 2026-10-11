@@ -172,3 +172,21 @@ test('destroy removes listeners', () => {
   fire(s.a1, 'focusout', { relatedTarget: s.outside });
   assert.equal(s.nav.isOpen(), true);
 });
+
+test('clicking the Appearance toggle inside the panel keeps the menu open', () => {
+  const s = setup();
+  const theme = new El(s.doc, 'theme', s.panel); theme.tag = 'button';
+  s.nav.open();
+  click(theme);
+  assert.equal(s.nav.isOpen(), true);
+});
+
+test('Tab from the last link to the Appearance toggle keeps the menu open; Tab past it closes', () => {
+  const s = setup();
+  const theme = new El(s.doc, 'theme', s.panel); theme.tag = 'button';
+  s.nav.open();
+  fire(s.a2, 'focusout', { relatedTarget: theme });
+  assert.equal(s.nav.isOpen(), true);
+  fire(theme, 'focusout', { relatedTarget: s.outside });
+  assert.equal(s.nav.isOpen(), false);
+});
