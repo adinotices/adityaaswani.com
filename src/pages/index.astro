@@ -1,60 +1,223 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
-import Hero from '../components/Hero.astro';
-import WorkSection from '../components/WorkSection.astro';
-import WritingSection from '../components/WritingSection.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
----
+import Motif from '../components/Motif.astro';
+import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter } from '../data/site';
 
+const latest = essays.slice(0, 6);
+const fmt = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const photo = identity.photo;
+const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
+---
 <Layout
   title="Aditya Aswani — Buddhist, Writer, Animal Rights Activist"
   description="Aditya Aswani — Buddhist meditator, animal rights activist, and writer. Currently facing felony charges for rescuing dogs from a research lab."
   ogImage="/aditya-photo-new.jpg"
 >
-  <Navigation />
-  <main>
-    <Hero />
-    <WorkSection />
-    <WritingSection />
+  <Header />
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="hi">
+      <div class="wrap hero-grid">
+        <div class="hero-head">
+          <h1 id="hi">Hi, I’m <span class="name">Aditya</span>.</h1>
+          <p class="one-line">{identity.oneLine}</p>
+        </div>
+
+        <figure class="portrait">
+          <div class="frame">
+            <img
+              src={photo.src(640)}
+              srcset={srcset}
+              sizes="(min-width: 860px) 400px, min(78vw, 340px)"
+              width="640"
+              height="960"
+              alt={photo.alt}
+              fetchpriority="high"
+              decoding="async"
+            />
+          </div>
+          <svg class="sprig" viewBox="0 0 80 80" width="80" height="80" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 70C26 52 40 36 62 12"/><path d="M26 54c-8-1-12-6-12-12 7 0 12 4 12 12zM38 40c-8 0-12-5-12-11 7 0 12 4 12 11zM50 26c-7 0-11-4-11-10 6 0 11 4 11 10zM30 56c1-8 6-12 12-12 0 7-4 12-12 12zM42 42c2-8 7-11 13-11-1 7-5 11-13 11z"/></svg>
+        </figure>
+
+        <div class="hero-body">
+          <p class="intro">{identity.intro}</p>
+          <div class="cta">
+            <a class="btn" href="#building">See what I’m building</a>
+            <a class="btn btn--quiet" href="#writing">Read my writing</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="building" aria-labelledby="building-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="building-h">Things I’m building</h2>
+        </div>
+        <ul class="cards">
+          {products.map((p) => (
+            <li class="card paper">
+              <div class="card-top">
+                <span class={`motif motif--${p.slug}`}><Motif slug={p.slug} /></span>
+                <span class={`badge badge--${p.status}`}>{statusLabel[p.status]}</span>
+              </div>
+              <h3>{p.name}</h3>
+              <p class="pitch">{p.pitch}</p>
+              {p.url
+                ? <a class="more" href={p.url}>{p.linkLabel}<span aria-hidden="true"> ↗</span></a>
+                : <a class="more" href="#newsletter">{p.linkLabel}<span aria-hidden="true"> →</span></a>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--soft" id="writing" aria-labelledby="writing-h">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="writing-h">Writing</h2>
+          <p>{newsletter.tagline}</p>
+        </div>
+        <ul class="essays">
+          {latest.map((e) => (
+            <li class="essay paper">
+              <img src={e.cover} width="800" height="500" loading="lazy" decoding="async" alt="" />
+              <div class="essay-body">
+                <p class="date">{fmt(e.date)}</p>
+                <h3><a href={e.url}>{e.title}</a></h3>
+                <p class="sub">{e.subtitle}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p class="all"><a class="btn btn--quiet" href={essaysHome}>All essays<span aria-hidden="true"> →</span></a></p>
+      </div>
+    </section>
+
+    <section class="section" id="meditation" aria-labelledby="med-h">
+      <div class="wrap">
+        <div class="letter paper">
+          <img class="avatar" src="/aditya-320.webp" width="320" height="480" loading="lazy" decoding="async" alt="" />
+          <div>
+            <h2 id="med-h">Meditate with me</h2>
+            <p>{meditation.blurb}</p>
+            <div class="cta">
+              <a class="btn" href={meditation.bookUrl} target="_blank" rel="noopener noreferrer">Book a session<span class="sr-only"> (opens in a new tab)</span></a>
+              <a class="btn btn--quiet" href={meditation.href}>How I teach</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" id="support" aria-labelledby="support-h">
+      <div class="wrap--narrow support">
+        <h2 id="support-h">Support my work</h2>
+        <p>Everything I build is free or at cost. If it has been useful to you, you can help keep it that way.</p>
+        <p><a class="btn" href="/support">Support my work</a></p>
+      </div>
+    </section>
+
+    <section class="section" id="newsletter" aria-labelledby="news-h">
+      <div class="wrap--narrow">
+        <div class="paper news">
+          <h2 id="news-h">{newsletter.name}</h2>
+          <p>{newsletter.tagline}</p>
+          <form action={newsletter.formAction} method="post" target="_blank">
+            <label for="email">Your email</label>
+            <div class="row">
+              <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+              <button class="btn" type="submit">Subscribe<span class="sr-only"> (opens in a new tab)</span></button>
+            </div>
+          </form>
+          <p class="contact-line">Or just say hello: <a href="/contact">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+        </div>
+      </div>
+    </section>
   </main>
   <Footer />
 </Layout>
 
-<script>
-  // Scroll animations
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-  };
+<style>
+  main:focus { outline: none; }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, observerOptions);
+  /* Hero */
+  .hero { padding: 1rem 0 2.5rem; position: relative; }
+  .hero-grid { display: grid; gap: 1.4rem; justify-items: center; text-align: center; }
+  h1 { font-size: clamp(2.9rem, 12vw, 5.6rem); font-weight: 520; line-height: 1.02; }
+  .name { color: var(--clay); }
+  .one-line { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: clamp(1.35rem, 4.6vw, 2rem); line-height: 1.3; color: var(--ink); margin-top: 0.8rem; max-width: 24ch; margin-inline: auto; }
+  .portrait { position: relative; margin: 0.4rem 0; width: min(78vw, 340px); }
+  .frame {
+    border-radius: 999px 999px 28px 28px; overflow: hidden; background: var(--sage-tint);
+    border: 8px solid var(--card); box-shadow: var(--shadow); aspect-ratio: 2 / 3; transform: rotate(-1.5deg);
+  }
+  .frame img { width: 100%; height: 100%; object-fit: cover; }
+  .sprig { position: absolute; right: -22px; bottom: -14px; color: var(--sage); }
+  .intro { max-width: 34rem; color: var(--ink-2); font-size: 1.1rem; margin-inline: auto; }
+  .cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.4rem; justify-content: center; }
+  @media (min-width: 860px) {
+    .hero { padding: 2rem 0 4rem; }
+    .hero-grid { grid-template-columns: 1.1fr 400px; grid-template-areas: "head photo" "body photo"; align-content: center; gap: 1.5rem 4rem; text-align: left; justify-items: start; }
+    .hero-head { grid-area: head; align-self: end; }
+    .hero-body { grid-area: body; align-self: start; }
+    .portrait { grid-area: photo; width: 400px; }
+    .one-line, .intro { margin-inline: 0; }
+    .cta { justify-content: flex-start; }
+  }
 
-  document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-  });
+  /* Product cards */
+  .cards { list-style: none; display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+  .card { position: relative; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
+  @media (prefers-reduced-motion: no-preference) { .card:hover, .essay:hover { transform: translateY(-3px) rotate(-0.4deg); } }
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+  .motif { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50% 46% 52% 48%; background: var(--sage-tint); color: var(--sage-ink); }
+  .motif--amberhall, .motif--savethedogs { background: var(--clay-tint); color: var(--clay-ink); }
+  .card h3 { font-size: 1.55rem; }
+  .pitch { color: var(--ink-2); flex: 1; font-size: 1rem; }
+  .more { font-weight: 800; text-decoration: none; margin-top: 0.4rem; display: inline-flex; align-items: center; min-height: 44px; }
+  .more::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+  .more:hover { text-decoration: underline; }
+  .more:focus-visible { outline: none; }
+  .more:focus-visible::after { outline: 3px solid var(--focus); outline-offset: 3px; }
 
-  // Smooth scroll for navigation links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const href = this.getAttribute('href');
-      if (!href) return;
-      
-      const target = document.querySelector(href);
-      const nav = document.querySelector('nav');
-      
-      if (target && nav) {
-        const navHeight = nav.offsetHeight;
-        const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight - 20;
-        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-      }
-    });
-  });
-</script>
+  /* Essays */
+  .essays { list-style: none; display: grid; gap: 1.3rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .essay { position: relative; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.25s; }
+  .essay img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-bottom: 1px solid var(--line); }
+  .essay-body { padding: 1.1rem 1.3rem 1.4rem; }
+  .date { font-size: 0.85rem; font-weight: 700; color: var(--ink-2); margin-bottom: 0.3rem; }
+  .essay h3 { font-size: 1.3rem; line-height: 1.22; }
+  .essay h3 a { color: var(--ink); text-decoration: none; }
+  .essay h3 a::after { content: ""; position: absolute; inset: 0; }
+  .essay h3 a:hover { color: var(--clay-ink); text-decoration: underline; }
+  .essay h3 a:focus-visible { outline: none; }
+  .essay:has(a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .sub { color: var(--ink-2); font-size: 0.97rem; margin-top: 0.4rem; }
+  .all { margin-top: 2rem; }
+
+  /* Meditation letter */
+  .letter { display: grid; gap: 1.5rem; padding: clamp(1.5rem, 4vw, 2.6rem); align-items: center; }
+  .letter h2 { font-size: clamp(1.8rem, 4.5vw, 2.5rem); margin-bottom: 0.8rem; }
+  .letter p { color: var(--ink-2); font-size: 1.1rem; }
+  .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 5px solid var(--bg-soft); }
+  @media (min-width: 700px) { .letter { grid-template-columns: 150px 1fr; gap: 2.5rem; } .avatar { width: 150px; height: 150px; } }
+
+  .support { text-align: center; }
+  .support h2 { font-size: clamp(1.9rem, 4.5vw, 2.7rem); margin-bottom: 0.8rem; }
+  .support p { color: var(--ink-2); font-size: 1.15rem; margin-bottom: 1.4rem; }
+
+  .news { padding: clamp(1.5rem, 4vw, 2.6rem); text-align: center; }
+  .news h2 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin-bottom: 0.5rem; }
+  .news > p { color: var(--ink-2); }
+  form { margin-top: 1.4rem; text-align: left; }
+  label { display: block; font-weight: 700; margin-bottom: 0.4rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  input[type="email"] {
+    flex: 1 1 14rem; min-height: 48px; padding: 0.6rem 1.1rem; border-radius: 999px;
+    border: 2px solid var(--ink-2); background: var(--bg); color: var(--ink); font: inherit;
+  }
+  input[type="email"]::placeholder { color: var(--ink-2); opacity: 0.85; }
+  .contact-line { margin-top: 1.4rem; font-size: 0.98rem; }
+</style>

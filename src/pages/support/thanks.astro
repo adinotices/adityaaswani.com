@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import supportLinks from '../../data/support-links.json';
+
+const { portalUrl, monthly } = supportLinks;
+const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
+---
+
+<Layout title="Thank you — Aditya Aswani" description="Thank you for supporting Aditya Aswani's work." noindex>
+  <Header />
+
+  <main id="main" tabindex="-1" class="page">
+    <article class="wrap--narrow content">
+      <h1>Thank you 🙏</h1>
+      <p class="lead">Your support keeps the talks searchable, the meditation buddies matched and the campaign going. It means a lot to me.</p>
+      <p>It goes straight into hosting, the GPUs that transcribe Dhamma talks, and time to build the next free thing.</p>
+
+      <p id="monthly-note" hidden>You can <a href={portalUrl}>manage or cancel your monthly support</a> anytime.</p>
+
+      <section id="upsell" class="card" aria-labelledby="upsell-heading" hidden>
+        <h2 id="upsell-heading">Would you like to give $5 a month from now on?</h2>
+        <div class="actions">
+          <a class="primary" href={monthly5.url}>Yes, give $5 a month</a>
+          <button type="button" class="plain" id="upsell-no">No thanks, this is perfect</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="share-heading">
+        <h2 id="share-heading">Know someone who'd like this work?</h2>
+        <button type="button" class="primary" id="share-btn">Share this page</button>
+        <p class="status" id="share-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <p class="blessing">May you be happy, healthy, and safe.</p>
+      <a href="/" class="home-button">Back to home</a>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const type = new URLSearchParams(location.search).get('type');
+  const show = (id: string) => { document.getElementById(id)!.hidden = false; };
+  if (type === 'once') show('upsell');
+  if (type === 'monthly') show('monthly-note');
+
+  document.getElementById('upsell-no')!.addEventListener('click', () => {
+    document.getElementById('upsell')!.hidden = true;
+  });
+
+  const status = document.getElementById('share-status')!;
+  document.getElementById('share-btn')!.addEventListener('click', async () => {
+    const url = 'https://adityaaswani.com/support';
+    if (navigator.share) {
+      try { await navigator.share({ url }); } catch { /* dismissed */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      status.textContent = 'Link copied';
+    } catch {
+      status.textContent = 'Copy this link: ' + url;
+    }
+  });
+</script>
+
+<style>
+  main:focus { outline: none; }
+  .content { text-align: center; }
+  h1 { font-size: clamp(2.5rem, 8vw, 3.8rem); margin-bottom: 1rem; }
+  p { color: var(--ink-2); margin-bottom: 1.4rem; }
+  .lead { font-size: 1.25rem; }
+  p a { color: var(--ink); text-decoration: underline; }
+  .blessing { color: var(--ink); font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.4rem; }
+  [hidden] { display: none !important; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.6rem; margin-bottom: 1.5rem; }
+  .card h2 { font-size: 1.35rem; margin-bottom: 1rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+  .primary, .plain { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0.7rem 1.5rem; border-radius: 999px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .primary { background: var(--btn-bg); color: var(--btn-ink); border: 2px solid var(--btn-bg); }
+  .primary:hover { background: var(--btn-bg-hover); }
+  .plain { background: transparent; color: var(--ink); border: 2px solid var(--ink-2); }
+  .plain:hover { border-color: var(--ink); background: var(--bg-soft); }
+  .status { margin: 0.75rem 0 0; min-height: 1.5em; color: var(--ink); }
+  .home-button { display: inline-flex; align-items: center; min-height: 48px; padding: 0.7rem 1.6rem; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-decoration: none; font-weight: 700; }
+  .home-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+</style>

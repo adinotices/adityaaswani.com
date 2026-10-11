@@ -1,0 +1,335 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import supportLinks from '../../data/support-links.json';
+
+const isTest = supportLinks.mode === 'test';
+const { fees, oneTime, monthly, portalUrl } = supportLinks;
+
+// Editable copy: the line shown under the amount ladder for each selection.
+const impact = {
+  monthly: {
+    300: "Chips in toward the servers that keep Sutam and PausePal online.",
+    500: "About a coffee a month. Keeps me building free tools like Sutam and PausePal.",
+    1000: "Helps pay for the GPUs that transcribe Dhamma talks so anyone can search them.",
+    2500: "Covers a real share of hosting and transcription, and buys me time to build.",
+  },
+  once: {
+    500: "Chips in toward hosting for Sutam and PausePal.",
+    1000: "Helps pay for the GPU time that transcribes new Dhamma talks.",
+    2500: "Helps keep the servers running and the work free.",
+    5000: "Buys me time to build the next free project.",
+    other: "Every amount helps keep this work free.",
+  },
+};
+
+const grossUp = (c) => Math.ceil((c + fees.fixedCents) / (1 - fees.percent / 100));
+const fmt = (c) => '$' + (c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2));
+
+const defaultTier = monthly.tiers.find((t) => t.cents === monthly.defaultCents) ?? monthly.tiers[0];
+const defaultFee = defaultTier.feeCents - defaultTier.cents;
+const clientConfig = { fees, oneTime, monthly, portalUrl, impact };
+
+const projects = [
+  {
+    title: "Sutam",
+    description: "Free search across thousands of Dhamma talks, transcribed so you can find the teaching you need.",
+    link: "https://sutam.org/"
+  },
+  {
+    title: "PausePal",
+    description: "Find a meditation buddy and sit together, so the practice sticks.",
+    link: "https://pausepal.co/"
+  },
+  {
+    title: "Save the Dogs",
+    description: "The campaign to free the beagles at Ridglan Farms.",
+    link: "https://savethedogs.io/"
+  },
+  {
+    title: "Samvara",
+    description: "A commitment tracker for keeping the promises we make to ourselves. Coming soon.",
+  },
+];
+---
+
+<Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
+  <Header />
+
+  <main id="main" tabindex="-1" class="page">
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <article class="wrap--narrow">
+      <header class="page-header">
+        {isTest && <p class="test-badge">Test mode: no real charges</p>}
+        <h1>Support my work</h1>
+        <p class="lead">Everything I build is free or at cost. If it has been useful to you, you can help keep it that way.</p>
+      </header>
+
+      <section class="give-card" aria-labelledby="give-heading" id="give">
+        <h2 id="give-heading" class="sr-only">Give</h2>
+
+        <div class="js-only controls">
+          <fieldset class="freq">
+            <legend class="sr-only">Frequency</legend>
+            <label class="tab"><input type="radio" name="freq" value="monthly" checked /><span>Monthly</span></label>
+            <label class="tab"><input type="radio" name="freq" value="once" /><span>One-time</span></label>
+          </fieldset>
+
+          <p class="callout" id="callout">Monthly support helps most, because I can plan around it. Cancel anytime.</p>
+
+          <fieldset class="ladder" id="ladder-monthly">
+            <legend>Monthly amount</legend>
+            <div class="options">
+              {monthly.tiers.map((t) => (
+                <label class="opt">
+                  <input type="radio" name="m-amt" value={t.cents} checked={t.cents === monthly.defaultCents} />
+                  <span class="opt-face">
+                    <span class="opt-amt">{fmt(t.cents)}<small>/month</small></span>
+                    {t.cents === monthly.defaultCents && <span class="tag">Suggested</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset class="ladder" id="ladder-once" hidden>
+            <legend>One-time amount</legend>
+            <div class="options">
+              {oneTime.amounts.map((c) => (
+                <label class="opt">
+                  <input type="radio" name="o-amt" value={c} checked={c === oneTime.defaultCents} />
+                  <span class="opt-face">
+                    <span class="opt-amt">{fmt(c)}</span>
+                    {c === oneTime.defaultCents && <span class="tag">Suggested</span>}
+                  </span>
+                </label>
+              ))}
+              <label class="opt">
+                <input type="radio" name="o-amt" value="other" />
+                <span class="opt-face"><span class="opt-amt">Other</span></span>
+              </label>
+            </div>
+            <div class="other" id="other-wrap" hidden>
+              <label for="other-amount">Amount in US dollars</label>
+              <div class="other-row">
+                <span aria-hidden="true">$</span>
+                <input id="other-amount" type="number" inputmode="numeric" min="1" max="10000" step="1" aria-describedby="other-error" />
+              </div>
+              <p class="error" id="other-error" aria-live="polite"></p>
+            </div>
+          </fieldset>
+
+          <p class="impact" id="impact" aria-live="polite">{impact.monthly[monthly.defaultCents]}</p>
+
+          <div class="fee">
+            <label class="fee-label">
+              <input type="checkbox" id="fee-cb" />
+              <span id="fee-text">Add {fmt(defaultFee)} to cover card fees, so the full {fmt(defaultTier.cents)} reaches me</span>
+            </label>
+            <p class="helper">Card fees are about {fees.percent}% + {fees.fixedCents}¢.</p>
+          </div>
+        </div>
+
+        <a id="give-btn" class="give-button" href={defaultTier.url}>Give {fmt(defaultTier.cents)} a month</a>
+
+        <p class="secure">
+          Secure checkout by Stripe.
+          <span id="cancel-note"> Cancel anytime: <a href={portalUrl}>manage or cancel</a>.</span>
+        </p>
+
+        <p class="deductible">This is personal support for my independent work, not a charitable donation, so it isn't tax-deductible. Thank you for backing it.</p>
+
+        <noscript>
+          <div class="noscript-links">
+            <p>Choose an option:</p>
+            <ul>
+              <li>One-time, any amount: <a href={oneTime.url}>give once</a></li>
+              {monthly.tiers.map((t) => (
+                <li>
+                  {fmt(t.cents)} a month: <a href={t.url}>give {fmt(t.cents)} monthly</a>, or <a href={t.feeUrl}>give {fmt(t.feeCents)} monthly (covers card fees)</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </noscript>
+      </section>
+
+      <section class="why" aria-labelledby="why-heading">
+        <h2 id="why-heading">What your support makes possible</h2>
+        <p>Your support covers hosting, the GPUs that transcribe Dhamma talks, and my time. It lets me keep saying yes to the work without putting it behind a paywall.</p>
+        <ul class="project-list">
+          {projects.map(project => (
+            <li>
+              {project.link
+                ? <a href={project.link} target="_blank" rel="noopener noreferrer">{project.title}</a>
+                : <span class="project-name">{project.title}</span>}
+              <span class="project-desc">{project.description}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <p class="fine-print">Questions? Email <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+
+      <p class="blessing">Thank you. May your generosity come back to you many times over.</p>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ cfg: clientConfig }}>
+  const $ = (id) => document.getElementById(id);
+  const { fees, oneTime, monthly, portalUrl, impact } = cfg;
+  const grossUp = (c) => Math.ceil((c + fees.fixedCents) / (1 - fees.percent / 100));
+  const fmt = (c) => '$' + (c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2));
+  const checked = (name) => document.querySelector(`input[name="${name}"]:checked`);
+
+  const btn = $('give-btn');
+  const feeCb = $('fee-cb');
+  const otherInput = $('other-amount');
+  const otherErr = $('other-error');
+
+  function update() {
+    const freq = checked('freq').value;
+    const isMonthly = freq === 'monthly';
+    $('ladder-monthly').hidden = !isMonthly;
+    $('ladder-once').hidden = isMonthly;
+    $('callout').hidden = !isMonthly;
+    $('cancel-note').hidden = !isMonthly;
+
+    let base = null, total = null, url = null, line = '';
+    if (isMonthly) {
+      const cents = Number(checked('m-amt').value);
+      const tier = monthly.tiers.find((t) => t.cents === cents);
+      base = cents;
+      total = feeCb.checked ? tier.feeCents : tier.cents;
+      url = feeCb.checked ? tier.feeUrl : tier.url;
+      line = impact.monthly[cents];
+    } else {
+      const v = checked('o-amt').value;
+      const isOther = v === 'other';
+      $('other-wrap').hidden = !isOther;
+      if (isOther) {
+        const raw = otherInput.value.trim();
+        const dollars = Number(raw);
+        const ok = /^\d+$/.test(raw) && dollars >= 1 && dollars <= oneTime.maxCents / 100;
+        if (ok) base = dollars * 100;
+        otherErr.textContent = ok ? '' : 'Enter a whole number of dollars from 1 to 10,000.';
+        otherInput.setAttribute('aria-invalid', ok || !raw ? 'false' : 'true');
+        line = impact.once.other;
+      } else {
+        base = Number(v);
+        otherErr.textContent = '';
+        line = impact.once[base] || impact.once.other;
+      }
+      if (base !== null) {
+        total = feeCb.checked ? Math.min(grossUp(base), oneTime.maxCents) : base;
+        total = Math.max(total, oneTime.minCents);
+        url = `${oneTime.url}?prefilled_amount=${total}`;
+      }
+    }
+
+    $('impact').textContent = line;
+    if (base === null) {
+      $('fee-text').textContent = 'Add card fees to my gift, so the full amount reaches me';
+      btn.textContent = 'Enter an amount';
+      btn.removeAttribute('href');
+      btn.setAttribute('aria-disabled', 'true');
+      return;
+    }
+    const feeAmt = (isMonthly ? monthly.tiers.find((t) => t.cents === base).feeCents : Math.min(grossUp(base), oneTime.maxCents)) - base;
+    $('fee-text').textContent = `Add ${fmt(feeAmt)} to cover card fees, so the full ${fmt(base)} reaches me`;
+    btn.textContent = `Give ${fmt(total)} ${isMonthly ? 'a month' : 'once'}`;
+    btn.href = url;
+    btn.removeAttribute('aria-disabled');
+  }
+
+  btn.addEventListener('click', (e) => {
+    if (btn.getAttribute('aria-disabled') === 'true') e.preventDefault();
+  });
+  document.querySelectorAll('.controls input').forEach((el) => {
+    el.addEventListener('change', update);
+    el.addEventListener('input', update);
+  });
+  update();
+</script>
+
+<style>
+  [hidden] { display: none !important; }
+  main:focus { outline: none; }
+  :global(html:not(.js)) .js-only { display: none; }
+
+  .test-badge { display: inline-block; margin-bottom: 1rem; padding: 0.25rem 0.8rem; border-radius: 999px; border: 1px solid #8a4a07; background: #fdebc3; color: #5c2f00; font-size: 0.82rem; font-weight: 800; }
+
+  .give-card, .why {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: clamp(1.25rem, 4vw, 2.2rem); margin-bottom: 2rem;
+  }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+
+  .freq { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; padding: 0.25rem; border: 2px solid var(--ink-2); border-radius: 999px; background: var(--bg); margin-bottom: 1.25rem; }
+  .tab, .opt, .fee-label { position: relative; display: block; cursor: pointer; }
+  .tab input, .opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .tab span { display: flex; align-items: center; justify-content: center; gap: 0.4rem; min-height: 46px; border-radius: 999px; font-weight: 800; color: var(--ink); }
+  .tab input:checked + span { background: var(--btn-bg); color: var(--btn-ink); }
+  .tab input:checked + span::before { content: "\2713"; }
+
+  .callout { margin: 0 0 1.25rem; padding: 0.8rem 1.1rem; border-left: 5px solid var(--sage); background: var(--sage-tint); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--sage-ink); line-height: 1.5; font-weight: 600; }
+
+  .ladder legend { font-weight: 800; color: var(--ink); margin-bottom: 0.6rem; padding: 0; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr)); gap: 0.65rem; }
+  .opt-face {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-height: 68px; padding: 0.5rem;
+    border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); text-align: center;
+  }
+  .opt-amt { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; font-weight: 600; }
+  .opt-amt small { font-family: var(--sans); font-size: 0.8rem; font-weight: 600; margin-left: 1px; }
+  .tag { font-size: 0.72rem; font-weight: 800; padding: 0 0.5rem; border: 1px solid currentColor; border-radius: 999px; }
+  .opt input:checked + .opt-face { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-ink); box-shadow: inset 0 0 0 2px var(--btn-ink); }
+  .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
+  .tab input:focus-visible + span, .opt input:focus-visible + .opt-face, .fee-label input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+  .other { margin-top: 1rem; }
+  .other label { display: block; font-weight: 800; color: var(--ink); margin-bottom: 0.4rem; }
+  .other-row { display: flex; align-items: center; gap: 0.5rem; color: var(--ink); font-weight: 700; }
+  .other-row input { width: 10rem; min-height: 48px; padding: 0.5rem 0.9rem; font-size: 1.1rem; border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-family: inherit; }
+  .other-row input[aria-invalid="true"] { border-color: #b3261e; }
+  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #a31d16; font-size: 0.95rem; font-weight: 600; }
+  :global(:root[data-theme="dark"]) .error { color: #ffb4a8; }
+
+  .impact { margin: 1.25rem 0 1rem; min-height: 3em; color: var(--ink-2); line-height: 1.5; text-align: center; font-size: 1.05rem; }
+  .fee { margin-bottom: 1.25rem; }
+  .fee-label { display: flex; align-items: center; gap: 0.75rem; min-height: 44px; color: var(--ink); line-height: 1.4; }
+  .fee-label input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--clay); }
+  .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--ink-2); }
+
+  .give-button {
+    display: block; padding: 1rem 1.5rem; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-align: center; text-decoration: none;
+    font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.4rem; font-weight: 600; box-shadow: 0 10px 24px -10px var(--btn-bg);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .give-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+  @media (prefers-reduced-motion: no-preference) { .give-button:hover { transform: translateY(-2px); } }
+  .give-button[aria-disabled="true"] { background: #6e6258; color: #fff; box-shadow: none; transform: none; cursor: not-allowed; }
+  :global(:root[data-theme="dark"]) .give-button[aria-disabled="true"] { background: #7b6a5c; color: #1b100a; }
+
+  .secure { margin: 0.9rem 0 0; text-align: center; color: var(--ink-2); font-size: 0.95rem; }
+  .secure a, .noscript-links a, .fine-print a { color: var(--ink); text-decoration: underline; }
+  .deductible { margin: 1.1rem 0 0; padding-top: 1.1rem; border-top: 1px dashed var(--line); color: var(--ink); line-height: 1.6; text-align: center; }
+  .noscript-links { margin-top: 1rem; color: var(--ink-2); }
+  .noscript-links ul { padding-left: 1.25rem; }
+  .noscript-links li { margin-bottom: 0.5rem; }
+
+  .why h2 { font-size: 1.7rem; margin-bottom: 0.8rem; }
+  .why > p { color: var(--ink-2); margin-bottom: 1.4rem; }
+  .project-list { list-style: none; display: grid; gap: 0.75rem; }
+  .project-list li { padding: 0.8rem 1.1rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-2); }
+  .project-list a, .project-name { color: var(--ink); font-weight: 800; margin-right: 0.5rem; }
+  .project-list a { text-decoration: underline; text-decoration-color: var(--clay); text-underline-offset: 3px; }
+  .project-list a:hover { color: var(--clay-ink); }
+
+  .fine-print { text-align: center; color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.6rem; }
+  .blessing { text-align: center; font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; color: var(--ink); }
+</style>

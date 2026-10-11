@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import frauncesUrl from '../assets/fonts/fraunces-latin-soft-normal.woff2?url';
+import nunitoUrl from '../assets/fonts/nunito-sans-latin-wght-normal.woff2?url';
 export interface Props {
   title: string;
   description?: string;
@@ -8,6 +11,9 @@ export interface Props {
 
 const { title, description = "Aditya Aswani - Personal hub for projects and writings.", ogImage, noindex = false } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").href;
+// Design-preview builds (PUBLIC_PREVIEW=1, deployed to Cloudflare Pages) are never
+// indexed and never report to Plausible.
+const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
 ---
 
 <!DOCTYPE html>
@@ -16,7 +22,7 @@ const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").hre
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {noindex && <meta name="robots" content="noindex" />}
+    {(noindex || isPreview) && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonicalUrl} />}
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -39,26 +45,21 @@ const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").hre
     {ogImage && <meta name="twitter:card" content="summary_large_image" />}
     {ogImage && <meta name="twitter:image" content={new URL(ogImage, "https://adityaaswani.com").href} />}
     
-    <!-- Fonts (non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <link rel="preload" as="font" type="font/woff2" href={nunitoUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={frauncesUrl} crossorigin />
+    <meta name="theme-color" content="#f8f1e3" />
 
     <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>
-    <script is:inline>
+    {!isPreview && <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>}
+    {!isPreview && <script is:inline>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       plausible.init()
-    </script>
+    </script>}
     <!-- Cloudflare Web Analytics (cookieless) -->
-    <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>
+    {!isPreview && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>}
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <slot />
   </body>
 </html>
-
-<style is:global>
-  @import '../styles/global.css';
-</style>

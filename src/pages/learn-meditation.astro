@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Learn Meditation — Aditya Aswani" description="Get personalized meditation guidance from Aditya on a donation basis." ogImage="/aditya-photo.jpg">
-  <Navigation />
-  <main class="meditation-page">
-    <article class="content">
+  <Header />
+  <main id="main" tabindex="-1" class="page">
+    <article class="wrap--narrow">
       <header class="page-header">
         <h1>Learn Meditation</h1>
         <p class="lead">Get personalized meditation guidance on a donation basis.</p>
@@ -24,7 +24,7 @@ import Footer from '../components/Footer.astro';
         <section>
           <h2>My Background</h2>
           <p>I have been meditating for almost three years now and I have done several silent meditation retreats. My shortest retreat was four days and my longest was three weeks. Most of my retreats were at the Insight Meditation Society, in Barre, MA. Cumulatively, I have spent around 1.5 months on silent retreat.</p>
-          <p>Most recently, I was a monk for three months in Malaysia. I practiced there in the Theravada Buddhist tradition. You can read more about my time as a monk in <a href="https://open.substack.com/pub/adityaaswani/p/from-the-subway-to-the-sangha?r=2b2ajo&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">this blog post</a>.</p>
+          <p>Most recently, I was a monk for three months in Malaysia. I practiced there in the Theravada Buddhist tradition. You can read more about my time as a monk in <a href="https://open.substack.com/pub/adityaaswani/p/from-the-subway-to-the-sangha?r=2b2ajo&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false" target="_blank" rel="noopener noreferrer">this blog post</a>.</p>
         </section>
 
         <section>
@@ -76,10 +76,10 @@ import Footer from '../components/Footer.astro';
         </div>
 
         <div class="cta-section">
-          <a href="https://cal.com/adityaa" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <a href="https://cal.com/adityaa" target="_blank" rel="noopener noreferrer" class="btn">
             Schedule a Session
           </a>
-          <a href="/contact" class="btn btn-secondary">
+          <a href="/contact" class="btn btn--quiet">
             Ask Questions
           </a>
         </div>
@@ -90,147 +90,11 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <style>
-  .meditation-page {
-    min-height: 100vh;
-    padding-top: calc(2rem + 80px); /* Account for fixed navbar */
-  }
-
-  .content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .page-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-  }
-
-  .prose {
-    color: var(--text-secondary);
-    line-height: 1.8;
-  }
-
-  .prose section {
-    margin-bottom: 2.5rem;
-  }
-
-  .prose h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 2rem;
-  }
-
-  .prose p {
-    margin-bottom: 1.5rem;
-  }
-
-  .prose ul {
-    margin-left: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .prose li {
-    margin-bottom: 0.5rem;
-  }
-
-  .prose a {
-    color: var(--accent-hover);
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .prose a:hover {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  .prose hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 3rem 0;
-  }
-
-  .closing {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .cta-section {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 3rem;
-  }
-
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn:hover {
-    text-decoration: none !important;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #ffffff !important;
-    font-weight: 700;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    color: #ffffff !important;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-  }
-
-  .btn-secondary {
-    border: 2px solid var(--border);
-    color: var(--text-primary);
-    background: transparent;
-  }
-
-  .btn-secondary:hover {
-    background: var(--bg-secondary);
-    border-color: var(--accent);
-  }
-
-  @media (max-width: 768px) {
-    .meditation-page {
-      padding-top: calc(1rem + 90px);
-    }
-    
-    .content {
-      padding: 1rem;
-    }
-    
-    .cta-section {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+  main:focus { outline: none; }
+  .prose { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: clamp(1.4rem, 5vw, 3rem); }
+  .prose section:first-of-type h2 { margin-top: 1.2rem; }
+  .prose > p:first-child { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.3rem; line-height: 1.4; color: var(--ink); }
+  hr { border: none; border-top: 1px dashed var(--line); margin: 2.4rem 0 1.6rem; }
+  .closing { text-align: center; font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.4rem; }
+  .cta-section { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1.2rem; }
 </style>

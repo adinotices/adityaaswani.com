@@ -1,0 +1,49 @@
+{
+  "mode": "test",
+  "fees": {
+    "percent": 2.9,
+    "fixedCents": 30
+  },
+  "portalUrl": "https://billing.stripe.com/p/login/test_6oU4gyesJ3CR8TOeWS7Vm00",
+  "oneTime": {
+    "url": "https://donate.stripe.com/test_eVqcN484lb5j7PK1627Vm03",
+    "minCents": 100,
+    "maxCents": 1000000,
+    "amounts": [
+      500,
+      1000,
+      2500,
+      5000
+    ],
+    "defaultCents": 1000
+  },
+  "monthly": {
+    "defaultCents": 500,
+    "tiers": [
+      {
+        "cents": 300,
+        "url": "https://buy.stripe.com/test_28EbJ05Wd4GV4DydSO7Vm06",
+        "feeCents": 340,
+        "feeUrl": "https://buy.stripe.com/test_00w6oG4S9b5j6LG3ea7Vm08"
+      },
+      {
+        "cents": 500,
+        "url": "https://buy.stripe.com/test_28E14m0BT8Xb3zu7uq7Vm04",
+        "feeCents": 546,
+        "feeUrl": "https://buy.stripe.com/test_3cI6oGfwNehv4Dy1627Vm09"
+      },
+      {
+        "cents": 1000,
+        "url": "https://buy.stripe.com/test_5kQ9ASgAR7T72vqdSO7Vm05",
+        "feeCents": 1061,
+        "feeUrl": "https://buy.stripe.com/test_4gMfZg70hflz7PK9Cy7Vm0a"
+      },
+      {
+        "cents": 2500,
+        "url": "https://buy.stripe.com/test_7sY6oG3O53CR2vq3ea7Vm07",
+        "feeCents": 2606,
+        "feeUrl": "https://buy.stripe.com/test_6oUbJ00BTddr6LG9Cy7Vm0b"
+      }
+    ]
+  }
+}
