@@ -10,17 +10,17 @@ const { fees, oneTime, monthly, portalUrl } = supportLinks;
 // Editable copy: the line shown under the amount ladder for each selection.
 const impact = {
   monthly: {
-    300: "Chips in toward the servers behind Sutam and PausePal and the campaign for the Marshall beagles.",
-    500: "About a coffee a month. Keeps the animal-rights work and the mindfulness tools going.",
-    1000: "Helps pay for the GPUs that transcribe Dhamma talks, and for campaign costs like printing and travel.",
-    2500: "Covers a real share of hosting, transcription and campaign costs, and buys me time to do the work.",
+    300: "Covers a slice of the hosting behind Sutam and PausePal.",
+    500: "About a coffee a month. A few of these cover the servers outright.",
+    1000: "Hosting is covered; the rest buys time for the work.",
+    2500: "Mostly buys time: hours each month for the animals or the practice instead of paid work.",
   },
   once: {
-    500: "Chips in toward hosting for Sutam and PausePal and the campaign for the Marshall beagles.",
-    1000: "Helps pay for GPU time that transcribes new Dhamma talks, or a day of campaign work.",
-    2500: "Helps keep the servers running and the campaign moving.",
-    5000: "Buys me time: a week I can spend on the animals or the practice instead of billable work.",
-    other: "Every amount helps the animals and the practice.",
+    500: "Covers about a week of hosting.",
+    1000: "Covers about a month of hosting for Sutam and PausePal.",
+    2500: "Buys an afternoon for the work.",
+    5000: "Buys a day I can spend on the animals or the practice.",
+    other: "Every amount helps.",
   },
 };
 
@@ -86,7 +86,7 @@ const groups = [
       <header class="page-header">
         {isTest && <p class="test-badge">Test mode: no real charges</p>}
         <h1>Support my work</h1>
-        <p class="lead">I spend my time on two things: fighting for animals and helping people build a steady mindfulness practice. Your support pays for the campaigns, the servers and the hours that make both possible.</p>
+        <p class="lead">I spend my time on two things: fighting for animals and helping people build a steady mindfulness practice. The servers are cheap and the campaign costs are covered by the coalition. What your support really buys is my time.</p>
       </header>
 
       <section class="give-card" aria-labelledby="give-heading" id="give">
