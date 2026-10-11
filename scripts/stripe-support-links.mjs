@@ -17,22 +17,31 @@ const LIVE = process.argv.includes('--live');
 const MODE = LIVE ? 'live' : 'test';
 const ENV_FILE = LIVE ? join(homedir(), 'repos/.env') : join(homedir(), 'repos/amberhall/.env');
 const KEY_NAME = LIVE ? 'STRIPE_SECRET_KEY_LIVE' : 'STRIPE_SECRET_KEY';
-const SUCCESS_URL = 'https://adityaaswani.com/support/thanks';
+const SUCCESS_BASE = 'https://adityaaswani.com/support/thanks';
+const SUBMIT_MESSAGE = "This is personal support for Aditya's independent work, not a charitable donation, so it isn't tax-deductible.";
+// Standard US card pricing (2.9% + 30 cents). Must be checked against the account's real rate.
+const FEE_PERCENT = 2.9;
+const FEE_FIXED_CENTS = 30;
+const grossUp = (c) => Math.ceil((c + FEE_FIXED_CENTS) / (1 - FEE_PERCENT / 100));
 const SITE = 'adityaaswani.com';
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../src/data/support-links.json');
 
 const PRODUCTS = {
   one_time: { name: "Support Aditya's work", description: 'A one-time gift toward hosting, transcription GPUs and time for free projects.' },
   monthly: { name: 'Monthly support', description: 'A monthly gift toward hosting, transcription GPUs and time for free projects.' },
+  monthly_fees: { name: 'Monthly support (plus card fees)', description: 'A monthly gift toward hosting, transcription GPUs and time for free projects. Includes a small amount to cover card fees, so the full chosen amount reaches Aditya.' },
 };
 
+const TIERS = [300, 500, 1000, 2500];
+const ONCE_MIN = 100;
+const ONCE_PRESET = 1000;
+const ONCE_MAX = 1000000;
+const ONCE_AMOUNTS = [500, 1000, 2500, 5000];
+
 const PRICES = [
-  { key: 'once_5', product: 'one_time', label: '$5', amount: 500 },
-  { key: 'once_20', product: 'one_time', label: '$20', amount: 2000 },
-  { key: 'once_50', product: 'one_time', label: '$50', amount: 5000 },
-  { key: 'once_custom', product: 'one_time', label: 'Custom', custom: true },
-  { key: 'monthly_5', product: 'monthly', label: '$5 / month', amount: 500, interval: 'month' },
-  { key: 'monthly_10', product: 'monthly', label: '$10 / month', amount: 1000, interval: 'month' },
+  { key: 'once_custom', product: 'one_time', custom: true, type: 'once' },
+  ...TIERS.map((c) => ({ key: `monthly_${c / 100}`, product: 'monthly', amount: c, interval: 'month', type: 'monthly' })),
+  ...TIERS.map((c) => ({ key: `monthly_${c / 100}_fees`, product: 'monthly_fees', amount: grossUp(c), interval: 'month', type: 'monthly' })),
 ];
 
 function readEnvKey(file, name) {
@@ -109,40 +118,95 @@ async function ensurePrice(spec, productId) {
   const existing = (await listAll('prices', { product: productId, active: true })).find((p) => ours(p, spec.key));
   if (existing) return existing;
   const params = { product: productId, currency: 'usd', metadata: { site: SITE, support_key: spec.key } };
-  if (spec.custom) params.custom_unit_amount = { enabled: true, minimum: 100, preset: 1000 };
+  if (spec.custom) params.custom_unit_amount = { enabled: true, minimum: ONCE_MIN, preset: ONCE_PRESET };
   else params.unit_amount = spec.amount;
   if (spec.interval) params.recurring = { interval: spec.interval };
   return stripe('POST', 'prices', params);
 }
 
 async function ensureLink(spec, priceId, links) {
-  const afterCompletion = { type: 'redirect', redirect: { url: SUCCESS_URL } };
+  const redirectUrl = `${SUCCESS_BASE}?type=${spec.type}`;
+  const afterCompletion = { type: 'redirect', redirect: { url: redirectUrl } };
+  const customText = { submit: { message: SUBMIT_MESSAGE } };
+  const submitType = spec.type === 'once' ? 'donate' : undefined;
   const existing = links.find((l) => ours(l, spec.key));
   if (existing) {
-    if (existing.after_completion?.redirect?.url !== SUCCESS_URL) {
-      return stripe('POST', `payment_links/${existing.id}`, { after_completion: afterCompletion });
+    const drift = {};
+    if (existing.after_completion?.redirect?.url !== redirectUrl) drift.after_completion = afterCompletion;
+    if (existing.custom_text?.submit?.message !== SUBMIT_MESSAGE) drift.custom_text = customText;
+    const submitDrift = submitType && existing.submit_type !== submitType;
+    if (submitDrift) drift.submit_type = submitType;
+    if (!Object.keys(drift).length) return existing;
+    try {
+      return await stripe('POST', `payment_links/${existing.id}`, drift);
+    } catch (err) {
+      if (!submitDrift) throw err;
+      console.log(`submit_type not updatable on ${spec.key} (${err.message}); creating replacement`);
+      const fresh = await stripe('POST', 'payment_links', {
+        line_items: { 0: { price: priceId, quantity: 1 } },
+        after_completion: afterCompletion,
+        custom_text: customText,
+        submit_type: submitType,
+        metadata: { site: SITE, support_key: spec.key },
+      });
+      await stripe('POST', `payment_links/${existing.id}`, { active: false });
+      return fresh;
     }
-    return existing;
   }
   return stripe('POST', 'payment_links', {
     line_items: { 0: { price: priceId, quantity: 1 } },
     after_completion: afterCompletion,
+    custom_text: customText,
+    submit_type: submitType,
     metadata: { site: SITE, support_key: spec.key },
   });
+}
+
+async function ensurePortal() {
+  const params = {
+    business_profile: { headline: 'Manage your monthly support for Aditya Aswani' },
+    features: {
+      invoice_history: { enabled: true },
+      payment_method_update: { enabled: true },
+      subscription_cancel: { enabled: true, mode: 'immediately' },
+    },
+    login_page: { enabled: true },
+  };
+  const all = await listAll('billing_portal/configurations');
+  const existing = all.find((c) => ours(c, 'portal'));
+  if (existing) {
+    if (existing.login_page?.url && existing.active) return existing;
+    return stripe('POST', `billing_portal/configurations/${existing.id}`, { ...params, active: true });
+  }
+  return stripe('POST', 'billing_portal/configurations', { ...params, metadata: { site: SITE, support_key: 'portal' } });
 }
 
 const products = {};
 for (const key of Object.keys(PRODUCTS)) products[key] = await ensureProduct(key);
 
 const links = await listAll('payment_links', { active: true });
-const result = { mode: MODE, oneTime: [], monthly: [] };
+const urls = {};
 for (const spec of PRICES) {
   const price = await ensurePrice(spec, products[spec.product].id);
   const link = await ensureLink(spec, price.id, links);
-  const entry = { key: spec.key, label: spec.label, url: link.url };
-  (spec.product === 'monthly' ? result.monthly : result.oneTime).push(entry);
-  console.log(`${spec.key.padEnd(12)} ${link.url}`);
+  urls[spec.key] = link.url;
+  console.log(`${spec.key.padEnd(16)} ${link.url}`);
 }
 
+const portal = await ensurePortal();
+const portalUrl = portal.login_page?.url;
+if (!portalUrl) throw new Error('Stripe returned no login_page.url for the portal configuration; stopping.');
+console.log(`portal           ${portalUrl}`);
+
+const result = {
+  mode: MODE,
+  fees: { percent: FEE_PERCENT, fixedCents: FEE_FIXED_CENTS },
+  portalUrl,
+  oneTime: { url: urls.once_custom, minCents: ONCE_MIN, maxCents: ONCE_MAX, amounts: ONCE_AMOUNTS, defaultCents: ONCE_PRESET },
+  monthly: {
+    defaultCents: 500,
+    tiers: TIERS.map((c) => ({ cents: c, url: urls[`monthly_${c / 100}`], feeCents: grossUp(c), feeUrl: urls[`monthly_${c / 100}_fees`] })),
+  },
+};
 writeFileSync(OUT, JSON.stringify(result, null, 2) + '\n');
 console.log(`wrote src/data/support-links.json (mode: ${MODE})`);

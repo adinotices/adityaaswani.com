@@ -2,6 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
+import supportLinks from '../../data/support-links.json';
+
+const { portalUrl, monthly } = supportLinks;
+const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
 ---
 
 <Layout title="Thank you — Aditya Aswani" description="Thank you for supporting Aditya Aswani's work." noindex>
@@ -10,8 +14,25 @@ import Footer from '../../components/Footer.astro';
   <main class="thanks-page">
     <article class="content">
       <h1>Thank you 🙏</h1>
-      <p class="lead">Your gift keeps the talks searchable, the meditation buddies matched and the campaign going. It means a lot.</p>
-      <p>If you set up a monthly gift and ever want to change or cancel it, just email <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+      <p class="lead">Your support keeps the talks searchable, the meditation buddies matched and the campaign going. It means a lot to me.</p>
+      <p>It goes straight into hosting, the GPUs that transcribe Dhamma talks, and time to build the next free thing.</p>
+
+      <p id="monthly-note" hidden>You can <a href={portalUrl}>manage or cancel your monthly support</a> anytime.</p>
+
+      <section id="upsell" class="card" aria-labelledby="upsell-heading" hidden>
+        <h2 id="upsell-heading">Would you like to give $5 a month from now on?</h2>
+        <div class="actions">
+          <a class="primary" href={monthly5.url}>Yes, give $5 a month</a>
+          <button type="button" class="plain" id="upsell-no">No thanks, this is perfect</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="share-heading">
+        <h2 id="share-heading">Know someone who'd like this work?</h2>
+        <button type="button" class="primary" id="share-btn">Share this page</button>
+        <p class="status" id="share-status" role="status" aria-live="polite"></p>
+      </section>
+
       <p class="blessing">May you be happy, healthy, and safe.</p>
       <a href="/" class="home-button">Back to home</a>
     </article>
@@ -19,6 +40,32 @@ import Footer from '../../components/Footer.astro';
 
   <Footer />
 </Layout>
+
+<script>
+  const type = new URLSearchParams(location.search).get('type');
+  const show = (id: string) => { document.getElementById(id)!.hidden = false; };
+  if (type === 'once') show('upsell');
+  if (type === 'monthly') show('monthly-note');
+
+  document.getElementById('upsell-no')!.addEventListener('click', () => {
+    document.getElementById('upsell')!.hidden = true;
+  });
+
+  const status = document.getElementById('share-status')!;
+  document.getElementById('share-btn')!.addEventListener('click', async () => {
+    const url = 'https://adityaaswani.com/support';
+    if (navigator.share) {
+      try { await navigator.share({ url }); } catch { /* dismissed */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      status.textContent = 'Link copied';
+    } catch {
+      status.textContent = 'Copy this link: ' + url;
+    }
+  });
+</script>
 
 <style>
   .thanks-page {
@@ -61,6 +108,54 @@ import Footer from '../../components/Footer.astro';
     font-weight: 500;
     font-size: 1.1rem;
   }
+
+  [hidden] { display: none !important; }
+
+  .card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card h2 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .primary, .plain {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .primary { background: #4f46e5; color: #ffffff; border: 2px solid #4f46e5; }
+  .primary:hover { background: #4338ca; }
+  .plain { background: transparent; color: var(--text-primary); border: 2px solid var(--text-secondary); }
+  .plain:hover { border-color: var(--text-primary); }
+
+  .primary:focus-visible, .plain:focus-visible, .home-button:focus-visible {
+    outline: 3px solid var(--accent-hover);
+    outline-offset: 3px;
+  }
+
+  .status { margin: 0.75rem 0 0; min-height: 1.5em; color: var(--text-primary); }
 
   .home-button {
     display: inline-block;
