@@ -8,6 +8,9 @@ export interface Props {
 
 const { title, description = "Aditya Aswani - Personal hub for projects and writings.", ogImage, noindex = false } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").href;
+// Design-preview builds (PUBLIC_PREVIEW=1, deployed to Cloudflare Pages) are never
+// indexed and never report to Plausible.
+const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
 ---
 
 <!DOCTYPE html>
@@ -16,7 +19,7 @@ const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").hre
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {noindex && <meta name="robots" content="noindex" />}
+    {(noindex || isPreview) && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonicalUrl} />}
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -46,11 +49,11 @@ const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").hre
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
 
     <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>
-    <script is:inline>
+    {!isPreview && <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>}
+    {!isPreview && <script is:inline>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       plausible.init()
-    </script>
+    </script>}
   </head>
   <body>
     <slot />
