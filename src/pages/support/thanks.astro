@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
+import { newsletter } from '../../data/site';
 
 const { portalUrl, monthly, checkout } = supportLinks;
 const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
@@ -27,14 +28,20 @@ const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
         </div>
       </section>
 
-      <section class="card" aria-labelledby="share-heading">
-        <h2 id="share-heading">Know someone who'd like this work?</h2>
-        <button type="button" class="primary" id="share-btn">Share this page</button>
-        <p class="status" id="share-status" role="status" aria-live="polite"></p>
+      <section class="card" aria-labelledby="news-heading">
+        <h2 id="news-heading">Want the essays?</h2>
+        <p class="news-tagline">{newsletter.tagline} Free, by email, from {newsletter.name}.</p>
+        <form class="news-form" action={newsletter.formAction} method="post" target="_blank">
+          <label for="news-email" class="sr-only">Your email</label>
+          <div class="news-row">
+            <input id="news-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+            <button class="primary" type="submit">Subscribe<span class="sr-only"> (opens in a new tab)</span></button>
+          </div>
+        </form>
       </section>
 
       <p class="blessing">May you be happy, healthy, and safe.</p>
-      <a href="/" class="home-button">Back to home</a>
+      <a href="/" class="home-link">Back to home</a>
     </article>
   </main>
 
@@ -84,20 +91,6 @@ const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
     document.getElementById('upsell')!.hidden = true;
   });
 
-  const status = document.getElementById('share-status')!;
-  document.getElementById('share-btn')!.addEventListener('click', async () => {
-    const url = 'https://adityaaswani.com/support';
-    if (navigator.share) {
-      try { await navigator.share({ url }); } catch { /* dismissed */ }
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      status.textContent = 'Link copied';
-    } catch {
-      status.textContent = 'Copy this link: ' + url;
-    }
-  });
 </script>
 
 <style>
@@ -118,6 +111,11 @@ const monthly5 = monthly.tiers.find((t) => t.cents === 500) ?? monthly.tiers[0];
   .plain { background: transparent; color: var(--ink); border: 2px solid var(--ink-2); }
   .plain:hover { border-color: var(--ink); background: var(--bg-soft); }
   .status { margin: 0.75rem 0 0; min-height: 1.5em; color: var(--ink); }
+  .news-tagline { color: var(--ink-2); margin: 0 0 1rem; }
+  .news-form .news-row { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+  .news-form input { flex: 1 1 14rem; min-height: 48px; padding: 0.6rem 0.9rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; }
+  .news-form input:focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; }
+  .home-link { display: inline-block; margin-top: 0.5rem; padding: 0.6rem 0.4rem; color: var(--clay-ink, var(--clay)); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
   .home-button { display: inline-flex; align-items: center; min-height: 48px; padding: 0.7rem 1.6rem; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-decoration: none; font-weight: 700; }
   .home-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
 </style>
