@@ -1,11 +1,12 @@
 ---
 const currentPath = Astro.url.pathname;
 
+const supportActive = currentPath.startsWith("/support");
+
 const navItems = [
   { href: currentPath === "/" ? "#home" : "/", label: "Home", active: currentPath === "/" },
   { href: currentPath === "/" ? "#work" : "/#work", label: "Work", active: false },
   { href: "/contact", label: "Contact", active: currentPath === "/contact" },
-  { href: "/support", label: "Support", active: currentPath.startsWith("/support") },
 ];
 ---
 
@@ -21,6 +22,12 @@ const navItems = [
     </ul>
     <div class="nav-controls">
       <a href={currentPath === "/" ? "#subscribe" : "/#subscribe"} class="nav-subscribe">Subscribe</a>
+      <a href="/support" class="nav-support" aria-current={supportActive ? "page" : undefined}>
+        <svg class="nav-support-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span class="support-full">Support my work</span>
+        <span class="support-short">Support</span>
+        <span class="support-sr">Support my work</span>
+      </a>
       <button class="theme-toggle" aria-label="Toggle theme">
         <span class="theme-icon dark">🌙</span>
         <span class="theme-icon light">☀️</span>
@@ -133,6 +140,103 @@ const navItems = [
   @media (max-width: 768px) {
     .nav-subscribe {
       display: none;
+    }
+  }
+
+  .nav-support {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    min-height: 36px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(244, 114, 182, 0.55);
+    background: transparent;
+    color: #f472b6;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-support-icon {
+    flex-shrink: 0;
+  }
+
+  .nav-support:hover,
+  .nav-support[aria-current="page"] {
+    background: rgba(244, 114, 182, 0.14);
+    border-color: #f472b6;
+  }
+
+  .nav-support:focus-visible {
+    outline: 2px solid #f472b6;
+    outline-offset: 3px;
+  }
+
+  :root[data-theme="light"] .nav-support {
+    color: #be185d;
+    border-color: rgba(190, 24, 93, 0.5);
+  }
+
+  :root[data-theme="light"] .nav-support:hover,
+  :root[data-theme="light"] .nav-support[aria-current="page"] {
+    background: rgba(190, 24, 93, 0.08);
+    border-color: #be185d;
+  }
+
+  :root[data-theme="light"] .nav-support:focus-visible {
+    outline-color: #be185d;
+  }
+
+  .support-short,
+  .support-sr {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .nav-support {
+      min-height: 40px;
+      padding: 0.4rem 0.9rem;
+    }
+
+    .support-full {
+      display: none;
+    }
+
+    .support-short {
+      display: inline;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .nav-support {
+      width: 40px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .support-short {
+      display: none;
+    }
+
+    .support-sr {
+      display: block;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    nav {
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
 
