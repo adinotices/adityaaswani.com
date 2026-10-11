@@ -151,7 +151,8 @@ import Footer from '../components/Footer.astro';
 
   .prose a {
     color: var(--accent-hover);
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     transition: color 0.3s ease;
   }
 
@@ -195,14 +196,14 @@ import Footer from '../components/Footer.astro';
   }
 
   .btn-primary {
-    background: var(--accent);
+    background: #4f46e5;
     color: #ffffff !important;
     font-weight: 700;
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
   }
 
   .btn-primary:hover {
-    background: var(--accent-hover);
+    background: #4338ca;
     color: #ffffff !important;
     transform: translateY(-2px);
     box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
