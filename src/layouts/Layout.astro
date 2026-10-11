@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import frauncesUrl from '../assets/fonts/fraunces-latin-soft-normal.woff2?url';
+import nunitoUrl from '../assets/fonts/nunito-sans-latin-wght-normal.woff2?url';
 export interface Props {
   title: string;
   description?: string;
@@ -42,11 +45,9 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     {ogImage && <meta name="twitter:card" content="summary_large_image" />}
     {ogImage && <meta name="twitter:image" content={new URL(ogImage, "https://adityaaswani.com").href} />}
     
-    <!-- Fonts (non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <link rel="preload" as="font" type="font/woff2" href={nunitoUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={frauncesUrl} crossorigin />
+    <meta name="theme-color" content="#f8f1e3" />
 
     <!-- Privacy-friendly analytics by Plausible -->
     {!isPreview && <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>}
@@ -56,10 +57,7 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     </script>}
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <slot />
   </body>
 </html>
-
-<style is:global>
-  @import '../styles/global.css';
-</style>

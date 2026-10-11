@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Navigation from '../../components/Navigation.astro';
+import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
 
@@ -55,11 +55,11 @@ const projects = [
 ---
 
 <Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
-  <Navigation />
+  <Header />
 
-  <main class="support-page">
+  <main id="main" tabindex="-1" class="page">
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <article class="content">
+    <article class="wrap--narrow">
       <header class="page-header">
         {isTest && <p class="test-badge">Test mode: no real charges</p>}
         <h1>Support my work</h1>
@@ -258,337 +258,78 @@ const projects = [
 
 <style>
   [hidden] { display: none !important; }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
+  main:focus { outline: none; }
   :global(html:not(.js)) .js-only { display: none; }
 
-  .support-page {
-    min-height: 100vh;
-    padding-top: calc(4rem + 80px);
-  }
+  .test-badge { display: inline-block; margin-bottom: 1rem; padding: 0.25rem 0.8rem; border-radius: 999px; border: 1px solid #8a4a07; background: #fdebc3; color: #5c2f00; font-size: 0.82rem; font-weight: 800; }
 
-  .content {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 2rem;
+  .give-card, .why {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: clamp(1.25rem, 4vw, 2.2rem); margin-bottom: 2rem;
   }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
-  .page-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-
-  .test-badge {
-    display: inline-block;
-    margin-bottom: 1rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    border: 1px solid #b45309;
-    background: #fef3c7;
-    color: #78350f;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .page-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-  }
-
-  /* Give card */
-  .give-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    min-width: 0;
-  }
-
-  .freq {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 12px;
-    background: var(--bg-primary);
-    margin-bottom: 1.25rem;
-  }
-
+  .freq { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; padding: 0.25rem; border: 2px solid var(--ink-2); border-radius: 999px; background: var(--bg); margin-bottom: 1.25rem; }
   .tab, .opt, .fee-label { position: relative; display: block; cursor: pointer; }
-
-  .tab input, .opt input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .tab span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    min-height: 44px;
-    border-radius: 9px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .tab input:checked + span {
-    background: #4f46e5;
-    color: #ffffff;
-  }
-
+  .tab input, .opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .tab span { display: flex; align-items: center; justify-content: center; gap: 0.4rem; min-height: 46px; border-radius: 999px; font-weight: 800; color: var(--ink); }
+  .tab input:checked + span { background: var(--btn-bg); color: var(--btn-ink); }
   .tab input:checked + span::before { content: "\2713"; }
 
-  .callout {
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    border-left: 4px solid #4f46e5;
-    background: var(--bg-primary);
-    border-radius: 0 8px 8px 0;
-    color: var(--text-primary);
-    line-height: 1.5;
-  }
+  .callout { margin: 0 0 1.25rem; padding: 0.8rem 1.1rem; border-left: 5px solid var(--sage); background: var(--sage-tint); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--sage-ink); line-height: 1.5; font-weight: 600; }
 
-  .ladder legend {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    padding: 0;
-  }
-
-  .options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr));
-    gap: 0.6rem;
-  }
-
+  .ladder legend { font-weight: 800; color: var(--ink); margin-bottom: 0.6rem; padding: 0; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr)); gap: 0.65rem; }
   .opt-face {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    min-height: 64px;
-    padding: 0.5rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 12px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    text-align: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-height: 68px; padding: 0.5rem;
+    border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); text-align: center;
   }
-
-  .opt-amt { font-size: 1.25rem; font-weight: 700; }
-  .opt-amt small { font-size: 0.8rem; font-weight: 500; margin-left: 1px; }
-
-  .tag {
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0 0.5rem;
-    border: 1px solid currentColor;
-    border-radius: 999px;
-  }
-
-  .opt input:checked + .opt-face {
-    background: #4f46e5;
-    border-color: #4f46e5;
-    color: #ffffff;
-    box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #4f46e5;
-  }
-
+  .opt-amt { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; font-weight: 600; }
+  .opt-amt small { font-family: var(--sans); font-size: 0.8rem; font-weight: 600; margin-left: 1px; }
+  .tag { font-size: 0.72rem; font-weight: 800; padding: 0 0.5rem; border: 1px solid currentColor; border-radius: 999px; }
+  .opt input:checked + .opt-face { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-ink); box-shadow: inset 0 0 0 2px var(--btn-ink); }
   .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
-
-  .tab input:focus-visible + span,
-  .opt input:focus-visible + .opt-face,
-  .fee-label input:focus-visible {
-    outline: 3px solid var(--accent-hover);
-    outline-offset: 3px;
-  }
+  .tab input:focus-visible + span, .opt input:focus-visible + .opt-face, .fee-label input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
   .other { margin-top: 1rem; }
-  .other label { display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 0.4rem; }
-  .other-row { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); font-weight: 600; }
-  .other-row input {
-    width: 10rem;
-    min-height: 44px;
-    padding: 0.5rem 0.75rem;
-    font-size: 1.1rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 10px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
-  .other-row input:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 2px; }
-  .other-row input[aria-invalid="true"] { border-color: #b91c1c; }
-  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #b91c1c; font-size: 0.95rem; }
-  :global(:root:not([data-theme="light"])) .error { color: #fca5a5; }
+  .other label { display: block; font-weight: 800; color: var(--ink); margin-bottom: 0.4rem; }
+  .other-row { display: flex; align-items: center; gap: 0.5rem; color: var(--ink); font-weight: 700; }
+  .other-row input { width: 10rem; min-height: 48px; padding: 0.5rem 0.9rem; font-size: 1.1rem; border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-family: inherit; }
+  .other-row input[aria-invalid="true"] { border-color: #b3261e; }
+  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #a31d16; font-size: 0.95rem; font-weight: 600; }
+  :global(:root[data-theme="dark"]) .error { color: #ffb4a8; }
 
-  .impact {
-    margin: 1.25rem 0 1rem;
-    min-height: 3em;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    text-align: center;
-  }
-
+  .impact { margin: 1.25rem 0 1rem; min-height: 3em; color: var(--ink-2); line-height: 1.5; text-align: center; font-size: 1.05rem; }
   .fee { margin-bottom: 1.25rem; }
-  .fee-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 44px;
-    color: var(--text-primary);
-    line-height: 1.4;
-  }
-  .fee-label input {
-    flex: none;
-    width: 24px;
-    height: 24px;
-    margin: 0;
-    accent-color: #4f46e5;
-  }
-  .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--text-secondary); }
+  .fee-label { display: flex; align-items: center; gap: 0.75rem; min-height: 44px; color: var(--ink); line-height: 1.4; }
+  .fee-label input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--clay); }
+  .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--ink-2); }
 
   .give-button {
-    display: block;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    background: #4f46e5;
-    color: #ffffff;
-    text-align: center;
-    text-decoration: none;
-    font-size: 1.25rem;
-    font-weight: 700;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-    transition: background 0.2s ease, transform 0.2s ease;
+    display: block; padding: 1rem 1.5rem; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-align: center; text-decoration: none;
+    font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.4rem; font-weight: 600; box-shadow: 0 10px 24px -10px var(--btn-bg);
+    transition: background 0.2s, transform 0.2s;
   }
-  .give-button:hover { background: #4338ca; transform: translateY(-2px); }
-  .give-button:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 3px; }
-  .give-button[aria-disabled="true"] { background: #6b7280; box-shadow: none; transform: none; cursor: not-allowed; }
+  .give-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+  @media (prefers-reduced-motion: no-preference) { .give-button:hover { transform: translateY(-2px); } }
+  .give-button[aria-disabled="true"] { background: #6e6258; color: #fff; box-shadow: none; transform: none; cursor: not-allowed; }
+  :global(:root[data-theme="dark"]) .give-button[aria-disabled="true"] { background: #7b6a5c; color: #1b100a; }
 
-  .secure {
-    margin: 0.9rem 0 0;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-  }
-  .secure a, .noscript-links a, .fine-print a { color: var(--text-primary); text-decoration: underline; }
-
-  .deductible {
-    margin: 1rem 0 0;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: center;
-  }
-
-  .noscript-links { margin-top: 1rem; color: var(--text-secondary); }
+  .secure { margin: 0.9rem 0 0; text-align: center; color: var(--ink-2); font-size: 0.95rem; }
+  .secure a, .noscript-links a, .fine-print a { color: var(--ink); text-decoration: underline; }
+  .deductible { margin: 1.1rem 0 0; padding-top: 1.1rem; border-top: 1px dashed var(--line); color: var(--ink); line-height: 1.6; text-align: center; }
+  .noscript-links { margin-top: 1rem; color: var(--ink-2); }
   .noscript-links ul { padding-left: 1.25rem; }
   .noscript-links li { margin-bottom: 0.5rem; }
 
-  /* Why */
-  .why {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
+  .why h2 { font-size: 1.7rem; margin-bottom: 0.8rem; }
+  .why > p { color: var(--ink-2); margin-bottom: 1.4rem; }
+  .project-list { list-style: none; display: grid; gap: 0.75rem; }
+  .project-list li { padding: 0.8rem 1.1rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-2); }
+  .project-list a, .project-name { color: var(--ink); font-weight: 800; margin-right: 0.5rem; }
+  .project-list a { text-decoration: underline; text-decoration-color: var(--clay); text-underline-offset: 3px; }
+  .project-list a:hover { color: var(--clay-ink); }
 
-  .why h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .why > p {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-
-  .project-list {
-    list-style: none;
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .project-list li {
-    padding: 0.75rem 1rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-secondary);
-  }
-
-  .project-list a,
-  .project-name {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-right: 0.5rem;
-  }
-
-  .project-list a {
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-underline-offset: 3px;
-  }
-
-  .project-list a:hover { color: var(--accent-hover); }
-
-  .fine-print {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-  }
-
-  .blessing {
-    text-align: center;
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .support-page { padding-top: calc(2rem + 90px); }
-    .content { padding: 1rem; }
-    .give-card, .why { padding: 1.25rem; }
-    .options { grid-template-columns: repeat(2, 1fr); }
-  }
+  .fine-print { text-align: center; color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.6rem; }
+  .blessing { text-align: center; font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; color: var(--ink); }
 </style>

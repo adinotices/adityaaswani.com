@@ -1,14 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
+import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="Contact — Aditya Aswani" description="Get in touch with Aditya Aswani for meaningful conversations and collaborations." ogImage="/aditya-photo.jpg">
-  <Navigation />
+  <Header />
   
-  <main class="contact-page">
-    <article class="content">
+  <main id="main" tabindex="-1" class="page">
+    <article class="wrap--narrow">
       <header class="page-header">
         <h1>Let's Connect</h1>
         <p class="lead">I'm always interested in meaningful conversations and collaborations</p>
@@ -133,351 +133,30 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <style>
-  .contact-page {
-    min-height: 100vh;
-    padding-top: calc(4rem + 80px);
+  main:focus { outline: none; }
+  h2 { font-size: 1.55rem; margin-bottom: 0.5rem; }
+  h3 { font-size: 1.25rem; margin-bottom: 0.4rem; }
+  h4 { font-size: 1.15rem; margin-bottom: 0.3rem; }
+  p { color: var(--ink-2); margin-bottom: 0.9rem; }
+  .contact-methods, .feedback-options, .intermediary-cards { display: grid; gap: 1.1rem; }
+  @media (min-width: 640px) { .feedback-options, .intermediary-cards { grid-template-columns: 1fr 1fr; } }
+  .contact-card, .feedback-card, .intermediary-card, .topics {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.5rem;
   }
-
-  .content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+  .contact-methods { margin-bottom: 1.1rem; }
+  .topics { margin-bottom: 2.5rem; }
+  .topics ul { padding-left: 1.3rem; color: var(--ink-2); }
+  .topics li { margin-bottom: 0.3rem; }
+  .contact-icon, .feedback-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50% 46% 52% 48%; background: var(--sage-tint); color: var(--sage-ink); margin-bottom: 0.8rem; }
+  .feedback-section { margin-top: 1rem; }
+  .feedback-section > h2 { margin-bottom: 0.4rem; }
+  .feedback-section > p { margin-bottom: 1.2rem; }
+  .contact-button, .feedback-button {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0.6rem 1.4rem; border-radius: 999px;
+    background: var(--btn-bg); color: var(--btn-ink); font-weight: 700; text-decoration: none; overflow-wrap: anywhere;
   }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .page-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-  }
-
-  .contact-methods {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-  }
-
-  .contact-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .contact-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-5px);
-  }
-
-  .contact-icon {
-    color: var(--accent);
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .contact-card h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .contact-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-
-  .contact-button {
-    background: #4f46e5;
-    color: #ffffff !important;
-    text-decoration: none;
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .contact-button:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-    text-decoration: none;
-  }
-
-  .topics {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-  }
-
-  .topics h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-
-  .topics ul {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .topics li {
-    color: var(--text-secondary);
-    padding: 0.75rem 1rem;
-    background: var(--bg-primary);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-  }
-
-  .topics li:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
-  }
-
-  .feedback-section {
-    margin-top: 3rem;
-  }
-
-  .feedback-section h2 {
-    color: var(--text-primary);
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .feedback-section > p {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-  }
-
-  .feedback-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-  }
-
-  .feedback-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .feedback-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-5px);
-  }
-
-  .feedback-card.direct {
-    border-color: rgba(99, 102, 241, 0.3);
-  }
-
-  .feedback-card.anonymous {
-    border-color: rgba(34, 197, 94, 0.3);
-  }
-
-  .feedback-icon {
-    color: var(--accent);
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .feedback-card.anonymous .feedback-icon {
-    color: #22c55e;
-  }
-
-  .feedback-card h3 {
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-  }
-
-  .feedback-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-
-  .feedback-button {
-    background: #4f46e5;
-    color: #ffffff !important;
-    text-decoration: none;
-    padding: 0.875rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .feedback-card.anonymous .feedback-button {
-    background: #15803d;
-    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
-  }
-
-  .feedback-button:hover {
-    transform: translateY(-2px);
-    text-decoration: none;
-  }
-
-  .feedback-card.direct .feedback-button:hover {
-    background: #4338ca;
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-  }
-
-  .feedback-card.anonymous .feedback-button:hover {
-    background: #166534;
-    box-shadow: 0 15px 40px rgba(34, 197, 94, 0.4);
-  }
-
-  .intermediaries {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 3rem;
-  }
-
-  .intermediaries h3 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  .intermediaries > p {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-    line-height: 1.6;
-  }
-
-  .intermediary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .intermediary-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .intermediary-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-  }
-
-  .intermediary-card h4 {
-    color: var(--text-primary);
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
-  }
-
-  .intermediary-links {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .intermediary-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-  }
-
-  .intermediary-links a:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    text-decoration: none;
-  }
-
-  .closing-message {
-    text-align: center;
-    padding: 2rem;
-    border-top: 1px solid var(--border);
-    margin-top: 2rem;
-  }
-
-  .closing-message p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    .contact-page {
-      padding-top: calc(2rem + 90px);
-    }
-
-    .content {
-      padding: 1rem;
-    }
-
-    .contact-methods {
-      grid-template-columns: 1fr;
-    }
-
-    .topics ul {
-      grid-template-columns: 1fr;
-    }
-
-    .feedback-options {
-      grid-template-columns: 1fr;
-    }
-
-    .intermediary-cards {
-      grid-template-columns: 1fr;
-    }
-
-    .intermediary-links {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-  }
+  .contact-button:hover, .feedback-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+  .intermediaries { margin-top: 2.2rem; }
+  .intermediary-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+  .intermediary-links a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font-weight: 700; }
 </style>
