@@ -41,6 +41,19 @@ export interface Product {
 
 export const products: Product[] = [
   {
+    slug: "savethedogs",
+    name: "SaveTheDogs",
+    pitch: "Ridglan has shut down. Now the campaign to free the 16,000 beagles at Marshall BioResources.",
+    status: "live",
+    url: "https://savethedogs.io",
+    linkLabel: "savethedogs.io",
+    screenshot: {
+      src640: "/products/savethedogs-640.webp",
+      src1280: "/products/savethedogs-1280.webp",
+      alt: "SaveTheDogs home page: “Now let's get 16,000 beagles out of Marshall.” with a petition form",
+    },
+  },
+  {
     slug: "sutam",
     name: "Sutam",
     pitch:
@@ -58,27 +71,13 @@ export const products: Product[] = [
     slug: "pausepal",
     name: "PausePal",
     pitch: "Meditate with a buddy every week. Get matched with one partner and a fixed time, and keep each other showing up.",
-    status: "live",
+    status: "coming-soon",
     url: "https://pausepal.co",
     linkLabel: "pausepal.co",
     screenshot: {
       src640: "/products/pausepal-640.webp",
       src1280: "/products/pausepal-1280.webp",
       alt: "PausePal home page: “Meditate with a buddy. Every week.”",
-    },
-  },
-  {
-    slug: "amberhall",
-    name: "Amberhall",
-    pitch:
-      "A tabletop adventure run by an AI dungeon master. Friends join from their phones; the story, art and narration play on the big screen.",
-    status: "beta",
-    url: "https://amberhall.quest",
-    linkLabel: "amberhall.quest",
-    screenshot: {
-      src640: "/products/amberhall-640.webp",
-      src1280: "/products/amberhall-1280.webp",
-      alt: "Amberhall title screen with “I'm hosting” and “I'm playing” buttons over a dusk landscape",
     },
   },
   {
@@ -90,16 +89,17 @@ export const products: Product[] = [
     linkLabel: "Get notified",
   },
   {
-    slug: "savethedogs",
-    name: "SaveTheDogs",
-    pitch: "Ridglan has shut down. Now the campaign to free the 16,000 beagles at Marshall BioResources.",
-    status: "live",
-    url: "https://savethedogs.io",
-    linkLabel: "savethedogs.io",
+    slug: "amberhall",
+    name: "Amberhall",
+    pitch:
+      "A tabletop adventure run by an AI dungeon master. Friends join from their phones; the story, art and narration play on the big screen.",
+    status: "coming-soon",
+    url: "https://amberhall.quest",
+    linkLabel: "amberhall.quest",
     screenshot: {
-      src640: "/products/savethedogs-640.webp",
-      src1280: "/products/savethedogs-1280.webp",
-      alt: "SaveTheDogs home page: “Now let's get 16,000 beagles out of Marshall.” with a petition form",
+      src640: "/products/amberhall-640.webp",
+      src1280: "/products/amberhall-1280.webp",
+      alt: "Amberhall title screen with “I'm hosting” and “I'm playing” buttons over a dusk landscape",
     },
   },
 ];
