@@ -272,6 +272,8 @@ const projects = [
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .freq { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); margin-bottom: 1.25rem; }
   .tab, .opt, .fee-label { position: relative; display: block; cursor: pointer; }
+  .opt { display: flex; }
+  .opt-face { flex: 1; }
   .tab input, .opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .tab span { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 48px; font-variant-caps: all-small-caps; letter-spacing: .09em; transition: background-color .2s, color .2s; }
   .tab input:checked + span { background: var(--ink); color: var(--paper); }
