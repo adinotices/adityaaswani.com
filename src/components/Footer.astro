@@ -65,6 +65,7 @@ const currentYear = new Date().getFullYear();
       </svg>
     </a>
   </div>
+  <p class="footer-links"><a href="/support">Support my work</a> · <a href="/contact">Contact</a></p>
   <p class="blessing">May all beings be happy, healthy, and safe.</p>
   <p class="copyright">&copy; {currentYear} Aditya Aswani. Built with <a href="https://astro.build/">Astro</a> + <a href="https://www.anthropic.com/claude-code">Claude Code</a> and lots of 🧘</p>
 </footer>
@@ -116,6 +117,20 @@ const currentYear = new Date().getFullYear();
 
   .social-links a:hover svg {
     transform: scale(1.1);
+  }
+
+  .footer-links {
+    margin-bottom: 1rem;
+  }
+
+  .footer-links a {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent);
   }
 
   .blessing {

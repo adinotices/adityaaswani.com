@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout title="Thank you — Aditya Aswani" description="Thank you for supporting Aditya Aswani's work." noindex>
+  <Navigation />
+
+  <main class="thanks-page">
+    <article class="content">
+      <h1>Thank you 🙏</h1>
+      <p class="lead">Your gift keeps the talks searchable, the meditation buddies matched and the campaign going. It means a lot.</p>
+      <p>If you set up a monthly gift and ever want to change or cancel it, just email <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+      <p class="blessing">May you be happy, healthy, and safe.</p>
+      <a href="/" class="home-button">Back to home</a>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .thanks-page {
+    min-height: 80vh;
+    padding-top: calc(4rem + 80px);
+  }
+
+  .content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    margin-bottom: 1rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+  }
+
+  p a {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+
+  .blessing {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  .home-button {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    border-radius: 10px;
+    background: #4f46e5;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .home-button:hover {
+    background: #4338ca;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .thanks-page {
+      padding-top: calc(2rem + 90px);
+    }
+  }
+</style>

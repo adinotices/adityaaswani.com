@@ -5,6 +5,7 @@ const navItems = [
   { href: currentPath === "/" ? "#home" : "/", label: "Home", active: currentPath === "/" },
   { href: currentPath === "/" ? "#work" : "/#work", label: "Work", active: false },
   { href: "/contact", label: "Contact", active: currentPath === "/contact" },
+  { href: "/support", label: "Support", active: currentPath.startsWith("/support") },
 ];
 ---
 
@@ -113,7 +114,7 @@ const navItems = [
   .nav-subscribe {
     padding: 0.5rem 1.1rem;
     border-radius: 8px;
-    background: var(--accent);
+    background: #4f46e5;
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
@@ -124,7 +125,7 @@ const navItems = [
   }
 
   .nav-subscribe:hover {
-    background: var(--accent-hover);
+    background: #4338ca;
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
   }

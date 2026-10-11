@@ -9,6 +9,6 @@ export default defineConfig({
     '/zoom': 'https://cmu.zoom.us/j/4722169152?pwd=FcpGRl2hzkghnYyiZRae9RFlO6mXLl.1',
   },
   integrations: [
-    sitemap(),
+    sitemap({ filter: (page) => !page.includes('/support/thanks') }),
   ],
 });

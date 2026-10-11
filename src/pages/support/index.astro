@@ -1,0 +1,293 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import supportLinks from '../../data/support-links.json';
+
+const isTest = supportLinks.mode === 'test';
+
+const projects = [
+  {
+    title: "Sutam",
+    description: "Free search across thousands of Dhamma talks, transcribed so you can find the teaching you need.",
+    link: "https://sutam.org/"
+  },
+  {
+    title: "PausePal",
+    description: "Find a meditation buddy and sit together, so the practice sticks.",
+    link: "https://pausepal.co/"
+  },
+  {
+    title: "Save the Dogs",
+    description: "The campaign to free the beagles at Ridglan Farms.",
+    link: "https://savethedogs.io/"
+  },
+  {
+    title: "Samvara",
+    description: "A commitment tracker for keeping the promises we make to ourselves. Coming soon.",
+  },
+];
+---
+
+<Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
+  <Navigation />
+
+  <main class="support-page">
+    <article class="content">
+      <header class="page-header">
+        {isTest && <p class="test-badge">Test mode: no real charges</p>}
+        <h1>Support my work</h1>
+        <p class="lead">Everything I build is free or at cost. If it has been useful to you, you can help keep it that way.</p>
+      </header>
+
+      <section class="why" aria-labelledby="why-heading">
+        <h2 id="why-heading">Why</h2>
+        <p>Your support covers hosting, the GPUs that transcribe Dhamma talks, and my time. It lets me keep saying yes to the work without putting it behind a paywall.</p>
+        <ul class="project-list">
+          {projects.map(project => (
+            <li>
+              {project.link
+                ? <a href={project.link} target="_blank" rel="noopener noreferrer">{project.title}</a>
+                : <span class="project-name">{project.title}</span>}
+              <span class="project-desc">{project.description}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="give-options">
+        <section class="give-card" aria-labelledby="once-heading">
+          <h2 id="once-heading">Give once</h2>
+          <p>A single gift, any size.</p>
+          <ul class="amounts">
+            {supportLinks.oneTime.map(item => (
+              <li>
+                <a href={item.url} class:list={["amount-button", { custom: item.key === 'once_custom' }]}>
+                  {item.key === 'once_custom' ? 'Any amount' : item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section class="give-card" aria-labelledby="monthly-heading">
+          <h2 id="monthly-heading">Give monthly</h2>
+          <p>Steady support I can plan around. Cancel any time.</p>
+          <ul class="amounts">
+            {supportLinks.monthly.map(item => (
+              <li>
+                <a href={item.url} class="amount-button">{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <p class="fine-print">
+        Payments are handled securely by Stripe. I'm an individual, not a nonprofit, so gifts are not tax-deductible.
+        Questions, or want to change a monthly gift? Email <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.
+      </p>
+
+      <p class="blessing">Thank you. May your generosity come back to you many times over.</p>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .support-page {
+    min-height: 100vh;
+    padding-top: calc(4rem + 80px);
+  }
+
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .test-badge {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid #b45309;
+    background: #fef3c7;
+    color: #78350f;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .page-header h1 {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    margin-bottom: 1rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+  }
+
+  .why {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .why h2,
+  .give-card h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .why > p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-list {
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .project-list li {
+    padding: 0.75rem 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+  }
+
+  .project-list a,
+  .project-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .project-list a {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 3px;
+  }
+
+  .project-list a:hover {
+    color: var(--accent-hover);
+  }
+
+  .give-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .give-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .give-card:hover {
+    border-color: var(--accent);
+  }
+
+  .give-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .amounts {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .amount-button {
+    display: block;
+    padding: 0.875rem 1rem;
+    border-radius: 10px;
+    background: #4f46e5;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+  }
+
+  .amount-button:hover {
+    background: #4338ca;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+  }
+
+  .amount-button:focus-visible {
+    outline: 3px solid var(--accent-hover);
+    outline-offset: 2px;
+  }
+
+  .amount-button.custom {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border);
+    box-shadow: none;
+  }
+
+  .amount-button.custom:hover {
+    border-color: var(--accent);
+    background: var(--bg-primary);
+  }
+
+  .fine-print {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .fine-print a {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+
+  .blessing {
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .support-page {
+      padding-top: calc(2rem + 90px);
+    }
+
+    .content {
+      padding: 1rem;
+    }
+
+    .give-options {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
