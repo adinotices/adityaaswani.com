@@ -1,60 +1,140 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
-import Hero from '../components/Hero.astro';
-import WorkSection from '../components/WorkSection.astro';
-import WritingSection from '../components/WritingSection.astro';
 import Footer from '../components/Footer.astro';
----
+import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter } from '../data/site';
 
+const shown = essays.slice(0, 5);
+const fmt = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
 <Layout
-  title="Aditya Aswani — Buddhist, Writer, Animal Rights Activist"
+  title="Aditya Aswani: Buddhist, writer, animal rights activist and builder"
   description="Aditya Aswani — Buddhist meditator, animal rights activist, and writer. Currently facing felony charges for rescuing dogs from a research lab."
   ogImage="/aditya-photo-new.jpg"
 >
   <Navigation />
-  <main>
-    <Hero />
-    <WorkSection />
-    <WritingSection />
+  <main id="main">
+    <section class="intro wrap" aria-labelledby="top">
+      <h1 id="top"><span class="name label">{identity.name}</span>{identity.oneLine}</h1>
+      <div class="intro-row">
+        <p class="lede">{identity.intro}</p>
+        <img
+          class="portrait"
+          src={identity.photo.src(320)}
+          srcset={identity.photo.widths.map((w) => `${identity.photo.src(w)} ${w}w`).join(', ')}
+          sizes="(min-width: 40rem) 140px, 96px"
+          width="320" height="480"
+          alt={identity.photo.alt}
+          fetchpriority="high"
+        />
+      </div>
+    </section>
+
+    <section id="building" class="block wrap" aria-labelledby="building-h">
+      <h2 id="building-h" class="label-big">Things I'm building</h2>
+      <ol class="index">
+        {products.map((p) => (
+          <li>
+            <div class="row">
+              <h3>{p.name}</h3>
+              <span class="label status">{statusLabel[p.status]}</span>
+            </div>
+            <p class="pitch">{p.pitch}</p>
+            <p class="go">
+              {p.url
+                ? <a href={p.url}>{p.linkLabel}<span class="sr-only"> ({p.name})</span> <span aria-hidden="true">→</span></a>
+                : <a href="#newsletter">{p.linkLabel}<span class="sr-only"> about {p.name}</span> <span aria-hidden="true">→</span></a>}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section id="writing" class="block wrap" aria-labelledby="writing-h">
+      <h2 id="writing-h" class="label-big">Writing</h2>
+      <ol class="dated">
+        {shown.map((e) => (
+          <li>
+            <time class="label" datetime={e.date}>{fmt(e.date)}</time>
+            <div>
+              <a class="title" href={e.url}>{e.title}</a>
+              <p class="sub">{e.subtitle}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="more"><a href={essaysHome}>All essays <span aria-hidden="true">→</span></a></p>
+    </section>
+
+    <section id="meditation" class="block wrap" aria-labelledby="med-h">
+      <h2 id="med-h" class="label-big">Meditation guidance</h2>
+      <p class="prose">{meditation.blurb}</p>
+      <p class="pair"><a href={meditation.href}>About the sessions</a> <a href={meditation.bookUrl}>Book a time <span aria-hidden="true">→</span></a></p>
+    </section>
+
+    <section id="support" class="block wrap" aria-labelledby="sup-h">
+      <h2 id="sup-h" class="label-big">Support my work</h2>
+      <p class="prose">Everything I build is free or at cost. If it has been useful to you, you can help keep it that way.</p>
+      <p class="pair"><a href="/support">Support my work <span aria-hidden="true">→</span></a></p>
+    </section>
+
+    <section id="newsletter" class="block wrap" aria-labelledby="nl-h">
+      <h2 id="nl-h" class="label-big">Newsletter and contact</h2>
+      <p class="prose"><em>{newsletter.name}.</em> {newsletter.tagline}</p>
+      <form action={newsletter.formAction} method="post" target="_blank" class="sub-form">
+        <label for="email">Email address</label>
+        <div class="field">
+          <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+          <button type="submit" class="button solid">Subscribe<span class="sr-only"> (opens in a new tab)</span></button>
+        </div>
+      </form>
+      <p class="contact">Or write to me: <a href="/contact">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+    </section>
   </main>
   <Footer />
 </Layout>
 
-<script>
-  // Scroll animations
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-  };
+<style>
+  .intro { padding-block: clamp(2.5rem, 8vw, 6rem) clamp(2rem, 5vw, 3.5rem); }
+  h1 { font-size: clamp(2.5rem, 1.5rem + 4.6vw, 4.4rem); line-height: 1.05; font-weight: 360; letter-spacing: -0.02em; }
+  .name { display: block; font-size: clamp(1.05rem, 1rem + .3vw, 1.2rem); letter-spacing: .14em; margin-bottom: 1.4rem; font-weight: 500; }
+  .intro-row { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: start; margin-top: clamp(1.75rem, 4vw, 2.5rem); }
+  .lede { font-style: italic; font-size: 1.12em; color: var(--muted); line-height: 1.5; max-width: 30rem; }
+  .portrait { width: 96px; height: auto; aspect-ratio: 2/3; object-fit: cover; filter: grayscale(.25) sepia(.1); border: 1px solid var(--rule); }
+  @media (min-width: 40rem) { .portrait { width: 140px; } }
+  :global([data-theme="dark"]) .portrait { filter: grayscale(.25) sepia(.1) brightness(.88); }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, observerOptions);
+  ol { list-style: none; }
+  .go span[aria-hidden], .pair span[aria-hidden], .more span[aria-hidden] { margin-left: .35em; }
+  .block { padding-block: clamp(1.75rem, 4vw, 2.5rem); }
+  .block > h2 { padding-top: 1.1rem; border-top: 1px solid var(--rule); margin-bottom: 1.5rem; font-size: 1.05em; font-weight: 500; }
+  .prose { max-width: 34rem; }
+  .prose em { font-style: italic; }
+  .pair { margin-top: 1.1rem; display: flex; flex-wrap: wrap; gap: .2rem 1.75rem; }
+  .pair a, .more a, .go a { display: inline-flex; align-items: center; min-height: 44px; }
 
-  document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-  });
+  .index > li { padding-block: 1.25rem; border-bottom: 1px solid var(--rule); }
+  .index > li:first-child { padding-top: 0; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .row h3 { font-size: 1.7em; font-weight: 420; }
+  .status { white-space: nowrap; font-size: 1.05em; }
+  .pitch { margin-top: .4rem; color: var(--muted); max-width: 34rem; }
+  .go { margin-top: .15rem; }
 
-  // Smooth scroll for navigation links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const href = this.getAttribute('href');
-      if (!href) return;
-      
-      const target = document.querySelector(href);
-      const nav = document.querySelector('nav');
-      
-      if (target && nav) {
-        const navHeight = nav.offsetHeight;
-        const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight - 20;
-        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-      }
-    });
-  });
-</script>
+  .dated > li { display: grid; gap: .1rem 1.5rem; padding-block: 1rem; border-bottom: 1px solid var(--rule); }
+  .dated > li:first-child { padding-top: 0; }
+  @media (min-width: 40rem) { .dated > li { grid-template-columns: 11rem 1fr; } .dated time { padding-top: .35em; } }
+  .dated .title { font-size: 1.2em; line-height: 1.3; }
+  .sub { color: var(--muted); font-style: italic; }
+  .more { margin-top: .75rem; }
+
+  .sub-form { margin-top: 1.25rem; max-width: 30rem; }
+  .sub-form label { display: block; font-variant-caps: all-small-caps; letter-spacing: .09em; color: var(--muted); margin-bottom: .3rem; }
+  .field { display: flex; flex-wrap: wrap; gap: .75rem; }
+  input[type="email"] { flex: 1 1 14rem; min-height: 48px; padding: .4rem .2rem; font: inherit; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; }
+  input[type="email"]::placeholder { color: var(--muted); opacity: 1; }
+  input[type="email"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .contact { margin-top: 1.5rem; color: var(--muted); }
+  .contact a { color: var(--ink); }
+  .contact a:hover { color: var(--accent); }
+</style>

@@ -2,60 +2,26 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import Wordmark from '../components/Wordmark.astro';
 ---
 
 <Layout title="404 — Page Not Found" description="This page doesn't exist." noindex={true}>
   <Navigation />
-  <main class="not-found">
+  <main id="main" class="not-found">
+    <div class="mark"><Wordmark label={false} /></div>
     <h1>404</h1>
     <p>This page doesn't exist.</p>
-    <a href="/" class="btn">Go home →</a>
+    <a href="/" class="btn">Go home <span aria-hidden="true">→</span></a>
   </main>
   <Footer />
 </Layout>
 
 <style>
-  .not-found {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-    gap: 1.5rem;
-  }
-
-  h1 {
-    font-size: clamp(6rem, 20vw, 10rem);
-    font-weight: 700;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-    margin: 0;
-  }
-
-  p {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    background: #4f46e5;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-  }
-
-  .btn:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
-  }
+  main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4rem var(--pad); max-width: calc(var(--measure) + 2 * var(--pad)); margin-inline: auto; width: 100%; }
+  .mark { color: var(--ink); margin-bottom: 2.5rem; }
+  .mark :global(.wordmark) { height: 2.2rem; }
+  h1 { font-size: clamp(2.4rem, 1.6rem + 3.4vw, 3.6rem); font-weight: 380; margin-bottom: .75rem; }
+  p { font-style: italic; color: var(--muted); font-size: 1.3em; margin-bottom: 1.5rem; }
+  .btn { align-self: flex-start; display: inline-flex; align-items: center; min-height: 48px; padding: .4rem 1.5rem; border: 1px solid var(--ink); text-decoration: none; font-variant-caps: all-small-caps; letter-spacing: .09em; transition: background-color .2s, color .2s; }
+  .btn:hover { background: var(--ink); color: var(--paper); }
 </style>

@@ -1,0 +1,23 @@
+---
+---
+<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Dark mode" title="Dark mode">
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+</button>
+<style>
+  .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: none; border: 0; color: var(--ink); cursor: pointer; transition: color .2s; }
+  .theme-toggle:hover { color: var(--accent); }
+  .theme-toggle svg { transition: transform .4s; }
+  .theme-toggle[aria-pressed="true"] svg { transform: rotate(180deg); }
+</style>
+<script>
+  const root = document.documentElement;
+  const btns = document.querySelectorAll<HTMLButtonElement>('.theme-toggle');
+  const sync = () => btns.forEach((b) => b.setAttribute('aria-pressed', String(root.getAttribute('data-theme') === 'dark')));
+  sync();
+  btns.forEach((b) => b.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch {}
+    sync();
+  }));
+</script>

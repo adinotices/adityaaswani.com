@@ -57,7 +57,7 @@ const projects = [
 <Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
   <Navigation />
 
-  <main class="support-page">
+  <main id="main" class="support-page">
     <script is:inline>document.documentElement.classList.add('js');</script>
     <article class="content">
       <header class="page-header">
@@ -258,337 +258,68 @@ const projects = [
 
 <style>
   [hidden] { display: none !important; }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   :global(html:not(.js)) .js-only { display: none; }
 
-  .support-page {
-    min-height: 100vh;
-    padding-top: calc(4rem + 80px);
-  }
+  .support-page { padding-block: clamp(2.5rem, 7vw, 5rem) 1rem; }
+  .content { max-width: calc(var(--measure) + 2 * var(--pad)); margin-inline: auto; padding-inline: var(--pad); }
+  .page-header { margin-bottom: 2.25rem; }
+  .test-badge { display: inline-block; margin-bottom: 1rem; padding: .15rem .75rem; border: 1px solid var(--accent); color: var(--accent); font-variant-caps: all-small-caps; letter-spacing: .09em; }
+  h1 { font-size: clamp(2.4rem, 1.6rem + 3.4vw, 3.6rem); font-weight: 380; margin-bottom: 1rem; }
+  .lead { font-size: 1.3em; font-style: italic; color: var(--muted); line-height: 1.45; }
 
-  .content {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-
-  .test-badge {
-    display: inline-block;
-    margin-bottom: 1rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    border: 1px solid #b45309;
-    background: #fef3c7;
-    color: #78350f;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .page-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 1rem;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .lead {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-  }
-
-  /* Give card */
-  .give-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    min-width: 0;
-  }
-
-  .freq {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 12px;
-    background: var(--bg-primary);
-    margin-bottom: 1.25rem;
-  }
-
+  .give-card { padding-block: 1.75rem; border-block: 1px solid var(--ink); margin-bottom: 2.5rem; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .freq { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); margin-bottom: 1.25rem; }
   .tab, .opt, .fee-label { position: relative; display: block; cursor: pointer; }
-
-  .tab input, .opt input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .tab span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    min-height: 44px;
-    border-radius: 9px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .tab input:checked + span {
-    background: #4f46e5;
-    color: #ffffff;
-  }
-
+  .tab input, .opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .tab span { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 48px; font-variant-caps: all-small-caps; letter-spacing: .09em; transition: background-color .2s, color .2s; }
+  .tab input:checked + span { background: var(--ink); color: var(--paper); }
   .tab input:checked + span::before { content: "\2713"; }
-
-  .callout {
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    border-left: 4px solid #4f46e5;
-    background: var(--bg-primary);
-    border-radius: 0 8px 8px 0;
-    color: var(--text-primary);
-    line-height: 1.5;
-  }
-
-  .ladder legend {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    padding: 0;
-  }
-
-  .options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr));
-    gap: 0.6rem;
-  }
-
-  .opt-face {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    min-height: 64px;
-    padding: 0.5rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 12px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    text-align: center;
-  }
-
-  .opt-amt { font-size: 1.25rem; font-weight: 700; }
-  .opt-amt small { font-size: 0.8rem; font-weight: 500; margin-left: 1px; }
-
-  .tag {
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0 0.5rem;
-    border: 1px solid currentColor;
-    border-radius: 999px;
-  }
-
-  .opt input:checked + .opt-face {
-    background: #4f46e5;
-    border-color: #4f46e5;
-    color: #ffffff;
-    box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #4f46e5;
-  }
-
+  .callout { margin: 0 0 1.25rem; padding-left: 1rem; border-left: 2px solid var(--accent); color: var(--muted); font-style: italic; line-height: 1.5; }
+  .ladder legend { font-variant-caps: all-small-caps; letter-spacing: .09em; color: var(--muted); margin-bottom: .5rem; padding: 0; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr)); gap: .6rem; }
+  .opt-face { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; min-height: 68px; padding: .5rem; border: 1px solid var(--muted); color: var(--ink); text-align: center; transition: background-color .2s, color .2s, border-color .2s; }
+  .opt:hover .opt-face { border-color: var(--ink); }
+  .opt-amt { font-size: 1.3em; }
+  .opt-amt small { font-size: .75em; margin-left: 2px; }
+  .tag { font-variant-caps: all-small-caps; letter-spacing: .08em; font-size: .9em; }
+  .opt input:checked + .opt-face { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
-
-  .tab input:focus-visible + span,
-  .opt input:focus-visible + .opt-face,
-  .fee-label input:focus-visible {
-    outline: 3px solid var(--accent-hover);
-    outline-offset: 3px;
-  }
+  .tab input:focus-visible + span, .opt input:focus-visible + .opt-face, .fee-label input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   .other { margin-top: 1rem; }
-  .other label { display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 0.4rem; }
-  .other-row { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); font-weight: 600; }
-  .other-row input {
-    width: 10rem;
-    min-height: 44px;
-    padding: 0.5rem 0.75rem;
-    font-size: 1.1rem;
-    border: 2px solid var(--text-secondary);
-    border-radius: 10px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
-  .other-row input:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 2px; }
-  .other-row input[aria-invalid="true"] { border-color: #b91c1c; }
-  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #b91c1c; font-size: 0.95rem; }
-  :global(:root:not([data-theme="light"])) .error { color: #fca5a5; }
+  .other label { display: block; font-variant-caps: all-small-caps; letter-spacing: .09em; color: var(--muted); margin-bottom: .3rem; }
+  .other-row { display: flex; align-items: center; gap: .5rem; }
+  .other-row input { width: 10rem; min-height: 48px; padding: .4rem .5rem; font: inherit; border: 0; border-bottom: 1px solid var(--ink); background: transparent; color: var(--ink); border-radius: 0; }
+  .other-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .other-row input[aria-invalid="true"] { border-bottom-color: var(--accent); }
+  .error { margin: .4rem 0 0; min-height: 1.4em; color: var(--accent); font-size: .95em; }
 
-  .impact {
-    margin: 1.25rem 0 1rem;
-    min-height: 3em;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    text-align: center;
-  }
-
+  .impact { margin: 1.25rem 0 1rem; min-height: 3em; color: var(--muted); font-style: italic; line-height: 1.5; }
   .fee { margin-bottom: 1.25rem; }
-  .fee-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 44px;
-    color: var(--text-primary);
-    line-height: 1.4;
-  }
-  .fee-label input {
-    flex: none;
-    width: 24px;
-    height: 24px;
-    margin: 0;
-    accent-color: #4f46e5;
-  }
-  .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--text-secondary); }
+  .fee-label { display: flex; align-items: center; gap: .75rem; min-height: 44px; line-height: 1.4; }
+  .fee-label input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--accent); }
+  .helper { margin: .1rem 0 0 calc(24px + .75rem); font-size: .9em; color: var(--muted); }
 
-  .give-button {
-    display: block;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    background: #4f46e5;
-    color: #ffffff;
-    text-align: center;
-    text-decoration: none;
-    font-size: 1.25rem;
-    font-weight: 700;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-  .give-button:hover { background: #4338ca; transform: translateY(-2px); }
-  .give-button:focus-visible { outline: 3px solid var(--accent-hover); outline-offset: 3px; }
-  .give-button[aria-disabled="true"] { background: #6b7280; box-shadow: none; transform: none; cursor: not-allowed; }
+  .give-button { display: block; padding: .9rem 1.5rem; background: var(--ink); color: var(--paper); text-align: center; text-decoration: none; font-size: 1.3em; border: 1px solid var(--ink); transition: background-color .2s, border-color .2s; }
+  .give-button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .give-button[aria-disabled="true"] { background: transparent; color: var(--muted); border-color: var(--muted); cursor: not-allowed; }
+  .secure { margin: .9rem 0 0; color: var(--muted); font-size: .95em; }
+  .secure a, .noscript-links a, .fine-print a { color: var(--ink); }
+  .secure a:hover, .noscript-links a:hover, .fine-print a:hover { color: var(--accent); }
+  .deductible { margin: 1rem 0 0; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .95em; line-height: 1.6; }
+  .noscript-links { margin-top: 1rem; color: var(--muted); }
+  .noscript-links ul { list-style: none; }
+  .noscript-links li { margin-bottom: .5rem; }
 
-  .secure {
-    margin: 0.9rem 0 0;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-  }
-  .secure a, .noscript-links a, .fine-print a { color: var(--text-primary); text-decoration: underline; }
-
-  .deductible {
-    margin: 1rem 0 0;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 1rem;
-    line-height: 1.6;
-    text-align: center;
-  }
-
-  .noscript-links { margin-top: 1rem; color: var(--text-secondary); }
-  .noscript-links ul { padding-left: 1.25rem; }
-  .noscript-links li { margin-bottom: 0.5rem; }
-
-  /* Why */
-  .why {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .why h2 {
-    color: var(--text-primary);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .why > p {
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-
-  .project-list {
-    list-style: none;
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .project-list li {
-    padding: 0.75rem 1rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-secondary);
-  }
-
-  .project-list a,
-  .project-name {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-right: 0.5rem;
-  }
-
-  .project-list a {
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-underline-offset: 3px;
-  }
-
-  .project-list a:hover { color: var(--accent-hover); }
-
-  .fine-print {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-  }
-
-  .blessing {
-    text-align: center;
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .support-page { padding-top: calc(2rem + 90px); }
-    .content { padding: 1rem; }
-    .give-card, .why { padding: 1.25rem; }
-    .options { grid-template-columns: repeat(2, 1fr); }
-  }
+  .why { margin-bottom: 2rem; }
+  .why h2 { font-size: 1.05em; font-variant-caps: all-small-caps; letter-spacing: .1em; color: var(--muted); font-weight: 500; margin-bottom: 1rem; }
+  .why > p { margin-bottom: 1.25rem; }
+  .project-list li { padding-block: .75rem; border-bottom: 1px solid var(--rule); color: var(--muted); }
+  .project-list a, .project-name { color: var(--ink); font-size: 1.1em; margin-right: .5rem; }
+  .project-list a:hover { color: var(--accent); }
+  .fine-print { color: var(--muted); font-size: .95em; margin-bottom: 1.5rem; }
+  .blessing { font-style: italic; font-size: 1.15em; margin-bottom: 1rem; }
+  @media (max-width: 768px) { .options { grid-template-columns: repeat(2, 1fr); } }
 </style>
