@@ -30,7 +30,7 @@ const year = new Date().getFullYear();
   .site-footer { background: var(--bg-soft); border-top: 1px solid var(--line); padding: 3rem 0 2rem; margin-top: 2rem; }
   .top { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
   .brand { display: inline-flex; min-height: 44px; align-items: center; color: var(--ink); }
-  .wm { height: 40px; width: auto; }
+  :global(.wm) { height: 40px; width: auto; }
   .blessing { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.15rem; color: var(--ink-2); margin-top: 0.4rem; max-width: 22rem; }
   ul { list-style: none; display: flex; flex-wrap: wrap; }
   .links { gap: 0.2rem 0.4rem; }

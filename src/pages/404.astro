@@ -18,7 +18,7 @@ import Wordmark from '../components/Wordmark.astro';
 
 <style>
   .not-found { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1.5rem; gap: 1.2rem; }
-  .wm { width: min(70vw, 280px); height: auto; color: var(--ink); }
+  :global(.wm) { width: min(70vw, 280px); height: auto; color: var(--ink); }
   h1 { font-size: clamp(4.5rem, 20vw, 8rem); color: var(--clay); line-height: 1; }
   p { font-size: 1.2rem; color: var(--ink-2); max-width: 26rem; }
   main:focus { outline: none; }

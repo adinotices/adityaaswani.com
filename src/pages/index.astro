@@ -20,9 +20,6 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
     <section class="hero" aria-labelledby="hi">
       <div class="wrap hero-grid">
         <div class="hero-head">
-          <p class="wave" aria-hidden="true">
-            <svg viewBox="0 0 48 24" width="48" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 18c6-14 12-14 18 0s12 14 24-8"/></svg>
-          </p>
           <h1 id="hi">Hi, I’m <span class="name">Aditya</span>.</h1>
           <p class="one-line">{identity.oneLine}</p>
         </div>
@@ -148,7 +145,6 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
   /* Hero */
   .hero { padding: 1rem 0 2.5rem; position: relative; }
   .hero-grid { display: grid; gap: 1.4rem; justify-items: center; text-align: center; }
-  .wave { color: var(--sage); }
   h1 { font-size: clamp(2.9rem, 12vw, 5.6rem); font-weight: 520; line-height: 1.02; }
   .name { color: var(--clay); }
   .one-line { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: clamp(1.35rem, 4.6vw, 2rem); line-height: 1.3; color: var(--ink); margin-top: 0.8rem; max-width: 24ch; margin-inline: auto; }

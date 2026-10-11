@@ -31,22 +31,22 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
   .site-header { padding: 0.9rem 0 0.4rem; }
   .bar { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "brand actions" "nav nav"; align-items: center; gap: 0.4rem 1rem; }
   .brand { grid-area: brand; display: inline-flex; min-height: 44px; align-items: center; color: var(--ink); justify-self: start; }
-  .wm { height: 34px; width: auto; display: block; }
+  :global(.wm) { height: 34px; width: auto; display: block; }
   .actions { grid-area: actions; display: flex; align-items: center; gap: 0.5rem; }
   .support { min-height: 44px; padding: 0.35rem 1rem; font-size: 0.95rem; }
   .short { display: none; }
   .nav { grid-area: nav; }
-  .nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 0.3rem; margin-inline: -0.6rem; }
+  .nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 0.1rem; margin-inline: -0.5rem; }
   .nav a {
-    display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.6rem; color: var(--ink);
-    text-decoration: none; font-weight: 700; font-size: 0.97rem; border-radius: 999px;
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.5rem; color: var(--ink);
+    text-decoration: none; font-weight: 700; font-size: 0.92rem; border-radius: 999px;
   }
   .nav a:hover { color: var(--clay-ink); background: var(--bg-soft); }
   .nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--clay); text-decoration-thickness: 3px; text-underline-offset: 6px; }
-  @media (max-width: 420px) { .full { display: none; } .short { display: inline; } .wm { height: 30px; } }
+  @media (max-width: 420px) { .full { display: none; } .short { display: inline; } :global(.wm) { height: 30px; } }
   @media (min-width: 820px) {
     .bar { grid-template-columns: auto 1fr auto; grid-template-areas: "brand nav actions"; gap: 1rem 2rem; }
     .nav ul { justify-content: center; }
-    .wm { height: 40px; }
+    :global(.wm) { height: 40px; }
   }
 </style>
