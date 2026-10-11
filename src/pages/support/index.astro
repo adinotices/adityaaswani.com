@@ -10,17 +10,17 @@ const { fees, oneTime, monthly, portalUrl } = supportLinks;
 // Editable copy: the line shown under the amount ladder for each selection.
 const impact = {
   monthly: {
-    300: "Chips in toward the servers that keep Sutam and PausePal online.",
-    500: "About a coffee a month. Keeps me building free tools like Sutam and PausePal.",
-    1000: "Helps pay for the GPUs that transcribe Dhamma talks so anyone can search them.",
-    2500: "Covers a real share of hosting and transcription, and buys me time to build.",
+    300: "Chips in toward the servers behind Sutam and PausePal and the campaign for the Marshall beagles.",
+    500: "About a coffee a month. Keeps the animal-rights work and the mindfulness tools going.",
+    1000: "Helps pay for the GPUs that transcribe Dhamma talks, and for campaign costs like printing and travel.",
+    2500: "Covers a real share of hosting, transcription and campaign costs, and buys me time to do the work.",
   },
   once: {
-    500: "Chips in toward hosting for Sutam and PausePal.",
-    1000: "Helps pay for the GPU time that transcribes new Dhamma talks.",
-    2500: "Helps keep the servers running and the work free.",
-    5000: "Buys me time to build the next free project.",
-    other: "Every amount helps keep this work free.",
+    500: "Chips in toward hosting for Sutam and PausePal and the campaign for the Marshall beagles.",
+    1000: "Helps pay for GPU time that transcribes new Dhamma talks, or a day of campaign work.",
+    2500: "Helps keep the servers running and the campaign moving.",
+    5000: "Buys me time: a week I can spend on the animals or the practice instead of billable work.",
+    other: "Every amount helps the animals and the practice.",
   },
 };
 
@@ -31,30 +31,53 @@ const defaultTier = monthly.tiers.find((t) => t.cents === monthly.defaultCents) 
 const defaultFee = defaultTier.feeCents - defaultTier.cents;
 const clientConfig = { fees, oneTime, monthly, portalUrl, impact };
 
-const projects = [
+const groups = [
   {
-    title: "Sutam",
-    description: "Free search across thousands of Dhamma talks, transcribed so you can find the teaching you need.",
-    link: "https://sutam.org/"
+    heading: "Fighting for animals",
+    intro: "I take part in open rescue and public campaigns to get animals out of laboratories and breeding facilities, and I have faced criminal charges for it.",
+    items: [
+      {
+        title: "Ridglan Farms",
+        description: "I helped free the beagles kept for experimentation at Ridglan Farms in Wisconsin. Ridglan has since shut down.",
+        link: "https://savethedogs.io/"
+      },
+      {
+        title: "Marshall BioResources",
+        description: "The campaign I am working on now: freeing the roughly 16,000 beagles bred for laboratories at Marshall BioResources.",
+        link: "https://savethedogs.io/"
+      },
+    ],
   },
   {
-    title: "PausePal",
-    description: "Find a meditation buddy and sit together, so the practice sticks.",
-    link: "https://pausepal.co/"
-  },
-  {
-    title: "Save the Dogs",
-    description: "The campaign to free the beagles at Ridglan Farms.",
-    link: "https://savethedogs.io/"
-  },
-  {
-    title: "Samvara",
-    description: "A commitment tracker for keeping the promises we make to ourselves. Coming soon.",
+    heading: "Spreading mindfulness",
+    intro: "I work on programs and tools that help people start a practice and keep it.",
+    items: [
+      {
+        title: "Contemplative Semester",
+        description: "A semester-long residential program for young adults built around meditation, study and community. I serve as Operations Lead.",
+        link: "https://www.contemplativesemester.org/"
+      },
+      {
+        title: "Inward Bound",
+        description: "Mindfulness retreats and programs for teens and young adults that I work with.",
+        link: "https://ibme.com/"
+      },
+      {
+        title: "PausePal",
+        description: "Meditate with a buddy at a fixed weekly time, so the practice sticks.",
+        link: "https://pausepal.co/"
+      },
+      {
+        title: "Sutam",
+        description: "Search across thousands of Dhamma talks, transcribed so you can find the teaching you need.",
+        link: "https://sutam.org/"
+      },
+    ],
   },
 ];
 ---
 
-<Layout title="Support my work — Aditya Aswani" description="Everything Aditya Aswani builds is free or at cost. Support covers hosting, transcription GPUs and time for Sutam, PausePal, Save the Dogs and Samvara." ogImage="/aditya-photo.jpg">
+<Layout title="Support my work — Aditya Aswani" description="Support Aditya Aswani's work fighting for animal rights, from the Ridglan Farms beagles to Marshall BioResources, and spreading mindfulness through Contemplative Semester, Inward Bound, PausePal and Sutam." ogImage="/aditya-photo.jpg">
   <Header />
 
   <main id="main" tabindex="-1" class="page">
@@ -63,7 +86,7 @@ const projects = [
       <header class="page-header">
         {isTest && <p class="test-badge">Test mode: no real charges</p>}
         <h1>Support my work</h1>
-        <p class="lead">Everything I build is free or at cost. If it has been useful to you, you can help keep it that way.</p>
+        <p class="lead">I spend my time on two things: fighting for animals and helping people build a steady mindfulness practice. Your support pays for the campaigns, the servers and the hours that make both possible.</p>
       </header>
 
       <section class="give-card" aria-labelledby="give-heading" id="give">
@@ -157,17 +180,23 @@ const projects = [
 
       <section class="why" aria-labelledby="why-heading">
         <h2 id="why-heading">What your support makes possible</h2>
-        <p>Your support covers hosting, the GPUs that transcribe Dhamma talks, and my time. It lets me keep saying yes to the work without putting it behind a paywall.</p>
-        <ul class="project-list">
-          {projects.map(project => (
-            <li>
-              {project.link
-                ? <a href={project.link} target="_blank" rel="noopener noreferrer">{project.title}</a>
-                : <span class="project-name">{project.title}</span>}
-              <span class="project-desc">{project.description}</span>
-            </li>
-          ))}
-        </ul>
+        <p>Campaign costs like travel and printing. Hosting and the GPUs that transcribe Dhamma talks. And time, which is the thing that lets me say yes to the next rescue or the next retreat.</p>
+        {groups.map(group => (
+          <div class="group">
+            <h3>{group.heading}</h3>
+            <p class="group-intro">{group.intro}</p>
+            <ul class="project-list">
+              {group.items.map(project => (
+                <li>
+                  {project.link
+                    ? <a href={project.link} target="_blank" rel="noopener noreferrer">{project.title}</a>
+                    : <span class="project-name">{project.title}</span>}
+                  <span class="project-desc">{project.description}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </section>
 
       <p class="fine-print">Questions? Email <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
@@ -324,6 +353,9 @@ const projects = [
 
   .why h2 { font-size: 1.7rem; margin-bottom: 0.8rem; }
   .why > p { color: var(--ink-2); margin-bottom: 1.4rem; }
+  .group { margin-top: 1.6rem; }
+  .group h3 { font-size: 1.2rem; margin: 0 0 0.35rem; }
+  .group-intro { color: var(--ink-2); margin: 0 0 0.8rem; }
   .project-list { list-style: none; display: grid; gap: 0.75rem; }
   .project-list li { padding: 0.8rem 1.1rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-2); }
   .project-list a, .project-name { color: var(--ink); font-weight: 800; margin-right: 0.5rem; }
