@@ -3,9 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
+import { feeCents, fmt } from '../../scripts/donate.js';
 
 const isTest = supportLinks.mode === 'test';
-const { fees, oneTime, monthly, portalUrl } = supportLinks;
+const { fees, oneTime, monthly, checkout } = supportLinks;
 
 // Editable copy: the line shown under the amount ladder for each selection.
 const impact = {
@@ -24,12 +25,16 @@ const impact = {
   },
 };
 
-const grossUp = (c) => Math.ceil((c + fees.fixedCents) / (1 - fees.percent / 100));
-const fmt = (c) => '$' + (c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2));
+// Build-time guard: the fee shown for every preset must match the Payment Link tier.
+for (const t of monthly.tiers) {
+  if (t.cents + feeCents(t.cents) !== t.feeCents) {
+    throw new Error(`support-links.json tier ${t.cents}: feeCents ${t.feeCents} != computed ${t.cents + feeCents(t.cents)}`);
+  }
+}
 
 const defaultTier = monthly.tiers.find((t) => t.cents === monthly.defaultCents) ?? monthly.tiers[0];
-const defaultFee = defaultTier.feeCents - defaultTier.cents;
-const clientConfig = { fees, oneTime, monthly, portalUrl, impact };
+const defaultFee = feeCents(defaultTier.cents);
+const clientConfig = { oneTime, monthly, impact };
 
 const groups = [
   {
@@ -89,7 +94,7 @@ const groups = [
         <p class="lead">I spend my time on two things: fighting for animals and helping people build a steady mindfulness practice. The servers are cheap and the campaign costs are covered by the coalition. What your support really buys is my time.</p>
       </header>
 
-      <section class="give-card" aria-labelledby="give-heading" id="give">
+      <section class="give-card" aria-labelledby="give-heading" id="give" data-config={JSON.stringify(clientConfig)}>
         <h2 id="give-heading" class="sr-only">Give</h2>
 
         <div class="js-only controls">
@@ -113,6 +118,10 @@ const groups = [
                   </span>
                 </label>
               ))}
+              <label class="opt">
+                <input type="radio" name="m-amt" value="other" />
+                <span class="opt-face"><span class="opt-amt">Other</span></span>
+              </label>
             </div>
           </fieldset>
 
@@ -133,15 +142,16 @@ const groups = [
                 <span class="opt-face"><span class="opt-amt">Other</span></span>
               </label>
             </div>
-            <div class="other" id="other-wrap" hidden>
-              <label for="other-amount">Amount in US dollars</label>
-              <div class="other-row">
-                <span aria-hidden="true">$</span>
-                <input id="other-amount" type="number" inputmode="numeric" min="1" max="10000" step="1" aria-describedby="other-error" />
-              </div>
-              <p class="error" id="other-error" aria-live="polite"></p>
-            </div>
           </fieldset>
+
+          <div class="other" id="other-wrap" hidden>
+            <label for="other-amount">Other amount (USD)</label>
+            <div class="other-row">
+              <span aria-hidden="true">$</span>
+              <input id="other-amount" type="number" inputmode="decimal" min="1" max="1000" step="0.01" aria-describedby="other-error" />
+            </div>
+            <p class="error" id="other-error" aria-live="polite"></p>
+          </div>
 
           <p class="impact" id="impact" aria-live="polite">{impact.monthly[monthly.defaultCents]}</p>
 
@@ -155,10 +165,11 @@ const groups = [
         </div>
 
         <a id="give-btn" class="give-button" href={defaultTier.url}>Give {fmt(defaultTier.cents)} a month</a>
+        <p id="give-status" class="give-status" role="status"></p>
 
         <p class="secure">
           Secure checkout by Stripe.
-          <span id="cancel-note"> Cancel anytime: <a href={portalUrl}>manage or cancel</a>.</span>
+          <span id="cancel-note"> Cancel anytime: <a href={checkout.portalUrl}>manage or cancel</a>.</span>
         </p>
 
         <p class="deductible">This is personal support for my independent work, not a charitable donation, so it isn't tax-deductible. Thank you for backing it.</p>
@@ -174,6 +185,7 @@ const groups = [
                 </li>
               ))}
             </ul>
+            <p>A custom monthly amount needs JavaScript; the one-time link lets you choose any amount.</p>
           </div>
         </noscript>
       </section>
@@ -207,81 +219,154 @@ const groups = [
   <Footer />
 </Layout>
 
-<script define:vars={{ cfg: clientConfig }}>
+<script>
+  import { parseAmount, feeCents, fmt, nearestLine, startCheckout, errorMessage } from '../../scripts/donate.js';
+
   const $ = (id) => document.getElementById(id);
-  const { fees, oneTime, monthly, portalUrl, impact } = cfg;
-  const grossUp = (c) => Math.ceil((c + fees.fixedCents) / (1 - fees.percent / 100));
-  const fmt = (c) => '$' + (c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2));
+  const cfg = JSON.parse($('give').dataset.config);
+  const { oneTime, monthly, impact } = cfg;
   const checked = (name) => document.querySelector(`input[name="${name}"]:checked`);
 
   const btn = $('give-btn');
   const feeCb = $('fee-cb');
   const otherInput = $('other-amount');
   const otherErr = $('other-error');
+  const statusEl = $('give-status');
 
-  function update() {
-    const freq = checked('freq').value;
-    const isMonthly = freq === 'monthly';
+  // With JS the button never navigates by href, so middle-click or copy-link can't bypass the Worker.
+  btn.removeAttribute('href');
+  btn.setAttribute('role', 'button');
+  btn.setAttribute('tabindex', '0');
+
+  let busy = false;
+  let current = null; // { base, total, interval, tier, isCustom }
+
+  function render() {
+    const isMonthly = checked('freq').value === 'monthly';
+    const interval = isMonthly ? 'month' : 'once';
     $('ladder-monthly').hidden = !isMonthly;
     $('ladder-once').hidden = isMonthly;
     $('callout').hidden = !isMonthly;
     $('cancel-note').hidden = !isMonthly;
 
-    let base = null, total = null, url = null, line = '';
-    if (isMonthly) {
-      const cents = Number(checked('m-amt').value);
-      const tier = monthly.tiers.find((t) => t.cents === cents);
-      base = cents;
-      total = feeCb.checked ? tier.feeCents : tier.cents;
-      url = feeCb.checked ? tier.feeUrl : tier.url;
-      line = impact.monthly[cents];
+    const v = checked(isMonthly ? 'm-amt' : 'o-amt').value;
+    const isOther = v === 'other';
+    $('other-wrap').hidden = !isOther;
+
+    let base = null;
+    let tier = null;
+    if (isOther) {
+      const parsed = parseAmount(otherInput.value);
+      if (parsed.ok) base = parsed.cents;
+      const showErr = !parsed.ok && !parsed.empty;
+      otherErr.textContent = showErr ? parsed.error : '';
+      otherInput.setAttribute('aria-invalid', showErr ? 'true' : 'false');
     } else {
-      const v = checked('o-amt').value;
-      const isOther = v === 'other';
-      $('other-wrap').hidden = !isOther;
-      if (isOther) {
-        const raw = otherInput.value.trim();
-        const dollars = Number(raw);
-        const ok = /^\d+$/.test(raw) && dollars >= 1 && dollars <= oneTime.maxCents / 100;
-        if (ok) base = dollars * 100;
-        otherErr.textContent = ok ? '' : 'Enter a whole number of dollars from 1 to 10,000.';
-        otherInput.setAttribute('aria-invalid', ok || !raw ? 'false' : 'true');
-        line = impact.once.other;
-      } else {
-        base = Number(v);
-        otherErr.textContent = '';
-        line = impact.once[base] || impact.once.other;
-      }
-      if (base !== null) {
-        total = feeCb.checked ? Math.min(grossUp(base), oneTime.maxCents) : base;
-        total = Math.max(total, oneTime.minCents);
-        url = `${oneTime.url}?prefilled_amount=${total}`;
-      }
+      base = Number(v);
+      if (isMonthly) tier = monthly.tiers.find((t) => t.cents === base) || null;
     }
 
+    const lines = isMonthly ? impact.monthly : impact.once;
+    let line;
+    if (base === null) line = impact.once.other;
+    else if (!isOther) line = lines[base] || impact.once.other;
+    else {
+      const tiers = {};
+      for (const k of Object.keys(lines)) if (k !== 'other') tiers[k] = lines[k];
+      line = nearestLine(tiers, base, impact.once.other);
+    }
     $('impact').textContent = line;
+
     if (base === null) {
+      current = null;
       $('fee-text').textContent = 'Add card fees to my gift, so the full amount reaches me';
-      btn.textContent = 'Enter an amount';
-      btn.removeAttribute('href');
+      if (!busy) btn.textContent = 'Enter an amount';
       btn.setAttribute('aria-disabled', 'true');
       return;
     }
-    const feeAmt = (isMonthly ? monthly.tiers.find((t) => t.cents === base).feeCents : Math.min(grossUp(base), oneTime.maxCents)) - base;
-    $('fee-text').textContent = `Add ${fmt(feeAmt)} to cover card fees, so the full ${fmt(base)} reaches me`;
-    btn.textContent = `Give ${fmt(total)} ${isMonthly ? 'a month' : 'once'}`;
-    btn.href = url;
-    btn.removeAttribute('aria-disabled');
+    const fee = feeCb.checked ? feeCents(base) : 0;
+    const total = base + fee;
+    current = { base, total, interval, tier, isCustom: isOther };
+    $('fee-text').textContent = `Add ${fmt(feeCents(base))} to cover card fees, so the full ${fmt(base)} reaches me`;
+    if (!busy) {
+      btn.textContent = `Give ${fmt(total)} ${isMonthly ? 'a month' : 'once'}`;
+      btn.removeAttribute('aria-disabled');
+    }
+  }
+
+  function onChange() {
+    statusEl.textContent = '';
+    render();
+  }
+
+  function fallbackUrl(c) {
+    if (c.interval === 'once') return `${oneTime.url}?prefilled_amount=${c.total}`;
+    if (c.tier) return feeCb.checked ? c.tier.feeUrl : c.tier.url;
+    return null;
+  }
+
+  function setBusy(on) {
+    busy = on;
+    if (on) {
+      btn.textContent = 'Opening secure checkout…';
+      btn.setAttribute('aria-disabled', 'true');
+      btn.setAttribute('aria-busy', 'true');
+    } else {
+      btn.removeAttribute('aria-busy');
+      render();
+    }
+  }
+
+  async function give() {
+    if (busy || !current || btn.getAttribute('aria-disabled') === 'true') return;
+    const c = current;
+    statusEl.textContent = '';
+    setBusy(true);
+    const res = await startCheckout({
+      site: 'aditya',
+      amount_cents: c.base,
+      interval: c.interval,
+      cover_fees: feeCb.checked,
+    });
+    if (res.ok) {
+      location.assign(res.url);
+      return;
+    }
+    setBusy(false);
+    statusEl.textContent = errorMessage(res.error);
+    if (res.error !== 'invalid_amount' && res.error !== 'rate_limited') {
+      const href = fallbackUrl(c);
+      if (href) {
+        statusEl.append(' ');
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = 'Or use this direct link';
+        statusEl.append(a);
+      } else {
+        statusEl.append(' Custom monthly amounts need secure checkout; please try again in a moment or pick a preset.');
+      }
+    }
   }
 
   btn.addEventListener('click', (e) => {
-    if (btn.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    e.preventDefault();
+    give();
+  });
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      give();
+    }
   });
   document.querySelectorAll('.controls input').forEach((el) => {
-    el.addEventListener('change', update);
-    el.addEventListener('input', update);
+    el.addEventListener('change', onChange);
+    el.addEventListener('input', onChange);
   });
-  update();
+  // Coming back from Stripe via bfcache restores the page mid-"busy".
+  window.addEventListener('pageshow', () => {
+    if (busy) setBusy(false);
+  });
+  render();
 </script>
 
 <style>
@@ -340,9 +425,12 @@ const groups = [
   }
   .give-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
   @media (prefers-reduced-motion: no-preference) { .give-button:hover { transform: translateY(-2px); } }
+  .give-button[role="button"] { cursor: pointer; }
   .give-button[aria-disabled="true"] { background: #6e6258; color: #fff; box-shadow: none; transform: none; cursor: not-allowed; }
   :global(:root[data-theme="dark"]) .give-button[aria-disabled="true"] { background: #7b6a5c; color: #1b100a; }
 
+  .give-status { margin: 0.75rem 0 0; min-height: 1.4em; text-align: center; color: var(--ink); font-weight: 600; }
+  .give-status :global(a) { color: var(--ink); text-decoration: underline; }
   .secure { margin: 0.9rem 0 0; text-align: center; color: var(--ink-2); font-size: 0.95rem; }
   .secure a, .noscript-links a, .fine-print a { color: var(--ink); text-decoration: underline; }
   .deductible { margin: 1.1rem 0 0; padding-top: 1.1rem; border-top: 1px dashed var(--line); color: var(--ink); line-height: 1.6; text-align: center; }

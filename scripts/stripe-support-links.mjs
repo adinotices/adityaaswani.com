@@ -198,6 +198,10 @@ const portalUrl = portal.login_page?.url;
 if (!portalUrl) throw new Error('Stripe returned no login_page.url for the portal configuration; stopping.');
 console.log(`portal           ${portalUrl}`);
 
+// Preserve the hand-maintained Worker checkout config across regenerations.
+let existingCheckout;
+try { existingCheckout = JSON.parse(readFileSync(OUT, 'utf8')).checkout; } catch { /* first run */ }
+
 const result = {
   mode: MODE,
   fees: { percent: FEE_PERCENT, fixedCents: FEE_FIXED_CENTS },
@@ -207,6 +211,7 @@ const result = {
     defaultCents: 500,
     tiers: TIERS.map((c) => ({ cents: c, url: urls[`monthly_${c / 100}`], feeCents: grossUp(c), feeUrl: urls[`monthly_${c / 100}_fees`] })),
   },
+  ...(existingCheckout ? { checkout: existingCheckout } : {}),
 };
 writeFileSync(OUT, JSON.stringify(result, null, 2) + '\n');
 console.log(`wrote src/data/support-links.json (mode: ${MODE})`);

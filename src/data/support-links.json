@@ -45,5 +45,12 @@
         "feeUrl": "https://buy.stripe.com/test_6oUbJ00BTddr6LG9Cy7Vm0b"
       }
     ]
+  },
+  "checkout": {
+    "endpoint": "https://sutam.org/api/donate/checkout",
+    "site": "aditya",
+    "portalUrl": "https://billing.stripe.com/p/login/test_cNi00i5W56Hu71a5iLbMQ00",
+    "minCents": 100,
+    "maxCents": 100000
   }
 }
