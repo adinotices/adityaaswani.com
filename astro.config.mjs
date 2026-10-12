@@ -5,6 +5,8 @@ export default defineConfig({
   site: 'https://adityaaswani.com',
   base: '/',
   output: 'static',
+  // The stylesheets are small; inlining them removes PSI's render-blocking CSS requests.
+  build: { inlineStylesheets: 'always' },
   redirects: {
     '/zoom': 'https://cmu.zoom.us/j/4722169152?pwd=FcpGRl2hzkghnYyiZRae9RFlO6mXLl.1',
   },
