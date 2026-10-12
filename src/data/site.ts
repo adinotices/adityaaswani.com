@@ -118,7 +118,7 @@ export interface Essay {
   subtitle: string;
   url: string;
   date: string; // ISO
-  cover: string; // 800x500 webp
+  cover: string | null; // 800x500 webp; null when a feed post has no image
 }
 
 // Latest posts from the Substack archive API, 2026-10-11.

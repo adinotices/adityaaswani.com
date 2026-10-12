@@ -3,9 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Motif from '../components/Motif.astro';
-import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter, socials } from '../data/site';
+import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter, socials, type Essay } from '../data/site';
 
-const latest = essays.slice(0, 6);
+// scripts/fetch-essays.mjs writes the 6 latest posts from the Substack feed (covers downloaded
+// to /writing/feed/) before every build; without it (feed down, or `astro dev`) use site.ts.
+const generated = Object.values(
+  import.meta.glob<{ essays: Essay[] }>('../data/essays.generated.json', { eager: true, import: 'default' }),
+)[0];
+const latest = (generated?.essays ?? essays).slice(0, 6);
 const fmt = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const photo = identity.photo;
 const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
@@ -107,7 +112,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
         <ul class="essays">
           {latest.map((e) => (
             <li class="essay paper">
-              <img src={e.cover} width="800" height="500" loading="lazy" decoding="async" alt="" />
+              {e.cover && <img src={e.cover} width="800" height="500" loading="lazy" decoding="async" alt="" />}
               <div class="essay-body">
                 <p class="date">{fmt(e.date)}</p>
                 <h3><a href={e.url}>{e.title}</a></h3>
