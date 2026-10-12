@@ -3,18 +3,36 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Motif from '../components/Motif.astro';
-import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter } from '../data/site';
+import CopyButton from '../components/CopyButton.astro';
+import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter, socials, type Essay } from '../data/site';
 
-const latest = essays.slice(0, 6);
+// scripts/fetch-essays.mjs writes the 6 latest posts from the Substack feed (covers downloaded
+// to /writing/feed/) before every build; without it (feed down, or `astro dev`) use site.ts.
+const generated = Object.values(
+  import.meta.glob<{ essays: Essay[] }>('../data/essays.generated.json', { eager: true, import: 'default' }),
+)[0];
+const latest = (generated?.essays ?? essays).slice(0, 6);
 const fmt = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const photo = identity.photo;
 const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
+const site = 'https://adityaaswani.com';
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: identity.name,
+  url: `${site}/`,
+  image: `${site}${photo.src(960)}`,
+  description: identity.oneLine,
+  sameAs: socials.map((s) => s.href),
+};
+// Escape "<" so no string in the data can close the script element early.
+const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
 ---
 <Layout
   title="Aditya Aswani — Buddhist, Writer, Animal Rights Activist"
   description="Aditya Aswani — Buddhist meditator, animal rights activist, and writer. Currently facing felony charges for rescuing dogs from a research lab."
-  ogImage="/aditya-photo-new.jpg"
 >
+  <script is:inline type="application/ld+json" set:html={personJson} slot="head" />
   <Header />
   <main id="main" tabindex="-1">
     <section class="hero" aria-labelledby="hi">
@@ -57,9 +75,22 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
         </div>
         <ul class="cards">
           {products.map((p) => (
-            <li class="card paper">
+            <li class:list={['card paper', { 'card--shot': p.screenshot }]}>
+              {p.screenshot && (
+                <img
+                  class="shot"
+                  src={p.screenshot.src640}
+                  srcset={`${p.screenshot.src640} 640w, ${p.screenshot.src1280} 1280w`}
+                  sizes="(min-width: 1080px) 350px, (min-width: 700px) 50vw, 100vw"
+                  width="640"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  alt={p.screenshot.alt}
+                />
+              )}
               <div class="card-top">
-                <span class={`motif motif--${p.slug}`}><Motif slug={p.slug} /></span>
+                {!p.screenshot && <span class={`motif motif--${p.slug}`}><Motif slug={p.slug} /></span>}
                 <span class={`badge badge--${p.status}`}>{statusLabel[p.status]}</span>
               </div>
               <h3>{p.name}</h3>
@@ -82,7 +113,7 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
         <ul class="essays">
           {latest.map((e) => (
             <li class="essay paper">
-              <img src={e.cover} width="800" height="500" loading="lazy" decoding="async" alt="" />
+              {e.cover && <img src={e.cover} width="800" height="500" loading="lazy" decoding="async" alt="" />}
               <div class="essay-body">
                 <p class="date">{fmt(e.date)}</p>
                 <h3><a href={e.url}>{e.title}</a></h3>
@@ -115,7 +146,7 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
       <div class="wrap--narrow support">
         <h2 id="support-h">Support my work</h2>
         <p>I fight for animals and help people build a steady mindfulness practice. If that work matters to you, you can help it keep going.</p>
-        <p><a class="btn" href="/support">Support my work</a></p>
+        <p><a class="btn" href="/support/">Support my work</a></p>
       </div>
     </section>
 
@@ -131,7 +162,7 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
               <button class="btn" type="submit">Subscribe<span class="sr-only"> (opens in a new tab)</span></button>
             </div>
           </form>
-          <p class="contact-line">Or just say hello: <a href="/contact">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+          <p class="contact-line">Or just say hello: <a href="/contact/">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>. <CopyButton text="hello@adityaaswani.com" id="copy-hello" /></p>
         </div>
       </div>
     </section>
@@ -157,6 +188,11 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
   .sprig { position: absolute; right: -22px; bottom: -14px; color: var(--sage); }
   .intro { max-width: 34rem; color: var(--ink-2); font-size: 1.1rem; margin-inline: auto; }
   .cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.4rem; justify-content: center; }
+  /* Phones: intro and CTAs first, so "See what I'm building" is on the first screen; the portrait follows. */
+  @media (max-width: 599.98px) {
+    .hero-body { order: 1; }
+    .portrait { order: 2; }
+  }
   @media (min-width: 860px) {
     .hero { padding: 2rem 0 4rem; }
     .hero-grid { grid-template-columns: 1.1fr 400px; grid-template-areas: "head photo" "body photo"; align-content: center; gap: 1.5rem 4rem; text-align: left; justify-items: start; }
@@ -172,6 +208,12 @@ const srcset = photo.widths.map((w) => `${photo.src(w)} ${w}w`).join(', ');
   .card { position: relative; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
   @media (prefers-reduced-motion: no-preference) { .card:hover, .essay:hover { transform: translateY(-3px) rotate(-0.4deg); } }
   .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+  /* Screenshot cards: 16:10 image bleeds to the card edges; the badge takes the motif's place */
+  .shot {
+    width: calc(100% + 3rem); max-width: none; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top;
+    margin: -1.5rem -1.5rem 0.4rem; border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--line);
+  }
+  .card--shot .card-top { justify-content: flex-start; }
   .motif { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50% 46% 52% 48%; background: var(--sage-tint); color: var(--sage-ink); }
   .motif--amberhall, .motif--savethedogs { background: var(--clay-tint); color: var(--clay-ink); }
   .card h3 { font-size: 1.55rem; }

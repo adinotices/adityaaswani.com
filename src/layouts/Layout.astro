@@ -9,8 +9,12 @@ export interface Props {
   noindex?: boolean;
 }
 
-const { title, description = "Aditya Aswani - Personal hub for projects and writings.", ogImage, noindex = false } = Astro.props;
+const { title, description = "Aditya Aswani - Personal hub for projects and writings.", ogImage = "/og-default.jpg", noindex = false } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, "https://adityaaswani.com").href;
+const ogImageUrl = new URL(ogImage, "https://adityaaswani.com").href;
+// Pixel sizes of the share images in public/, so crawlers can lay out the card before fetching.
+const ogSizes: Record<string, [number, number]> = { "/og-default.jpg": [1200, 630], "/og-links.jpg": [1600, 1067] };
+const ogSize = ogSizes[ogImage];
 // Design-preview builds (PUBLIC_PREVIEW=1, deployed to Cloudflare Pages) are never
 // indexed and never report to Plausible.
 const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
@@ -20,6 +24,9 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    {/* Production builds only: scripts/csp-integration.mjs fills in the policy with this page's inline-script hashes. */}
+    {import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content="__CSP__" />}
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {(noindex || isPreview) && <meta name="robots" content="noindex" />}
@@ -41,10 +48,14 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
-    {ogImage && <meta property="og:image" content={new URL(ogImage, "https://adityaaswani.com").href} />}
-    {ogImage && <meta name="twitter:card" content="summary_large_image" />}
-    {ogImage && <meta name="twitter:image" content={new URL(ogImage, "https://adityaaswani.com").href} />}
-    
+    <meta property="og:image" content={ogImageUrl} />
+    {ogSize && <meta property="og:image:width" content={String(ogSize[0])} />}
+    {ogSize && <meta property="og:image:height" content={String(ogSize[1])} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <link rel="preload" as="font" type="font/woff2" href={nunitoUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={frauncesUrl} crossorigin />
     <meta name="theme-color" content="#f8f1e3" />
@@ -57,6 +68,7 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     </script>}
     <!-- Cloudflare Web Analytics (cookieless) -->
     {!isPreview && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>}
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

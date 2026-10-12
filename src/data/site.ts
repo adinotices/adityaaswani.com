@@ -118,7 +118,7 @@ export interface Essay {
   subtitle: string;
   url: string;
   date: string; // ISO
-  cover: string; // 800x500 webp
+  cover: string | null; // 800x500 webp; null when a feed post has no image
 }
 
 // Latest posts from the Substack archive API, 2026-10-11.
@@ -168,7 +168,7 @@ export const essays: Essay[] = [
 ];
 
 export const meditation = {
-  href: "/learn-meditation",
+  href: "/learn-meditation/",
   blurb:
     "One-on-one meditation guidance on a donation basis, from a Theravada perspective. 50-minute sessions on Zoom, or in person in NYC.",
   bookUrl: "https://cal.com/adityaa",
@@ -177,12 +177,12 @@ export const meditation = {
 export const nav = [
   { href: "/#building", label: "Building" },
   { href: "/#writing", label: "Writing" },
-  { href: "/learn-meditation", label: "Meditation" },
-  { href: "/links", label: "Links" },
-  { href: "/contact", label: "Contact" },
+  { href: "/learn-meditation/", label: "Meditation" },
+  { href: "/links/", label: "Links" },
+  { href: "/contact/", label: "Contact" },
 ];
 
-export const support = { href: "/support", label: "Support my work", short: "Support" };
+export const support = { href: "/support/", label: "Support my work", short: "Support" };
 
 export const socials = [
   { label: "Substack", href: "https://substack.com/@adinotices" },

@@ -2,11 +2,12 @@
 import Wordmark from './Wordmark.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { nav, support } from '../data/site';
-// Static builds see /contact/ while nav hrefs are /contact; compare without the trailing slash.
-const path = Astro.url.pathname.replace(/(.)\/$/, '$1');
+// Hrefs end in a slash (/contact/) and so may the page URL; compare both without it.
+const strip = (p: string) => p.replace(/(.)\/$/, '$1');
+const path = strip(Astro.url.pathname);
 const onHome = path === '/';
 const supportActive = path.startsWith('/support');
-const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') : n.href, current: n.href === path }));
+const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') : n.href, current: strip(n.href) === path }));
 ---
 <header class="site-header">
   <div class="wrap bar">

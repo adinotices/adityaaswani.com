@@ -2,9 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import CopyButton from '../components/CopyButton.astro';
 ---
 
-<Layout title="Contact — Aditya Aswani" description="Get in touch with Aditya Aswani for meaningful conversations and collaborations." ogImage="/aditya-photo.jpg">
+<Layout title="Contact — Aditya Aswani" description="Get in touch with Aditya Aswani for meaningful conversations and collaborations." ogImage="/og-default.jpg">
   <Header />
   
   <main id="main" tabindex="-1" class="page">
@@ -17,33 +18,39 @@ import Footer from '../components/Footer.astro';
       <div class="contact-methods">
         <div class="contact-card">
           <div class="contact-icon">
-            <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" focusable="false" width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 12.713l-11.985-9.713h23.971l-11.986 9.713zm-5.425-1.822l-6.575-5.329v12.501l6.575-7.172zm10.85 0l6.575 7.172v-12.501l-6.575 5.329zm-1.557 1.261l-3.868 3.135-3.868-3.135-8.11 8.848h23.956l-8.11-8.848z"/>
             </svg>
           </div>
           <h2>Email</h2>
           <p>Feel free to reach out for any questions, collaborations, or just to say hello. This is my personal address.</p>
-          <a href="mailto:hello@adityaaswani.com" class="contact-button">
-            hello@adityaaswani.com
-          </a>
+          <div class="email-row">
+            <a href="mailto:hello@adityaaswani.com" class="contact-button">
+              hello@adityaaswani.com
+            </a>
+            <CopyButton text="hello@adityaaswani.com" id="copy-hello" />
+          </div>
         </div>
         
         <div class="contact-card">
           <div class="contact-icon">
-            <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" focusable="false" width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
             </svg>
           </div>
           <h2>Product Support</h2>
           <p>Need help with Samvara, Sutam, Amberhall, or PausePal? Write to the support address and it will reach the right place.</p>
-          <a href="mailto:support@adityaaswani.com" class="contact-button">
-            support@adityaaswani.com
-          </a>
+          <div class="email-row">
+            <a href="mailto:support@adityaaswani.com" class="contact-button">
+              support@adityaaswani.com
+            </a>
+            <CopyButton text="support@adityaaswani.com" id="copy-support" />
+          </div>
         </div>
 
         <div class="contact-card">
           <div class="contact-icon">
-            <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" focusable="false" width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
           </div>
@@ -71,7 +78,7 @@ import Footer from '../components/Footer.astro';
         <div class="feedback-options">
           <div class="feedback-card direct">
             <div class="feedback-icon">
-              <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" focusable="false" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
               </svg>
             </div>
@@ -84,7 +91,7 @@ import Footer from '../components/Footer.astro';
 
           <div class="feedback-card anonymous">
             <div class="feedback-icon">
-              <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" focusable="false" width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
               </svg>
             </div>
@@ -105,13 +112,13 @@ import Footer from '../components/Footer.astro';
               <h4>Pranab Sachi</h4>
               <div class="intermediary-links">
                 <a href="https://www.pranabsachi.com/" target="_blank" rel="noopener noreferrer">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                   </svg>
                   Website
                 </a>
                 <a href="mailto:pranabsachi@gmail.com">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                   </svg>
                   Email
@@ -123,13 +130,13 @@ import Footer from '../components/Footer.astro';
               <h4>Michelle Chai</h4>
               <div class="intermediary-links">
                 <a href="https://www.youtube.com/user/brooklynchai" target="_blank" rel="noopener noreferrer">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M23.498 6.186a2.998 2.998 0 0 0-2.108-2.085C19.505 3.65 12 3.65 12 3.65s-7.505 0-9.39.451A2.998 2.998 0 0 0 .502 6.186C.05 8.07.05 12 .05 12s0 3.93.452 5.814a2.998 2.998 0 0 0 2.108 2.085c1.885.451 9.39.451 9.39.451s7.505 0 9.39-.451a2.998 2.998 0 0 0 2.108-2.085C23.95 15.93 23.95 12 23.95 12s0-3.93-.452-5.814zM9.75 15.568V8.432L15.5 12l-5.75 3.568z"/>
                   </svg>
                   YouTube
                 </a>
                 <a href="mailto:myc219@nyu.edu">
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" focusable="false" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                   </svg>
                   Email
@@ -169,6 +176,7 @@ import Footer from '../components/Footer.astro';
     background: var(--btn-bg); color: var(--btn-ink); font-weight: 700; text-decoration: none; overflow-wrap: anywhere;
   }
   .contact-button:hover, .feedback-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+  .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
   .intermediaries { margin-top: 2.2rem; }
   .intermediary-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
   .intermediary-links a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font-weight: 700; }
