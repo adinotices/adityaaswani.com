@@ -65,6 +65,7 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     </script>}
     <!-- Cloudflare Web Analytics (cookieless) -->
     {!isPreview && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>}
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
