@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+  # Build (and test) every PR to main; only pushes to main deploy.
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
   # Weekly rebuild so new essays from the Substack feed appear without a commit.
   schedule:
@@ -16,7 +19,8 @@ permissions:
 
 # Allow only one deployment at a time
 concurrency:
-  group: "pages"
+  # PR builds get their own group so they never queue behind (or hold up) a deploy.
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
   cancel-in-progress: false
 
 env:
@@ -28,20 +32,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
 
       - name: Install dependencies
         run: npm ci
+        working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Unit tests
+        run: npm test
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Build with Astro
@@ -49,8 +57,12 @@ jobs:
           npm run build
         working-directory: ${{ env.BUILD_PATH }}
 
+      - name: Check the built site (links, og:image, sitemap, CSP hashes)
+        run: npm run test:dist
+        working-directory: ${{ env.BUILD_PATH }}
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: ${{ env.BUILD_PATH }}/dist
 
@@ -59,9 +71,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     name: Deploy
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
