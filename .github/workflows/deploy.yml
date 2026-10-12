@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+  # Weekly rebuild so new essays from the Substack feed appear without a commit.
+  schedule:
+    - cron: '0 9 * * 1'
 
 # Sets permissions for GitHub Pages
 permissions:
