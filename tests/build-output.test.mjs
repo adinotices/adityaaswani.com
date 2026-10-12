@@ -134,3 +134,10 @@ test('the home page has valid Person JSON-LD', opts, () => {
   for (const u of data.sameAs) assert.equal(new URL(u).protocol, 'https:');
   assert.ok(blocks[0].index < html.indexOf('</head>'), 'JSON-LD should sit in <head>');
 });
+
+test('every page in dist sends strict-origin-when-cross-origin as its referrer policy', opts, () => {
+  for (const { rel, html } of pages) {
+    const metas = html.match(/<meta name="referrer" content="[^"]*">/g) || [];
+    assert.deepEqual(metas, ['<meta name="referrer" content="strict-origin-when-cross-origin">'], rel);
+  }
+});
