@@ -43,7 +43,7 @@ export const projects: Project[] = [
     number: "05",
     title: "One-on-One Meditation Guidance",
     description: "Get personalized meditation guidance on a donation basis.",
-    link: "/learn-meditation",
+    link: "/learn-meditation/",
   },
 ];
 
