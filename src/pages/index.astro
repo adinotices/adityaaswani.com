@@ -169,6 +169,11 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .sprig { position: absolute; right: -22px; bottom: -14px; color: var(--sage); }
   .intro { max-width: 34rem; color: var(--ink-2); font-size: 1.1rem; margin-inline: auto; }
   .cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.4rem; justify-content: center; }
+  /* Phones: intro and CTAs first, so "See what I'm building" is on the first screen; the portrait follows. */
+  @media (max-width: 599.98px) {
+    .hero-body { order: 1; }
+    .portrait { order: 2; }
+  }
   @media (min-width: 860px) {
     .hero { padding: 2rem 0 4rem; }
     .hero-grid { grid-template-columns: 1.1fr 400px; grid-template-areas: "head photo" "body photo"; align-content: center; gap: 1.5rem 4rem; text-align: left; justify-items: start; }
