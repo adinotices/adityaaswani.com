@@ -3,3 +3,7 @@ node_modules
 # Generated at build time by scripts/fetch-essays.mjs
 src/data/essays.generated.json
 public/writing/feed/
+
+# Build output and Astro cache are never committed (GitHub Pages builds fresh)
+dist/
+.astro/
