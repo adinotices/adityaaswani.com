@@ -9,7 +9,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --test tests/*.test.mjs",
-    "test:dist": "node --test tests/build-output.test.mjs"
+    "test:dist": "node --test tests/build-output.test.mjs tests/csp.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.0.0",

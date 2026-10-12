@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import csp from './scripts/csp-integration.mjs';
 
 export default defineConfig({
   site: 'https://adityaaswani.com',
@@ -20,5 +21,6 @@ export default defineConfig({
         return !path.startsWith('/support/thanks') && !path.startsWith('/preview');
       },
     }),
+    csp(),
   ],
 });

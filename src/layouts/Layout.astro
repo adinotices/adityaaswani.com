@@ -24,6 +24,8 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    {/* Production builds only: scripts/csp-integration.mjs fills in the policy with this page's inline-script hashes. */}
+    {import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content="__CSP__" />}
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {(noindex || isPreview) && <meta name="robots" content="noindex" />}
