@@ -69,9 +69,22 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
         </div>
         <ul class="cards">
           {products.map((p) => (
-            <li class="card paper">
+            <li class:list={['card paper', { 'card--shot': p.screenshot }]}>
+              {p.screenshot && (
+                <img
+                  class="shot"
+                  src={p.screenshot.src640}
+                  srcset={`${p.screenshot.src640} 640w, ${p.screenshot.src1280} 1280w`}
+                  sizes="(min-width: 1080px) 350px, (min-width: 700px) 50vw, 100vw"
+                  width="640"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  alt={p.screenshot.alt}
+                />
+              )}
               <div class="card-top">
-                <span class={`motif motif--${p.slug}`}><Motif slug={p.slug} /></span>
+                {!p.screenshot && <span class={`motif motif--${p.slug}`}><Motif slug={p.slug} /></span>}
                 <span class={`badge badge--${p.status}`}>{statusLabel[p.status]}</span>
               </div>
               <h3>{p.name}</h3>
@@ -189,6 +202,12 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .card { position: relative; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
   @media (prefers-reduced-motion: no-preference) { .card:hover, .essay:hover { transform: translateY(-3px) rotate(-0.4deg); } }
   .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+  /* Screenshot cards: 16:10 image bleeds to the card edges; the badge takes the motif's place */
+  .shot {
+    width: calc(100% + 3rem); max-width: none; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top;
+    margin: -1.5rem -1.5rem 0.4rem; border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--line);
+  }
+  .card--shot .card-top { justify-content: flex-start; }
   .motif { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50% 46% 52% 48%; background: var(--sage-tint); color: var(--sage-ink); }
   .motif--amberhall, .motif--savethedogs { background: var(--clay-tint); color: var(--clay-ink); }
   .card h3 { font-size: 1.55rem; }
