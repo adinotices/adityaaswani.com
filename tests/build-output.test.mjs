@@ -141,3 +141,11 @@ test('every page in dist sends strict-origin-when-cross-origin as its referrer p
     assert.deepEqual(metas, ['<meta name="referrer" content="strict-origin-when-cross-origin">'], rel);
   }
 });
+
+test('security.txt is published with contact, expiry and language', opts, () => {
+  const txt = readFileSync(join(DIST, '.well-known/security.txt'), 'utf8');
+  assert.match(txt, /^Contact: mailto:hello@adityaaswani\.com$/m);
+  assert.match(txt, /^Preferred-Languages: en$/m);
+  const exp = Date.parse(txt.match(/^Expires: (.+)$/m)[1]);
+  assert.ok(exp > Date.now(), 'security.txt has expired; bump Expires (max one year out)');
+});
