@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import CopyButton from '../components/CopyButton.astro';
 ---
 
 <Layout title="Contact — Aditya Aswani" description="Get in touch with Aditya Aswani for meaningful conversations and collaborations." ogImage="/og-default.jpg">
@@ -23,9 +24,12 @@ import Footer from '../components/Footer.astro';
           </div>
           <h2>Email</h2>
           <p>Feel free to reach out for any questions, collaborations, or just to say hello. This is my personal address.</p>
-          <a href="mailto:hello@adityaaswani.com" class="contact-button">
-            hello@adityaaswani.com
-          </a>
+          <div class="email-row">
+            <a href="mailto:hello@adityaaswani.com" class="contact-button">
+              hello@adityaaswani.com
+            </a>
+            <CopyButton text="hello@adityaaswani.com" id="copy-hello" />
+          </div>
         </div>
         
         <div class="contact-card">
@@ -36,9 +40,12 @@ import Footer from '../components/Footer.astro';
           </div>
           <h2>Product Support</h2>
           <p>Need help with Samvara, Sutam, Amberhall, or PausePal? Write to the support address and it will reach the right place.</p>
-          <a href="mailto:support@adityaaswani.com" class="contact-button">
-            support@adityaaswani.com
-          </a>
+          <div class="email-row">
+            <a href="mailto:support@adityaaswani.com" class="contact-button">
+              support@adityaaswani.com
+            </a>
+            <CopyButton text="support@adityaaswani.com" id="copy-support" />
+          </div>
         </div>
 
         <div class="contact-card">
@@ -169,6 +176,7 @@ import Footer from '../components/Footer.astro';
     background: var(--btn-bg); color: var(--btn-ink); font-weight: 700; text-decoration: none; overflow-wrap: anywhere;
   }
   .contact-button:hover, .feedback-button:hover { background: var(--btn-bg-hover); color: var(--btn-ink); }
+  .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
   .intermediaries { margin-top: 2.2rem; }
   .intermediary-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
   .intermediary-links a { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font-weight: 700; }

@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Motif from '../components/Motif.astro';
+import CopyButton from '../components/CopyButton.astro';
 import { identity, products, statusLabel, essays, essaysHome, meditation, newsletter, socials, type Essay } from '../data/site';
 
 // scripts/fetch-essays.mjs writes the 6 latest posts from the Substack feed (covers downloaded
@@ -161,7 +162,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
               <button class="btn" type="submit">Subscribe<span class="sr-only"> (opens in a new tab)</span></button>
             </div>
           </form>
-          <p class="contact-line">Or just say hello: <a href="/contact/">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>.</p>
+          <p class="contact-line">Or just say hello: <a href="/contact/">contact page</a> or <a href="mailto:hello@adityaaswani.com">hello@adityaaswani.com</a>. <CopyButton text="hello@adityaaswani.com" id="copy-hello" /></p>
         </div>
       </div>
     </section>
