@@ -146,7 +146,7 @@ import { identity, products, statusLabel, newsletter, support } from '../data/si
 <style>
   main:focus { outline: none; }
   .links-page { width: min(100% - 2rem, 560px); margin: 0 auto; padding: 1rem 0 3rem; }
-  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
   .brand { display: inline-flex; min-height: 44px; align-items: center; color: var(--ink); }
   :global(.wm) { height: 32px; width: auto; }
   .topactions { display: flex; align-items: center; gap: 0.5rem; }
@@ -156,20 +156,20 @@ import { identity, products, statusLabel, newsletter, support } from '../data/si
   .avatar { width: 124px; height: 124px; margin: 0 auto 1rem; border-radius: 50%; overflow: hidden; border: 6px solid var(--card); box-shadow: var(--shadow); background: var(--sage-tint); }
   .avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
   h1 { font-size: 2.3rem; }
-  .bio { color: var(--ink-2); margin-top: 0.5rem; font-size: 0.98rem; }
+  .bio { color: var(--ink-2); margin-top: 0.5rem; font-size: var(--fs-small); }
 
   .link-section { margin-bottom: 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; }
-  .section-label { font-family: var(--sans); font-variation-settings: normal; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); margin: 0.4rem 0 0.1rem; }
+  .section-label { font-family: var(--sans); font-variation-settings: normal; font-size: var(--fs-caption); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); margin: 0.4rem 0 0.1rem; }
   .link-card { display: block; padding: 1.1rem 1.3rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); text-decoration: none; color: var(--ink); transition: transform 0.2s; }
   .link-card:hover { color: var(--ink); border-color: var(--clay); }
   @media (prefers-reduced-motion: no-preference) { .link-card:hover { transform: translateY(-2px); } }
   .link-card--featured { background: var(--sage-tint); border-color: var(--sage); }
   .link-title { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-weight: 560; font-size: 1.2rem; line-height: 1.25; }
-  .link-desc { color: var(--ink-2); font-size: 0.95rem; margin-top: 0.25rem; }
+  .link-desc { color: var(--ink-2); font-size: var(--fs-small); margin-top: 0.25rem; }
   .link-card--featured .link-desc { color: var(--sage-ink); }
 
   .build-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-  .build-item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 52px; padding: 0.4rem 1.2rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--ink); }
+  .build-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; min-height: 52px; padding: 0.4rem 1.2rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--ink); }
   .build-item:hover { border-color: var(--clay); color: var(--ink); }
   .build-name { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-weight: 560; font-size: 1.15rem; }
 

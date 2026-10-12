@@ -374,7 +374,7 @@ const groups = [
   main:focus { outline: none; }
   :global(html:not(.js)) .js-only { display: none; }
 
-  .test-badge { display: inline-block; margin-bottom: 1rem; padding: 0.25rem 0.8rem; border-radius: 999px; border: 1px solid #8a4a07; background: #fdebc3; color: #5c2f00; font-size: 0.82rem; font-weight: 800; }
+  .test-badge { display: inline-block; margin-bottom: 1rem; padding: 0.25rem 0.8rem; border-radius: 999px; border: 1px solid #8a4a07; background: #fdebc3; color: #5c2f00; font-size: var(--fs-caption); font-weight: 800; }
 
   .give-card, .why {
     background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
@@ -398,8 +398,8 @@ const groups = [
     border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); text-align: center;
   }
   .opt-amt { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; font-weight: 600; }
-  .opt-amt small { font-family: var(--sans); font-size: 0.8rem; font-weight: 600; margin-left: 1px; }
-  .tag { font-size: 0.72rem; font-weight: 800; padding: 0 0.5rem; border: 1px solid currentColor; border-radius: 999px; }
+  .opt-amt small { font-family: var(--sans); font-size: var(--fs-caption); font-weight: 600; margin-left: 1px; }
+  .tag { font-size: var(--fs-caption); font-weight: 800; padding: 0 0.5rem; border: 1px solid currentColor; border-radius: 999px; }
   .opt input:checked + .opt-face { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-ink); box-shadow: inset 0 0 0 2px var(--btn-ink); }
   .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
   .tab input:focus-visible + span, .opt input:focus-visible + .opt-face, .fee-label input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
@@ -409,7 +409,7 @@ const groups = [
   .other-row { display: flex; align-items: center; gap: 0.5rem; color: var(--ink); font-weight: 700; }
   .other-row input { width: 10rem; min-height: 48px; padding: 0.5rem 0.9rem; font-size: 1.1rem; border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-family: inherit; }
   .other-row input[aria-invalid="true"] { border-color: #b3261e; }
-  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #a31d16; font-size: 0.95rem; font-weight: 600; }
+  .error { margin: 0.4rem 0 0; min-height: 1.4em; color: #a31d16; font-size: var(--fs-small); font-weight: 600; }
   :global(:root[data-theme="dark"]) .error { color: #ffb4a8; }
 
   .impact { margin: 1.25rem 0 1rem; min-height: 3em; color: var(--ink-2); line-height: 1.5; text-align: center; font-size: 1.05rem; }
@@ -431,7 +431,7 @@ const groups = [
 
   .give-status { margin: 0.75rem 0 0; min-height: 1.4em; text-align: center; color: var(--ink); font-weight: 600; }
   .give-status :global(a) { color: var(--ink); text-decoration: underline; }
-  .secure { margin: 0.9rem 0 0; text-align: center; color: var(--ink-2); font-size: 0.95rem; }
+  .secure { margin: 0.9rem 0 0; text-align: center; color: var(--ink-2); font-size: var(--fs-small); }
   .secure a, .noscript-links a, .fine-print a { color: var(--ink); text-decoration: underline; }
   .deductible { margin: 1.1rem 0 0; padding-top: 1.1rem; border-top: 1px dashed var(--line); color: var(--ink); line-height: 1.6; text-align: center; }
   .noscript-links { margin-top: 1rem; color: var(--ink-2); }
@@ -449,6 +449,6 @@ const groups = [
   .project-list a { text-decoration: underline; text-decoration-color: var(--clay); text-underline-offset: 3px; }
   .project-list a:hover { color: var(--clay-ink); }
 
-  .fine-print { text-align: center; color: var(--ink-2); font-size: 0.95rem; margin-bottom: 1.6rem; }
+  .fine-print { text-align: center; color: var(--ink-2); font-size: var(--fs-small); margin-bottom: 1.6rem; }
   .blessing { text-align: center; font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; color: var(--ink); }
 </style>

@@ -53,6 +53,8 @@
   --focus: #2f5aa8;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 2px 4px rgba(70, 45, 20, 0.06), 0 12px 30px -12px rgba(70, 45, 20, 0.22);
   --wm-leaf: #5a7150;
+  --fs-caption: 0.875rem; /* smallest text: meta, badges, tags, caps labels (14px at default size) */
+  --fs-small: 1rem;       /* secondary body text (16px at default size) */
   --radius: 22px;
   --radius-sm: 14px;
   color-scheme: light;
@@ -151,7 +153,7 @@ a:hover { color: var(--clay-ink); text-decoration-thickness: 2px; }
 .section { padding: clamp(3rem, 7vw, 5.5rem) 0; }
 .section--soft { background: var(--bg-soft); }
 .eyebrow {
-  font-size: 0.85rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  font-size: var(--fs-caption); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--sage); margin-bottom: 0.6rem;
 }
 .section-head { margin-bottom: 2rem; max-width: 40rem; }
@@ -161,7 +163,7 @@ a:hover { color: var(--clay-ink); text-decoration-thickness: 2px; }
 /* Status badge */
 .badge {
   display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.15rem 0.7rem;
-  border-radius: 999px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.02em;
+  border-radius: 999px; font-size: var(--fs-caption); font-weight: 800; letter-spacing: 0.02em;
   border: 1px solid currentColor; white-space: nowrap;
 }
 .badge::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
