@@ -9,6 +9,12 @@ export default defineConfig({
     '/zoom': 'https://cmu.zoom.us/j/4722169152?pwd=FcpGRl2hzkghnYyiZRae9RFlO6mXLl.1',
   },
   integrations: [
-    sitemap({ filter: (page) => !page.includes('/support/thanks') }),
+    // Only the pages meant for search: no thank-you page and no /preview* design pages.
+    sitemap({
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return !path.startsWith('/support/thanks') && !path.startsWith('/preview');
+      },
+    }),
   ],
 });
