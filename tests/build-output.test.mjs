@@ -150,6 +150,18 @@ test('security.txt is published with contact, expiry and language', opts, () => 
   assert.ok(exp > Date.now(), 'security.txt has expired; bump Expires (max one year out)');
 });
 
+function allFiles(dir = DIST) {
+  return readdirSync(dir).flatMap((name) => {
+    const p = join(dir, name);
+    return statSync(p).isDirectory() ? allFiles(p) : [p];
+  });
+}
+
+test('no file in dist is over 1 MB (AA-24: source photos stay out of public/)', opts, () => {
+  const big = allFiles().filter((f) => statSync(f).size > 1024 * 1024).map((f) => `${relative(DIST, f)} (${statSync(f).size} bytes)`);
+  assert.deepEqual(big, []);
+});
+
 test('every HTML page in dist, the /preview* pages included, carries a meta CSP (AA-S13)', opts, () => {
   assert.ok(pages.some((p) => p.rel.startsWith('preview-')), 'no /preview-* page in dist');
   const missing = pages.filter(({ html }) => !/<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*">/.test(html)).map((p) => p.rel);
