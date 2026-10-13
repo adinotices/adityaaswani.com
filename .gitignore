@@ -8,3 +8,8 @@ public/writing/feed/
 dist/
 dist-previews/
 .astro/
+
+# Playwright output
+test-results/
+e2e-report/
+playwright-report/
