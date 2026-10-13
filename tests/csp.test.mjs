@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { applyCsp, CSP_PLACEHOLDER, GOOGLE_FONTS, SUBSTACK_EMBED } from '../scripts/csp-integration.mjs';
+import { applyCsp, CSP_PLACEHOLDER, GOOGLE_FONTS, SUBSTACK_EMBED, SUBSTACK_FRAME_SRC } from '../scripts/csp-integration.mjs';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const built = existsSync(join(DIST, 'index.html'));
@@ -50,7 +50,7 @@ test('Google Fonts and the Substack embed are allowed only on the pages that loa
     const embed = html.includes(`src="${SUBSTACK_EMBED}/`);
     assert.deepEqual(dirs['style-src'], ["'self'", "'unsafe-inline'", ...(fonts ? [GOOGLE_FONTS.style] : [])], rel);
     assert.deepEqual(dirs['font-src'], ["'self'", ...(fonts ? [GOOGLE_FONTS.font] : [])], rel);
-    assert.deepEqual(dirs['frame-src'], embed ? [SUBSTACK_EMBED] : undefined, rel);
+    assert.deepEqual(dirs['frame-src'], embed ? SUBSTACK_FRAME_SRC : undefined, rel);
   }
   for (const { rel, html } of layoutPages) assert.ok(!html.includes(GOOGLE_FONTS.style), `${rel}: a Layout page loads Google Fonts`);
   assert.ok(previewPages.every(({ html }) => cspOf(html).includes(GOOGLE_FONTS.font)), 'a preview page lost its font host');
@@ -122,7 +122,7 @@ test('applyCsp gives a standalone page the policy, with its font and embed hosts
   const dirs = directives(cspOf(out));
   assert.deepEqual(dirs['style-src'], ["'self'", "'unsafe-inline'", GOOGLE_FONTS.style]);
   assert.deepEqual(dirs['font-src'], ["'self'", GOOGLE_FONTS.font]);
-  assert.deepEqual(dirs['frame-src'], [SUBSTACK_EMBED]);
+  assert.deepEqual(dirs['frame-src'], [SUBSTACK_EMBED, 'https://essays.adityaaswani.com']);
   assert.ok(dirs['script-src'].includes("'sha256-" + createHash('sha256').update('b()').digest('base64') + "'"));
   assert.equal(applyCsp(out), out, 'applyCsp is not idempotent');
 });

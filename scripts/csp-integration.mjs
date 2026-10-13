@@ -15,6 +15,8 @@ export const REFERRER_META = '<meta name="referrer" content="strict-origin-when-
 
 export const GOOGLE_FONTS = { style: 'https://fonts.googleapis.com', font: 'https://fonts.gstatic.com' };
 export const SUBSTACK_EMBED = 'https://adityaaswani.substack.com';
+// The embed 301s to the custom domain, and frame-src is checked again after a redirect.
+export const SUBSTACK_FRAME_SRC = [SUBSTACK_EMBED, 'https://essays.adityaaswani.com'];
 
 export function policy(hashes, { googleFonts = false, substackEmbed = false } = {}) {
   return [
@@ -24,7 +26,7 @@ export function policy(hashes, { googleFonts = false, substackEmbed = false } = 
     "img-src 'self' data:",
     ["style-src 'self' 'unsafe-inline'", ...(googleFonts ? [GOOGLE_FONTS.style] : [])].join(' '),
     ["font-src 'self'", ...(googleFonts ? [GOOGLE_FONTS.font] : [])].join(' '),
-    ...(substackEmbed ? [`frame-src ${SUBSTACK_EMBED}`] : []),
+    ...(substackEmbed ? [['frame-src', ...SUBSTACK_FRAME_SRC].join(' ')] : []),
     "form-action 'self' https://adityaaswani.substack.com",
     "base-uri 'self'",
     "object-src 'none'",
