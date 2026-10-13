@@ -1,10 +1,11 @@
 // Astro integration: after the build, fills each page's meta CSP with the sha256 hashes of the
 // inline scripts actually in that page, so a copy edit can never silently break a hash.
 // Layout.astro emits <meta http-equiv="Content-Security-Policy" content="__CSP__"> right after
-// the charset (production builds only). Pages not built on Layout (the /zoom redirect and the
-// /preview* design pages) get the same policy and the referrer meta added here, so every page in
-// dist carries both. The /preview* pages also load Google Fonts and the Substack embed; those
-// origins are allowed only on the pages that use them (AA-S13).
+// the charset (production builds only). Pages not built on Layout (the /zoom redirect, and the
+// design variants in design-previews/ when scripts/build-design-previews.mjs builds them) get the
+// same policy and the referrer meta added here, so every page in dist carries both. The variants
+// load Google Fonts and the Substack embed; those origins are allowed only on the pages that use
+// them (AA-S13).
 import { createHash } from 'node:crypto';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

@@ -1,0 +1,202 @@
+{
+  "origin": "https://design-previews.adityaaswani-preview.pages.dev",
+  "axe": "4.10.2",
+  "at": "2026-10-13T19:06:25.501Z",
+  "steelSession": "99a54a64-9cd6-4ec1-9189-d2358e162944",
+  "results": [
+    {
+      "path": "/previews/",
+      "width": 390,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 8,
+          "targets": [
+            ".eyebrow",
+            "a[href$=\"preview/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-dark/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-brutalist/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-japanese/\"] > .meta > .meta-fonts"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview/",
+      "width": 390,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-dark/",
+      "width": 390,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-brutalist/",
+      "width": 390,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 4,
+          "targets": [
+            ".alert",
+            ".btn-red",
+            ".pin",
+            ".back"
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "nodes": 1,
+          "targets": [
+            ".barcode"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview-japanese/",
+      "width": 390,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-pixel/",
+      "width": 390,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1,
+          "targets": [
+            ".red"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview-anime/",
+      "width": 390,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 9,
+          "targets": [
+            ".strip-left > span:nth-child(1)",
+            ".danger",
+            "strong",
+            ".btn-primary",
+            "li:nth-child(1) > .report[target=\"_blank\"][rel=\"noopener noreferrer\"] > .report-stamp"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/previews/",
+      "width": 1280,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 8,
+          "targets": [
+            ".eyebrow",
+            "a[href$=\"preview/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-dark/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-brutalist/\"] > .meta > .meta-fonts",
+            "a[href$=\"preview-japanese/\"] > .meta > .meta-fonts"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview/",
+      "width": 1280,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-dark/",
+      "width": 1280,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-brutalist/",
+      "width": 1280,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 4,
+          "targets": [
+            ".alert",
+            ".btn-red",
+            ".pin",
+            ".back"
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "nodes": 1,
+          "targets": [
+            ".barcode"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview-japanese/",
+      "width": 1280,
+      "status": 200,
+      "violations": []
+    },
+    {
+      "path": "/preview-pixel/",
+      "width": 1280,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1,
+          "targets": [
+            ".red"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/preview-anime/",
+      "width": 1280,
+      "status": 200,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 10,
+          "targets": [
+            ".strip-left > span:nth-child(1)",
+            ".strip-left > .strip-meta-extra:nth-child(2)",
+            ".strip-meta-extra:nth-child(3)",
+            ".strip-right > .strip-meta-extra",
+            ".danger"
+          ]
+        }
+      ]
+    }
+  ]
+}

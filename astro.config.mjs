@@ -14,11 +14,11 @@ export default defineConfig({
   // Modern output only, so PSI does not flag legacy JavaScript.
   vite: { build: { target: 'es2022' } },
   integrations: [
-    // Only the pages meant for search: no thank-you page and no /preview* design pages.
+    // Only the pages meant for search: no thank-you page.
     sitemap({
       filter: (page) => {
         const path = new URL(page).pathname;
-        return !path.startsWith('/support/thanks') && !path.startsWith('/preview');
+        return !path.startsWith('/support/thanks');
       },
     }),
     csp(),
