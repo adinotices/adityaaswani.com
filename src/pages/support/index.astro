@@ -226,6 +226,10 @@ const groups = [
   const cfg = JSON.parse($('give').dataset.config);
   const { oneTime, monthly, impact } = cfg;
   const checked = (name) => document.querySelector(`input[name="${name}"]:checked`);
+  // Write text only when it changes. Typing an Other amount and then clicking Give fires `change`
+  // between mousedown and mouseup; replacing the text node under the pointer then makes WebKit drop
+  // the click, so Safari needed two presses (FEATURES.md GIVE-06).
+  const setText = (el, s) => { if (el.textContent !== s) el.textContent = s; };
 
   const btn = $('give-btn');
   const feeCb = $('fee-cb');
@@ -259,7 +263,7 @@ const groups = [
       const parsed = parseAmount(otherInput.value);
       if (parsed.ok) base = parsed.cents;
       const showErr = !parsed.ok && !parsed.empty;
-      otherErr.textContent = showErr ? parsed.error : '';
+      setText(otherErr, showErr ? parsed.error : '');
       otherInput.setAttribute('aria-invalid', showErr ? 'true' : 'false');
     } else {
       base = Number(v);
@@ -275,27 +279,27 @@ const groups = [
       for (const k of Object.keys(lines)) if (k !== 'other') tiers[k] = lines[k];
       line = nearestLine(tiers, base, impact.once.other);
     }
-    $('impact').textContent = line;
+    setText($('impact'), line);
 
     if (base === null) {
       current = null;
-      $('fee-text').textContent = 'Add card fees to my gift, so the full amount reaches me';
-      if (!busy) btn.textContent = 'Enter an amount';
+      setText($('fee-text'), 'Add card fees to my gift, so the full amount reaches me');
+      if (!busy) setText(btn, 'Enter an amount');
       btn.setAttribute('aria-disabled', 'true');
       return;
     }
     const fee = feeCb.checked ? feeCents(base) : 0;
     const total = base + fee;
     current = { base, total, interval, tier, isCustom: isOther };
-    $('fee-text').textContent = `Add ${fmt(feeCents(base))} to cover card fees, so the full ${fmt(base)} reaches me`;
+    setText($('fee-text'), `Add ${fmt(feeCents(base))} to cover card fees, so the full ${fmt(base)} reaches me`);
     if (!busy) {
-      btn.textContent = `Give ${fmt(total)} ${isMonthly ? 'a month' : 'once'}`;
+      setText(btn, `Give ${fmt(total)} ${isMonthly ? 'a month' : 'once'}`);
       btn.removeAttribute('aria-disabled');
     }
   }
 
   function onChange() {
-    statusEl.textContent = '';
+    setText(statusEl, '');
     render();
   }
 
