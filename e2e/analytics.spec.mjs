@@ -7,6 +7,8 @@ test('ANA-01 @live Plausible and Cloudflare Web Analytics load under the CSP', a
   const scripts = [];
   page.on('response', (r) => { if (/plausible\.io\/js\/|static\.cloudflareinsights\.com\/beacon/.test(r.url())) scripts.push(`${r.status()} ${new URL(r.url()).host}`); });
   await page.goto('/support/');
+  // Preview builds (PUBLIC_PREVIEW=1, Cloudflare Pages) carry noindex everywhere and no analytics.
+  test.skip((await page.locator('meta[name="robots"]').count()) > 0, 'preview build: no analytics by design');
   await page.waitForLoadState('networkidle');
   expect(scripts.sort()).toEqual(['200 plausible.io', '200 static.cloudflareinsights.com']);
   expect(await page.evaluate(() => typeof window.plausible)).toBe('function');

@@ -351,7 +351,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation | NONE | analytics.spec › ANA-01 |
+| ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation. Skipped on preview builds, which have no analytics by design. | NONE | analytics.spec › ANA-01 |
 | ANA-02 | Test runs never count as visits | Plausible ignores webdriver. Events and the beacon are answered locally by the guard fixture. | NONE | fixtures.mjs guard |
 | ANA-03 | A real visit is counted | The Plausible dashboard shows the page view | NONE | NONE (owner checks the dashboard; AA-23 decides whether both stay) |
 
