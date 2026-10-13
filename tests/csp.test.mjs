@@ -74,18 +74,19 @@ test('the policy carries the required directives and nothing unsafe for scripts'
     assert.ok(!dirs['script-src'].includes("'unsafe-inline'") && !dirs['script-src'].includes("'unsafe-eval'"), rel);
     for (const src of ['https://plausible.io', 'https://static.cloudflareinsights.com']) assert.ok(dirs['script-src'].includes(src), rel);
     assert.deepEqual(dirs['connect-src'], ["'self'", 'https://plausible.io', 'https://cloudflareinsights.com', 'https://sutam.org'], rel);
-    assert.deepEqual(dirs['form-action'], ["'self'", 'https://adityaaswani.substack.com'], rel);
+    assert.deepEqual(dirs['form-action'], ["'self'", 'https://essays.adityaaswani.com'], rel);
     assert.deepEqual(dirs['object-src'], ["'none'"], rel);
     assert.deepEqual(dirs['base-uri'], ["'self'"], rel);
     assert.ok('upgrade-insecure-requests' in dirs, rel);
   }
 });
 
-test('every external script, stylesheet and frame origin is allowed', opts, () => {
+test('every external script, stylesheet, frame and form origin is allowed', opts, () => {
   const kinds = [
     [/<script\b[^>]*\ssrc="([^"]+)"/g, 'script-src'],
     [/<link\b[^>]*rel="stylesheet"[^>]*\shref="([^"]+)"/g, 'style-src'],
     [/<iframe\b[^>]*\ssrc="([^"]+)"/g, 'frame-src'],
+    [/<form\b[^>]*\saction="([^"]+)"/g, 'form-action'],
   ];
   for (const { rel, html } of pages) {
     const dirs = directives(cspOf(html));

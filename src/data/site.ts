@@ -108,8 +108,10 @@ export const essaysHome = "https://essays.adityaaswani.com";
 export const newsletter = {
   name: "Love Yourself Unconditionally",
   tagline: "Essays on animal liberation and mindfulness, to read or listen to.",
-  // Substack's no-JS subscribe endpoint: POST with an `email` field.
-  formAction: "https://adityaaswani.substack.com/api/v1/free?nojs=true",
+  // Substack's no-JS subscribe endpoint: POST with an `email` field. It must be the custom
+  // domain: adityaaswani.substack.com 301s there, which turns the POST into a GET (a 404 in
+  // Firefox/Safari) and trips form-action in Chrome (FEATURES.md NEWS-12).
+  formAction: "https://essays.adityaaswani.com/api/v1/free?nojs=true",
   url: "https://essays.adityaaswani.com",
 };
 
