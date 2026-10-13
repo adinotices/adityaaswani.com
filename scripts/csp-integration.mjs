@@ -28,7 +28,8 @@ export function policy(hashes, { googleFonts = false, substackEmbed = false } = 
     ["style-src 'self' 'unsafe-inline'", ...(googleFonts ? [GOOGLE_FONTS.style] : [])].join(' '),
     ["font-src 'self'", ...(googleFonts ? [GOOGLE_FONTS.font] : [])].join(' '),
     ...(substackEmbed ? [['frame-src', ...SUBSTACK_FRAME_SRC].join(' ')] : []),
-    "form-action 'self' https://adityaaswani.substack.com",
+    // The newsletter forms post to the custom domain (src/data/site.ts newsletter.formAction).
+    "form-action 'self' https://essays.adityaaswani.com",
     "base-uri 'self'",
     "object-src 'none'",
     'upgrade-insecure-requests',
