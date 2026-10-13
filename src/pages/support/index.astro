@@ -395,13 +395,17 @@ const groups = [
   /* 6.5rem is the narrowest tile that fits "✓ $25" and the Suggested tag at 14px without clipping (checked 320-430px). */
   .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); gap: 0.65rem; }
   .opt-face {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-height: 68px; padding: 0.5rem 0.25rem; min-width: 0;
+    position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-height: 68px; padding: 0.5rem 0.25rem; min-width: 0;
     border: 2px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); text-align: center;
   }
   .opt-amt { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.35rem; font-weight: 600; line-height: 1.2; white-space: nowrap; }
   /* "/month" sits on its own line under the amount so the selected "✓ $5" never overflows a narrow tile */
   .opt-amt small { display: block; font-family: var(--sans); font-size: var(--fs-caption); font-weight: 600; line-height: 1.3; }
-  .tag { font-size: var(--fs-caption); font-weight: 800; padding: 0 0.4rem; border: 1px solid currentColor; border-radius: 999px; white-space: nowrap; }
+  /* The "Suggested" pill sits on the card's bottom edge so every option stays the same height. */
+  .tag { position: absolute; left: 50%; bottom: 0; transform: translate(-50%, 50%); background: var(--bg); font-size: var(--fs-caption); font-weight: 800; line-height: 1.5; padding: 0 0.4rem; border: 1px solid currentColor; border-radius: 999px; white-space: nowrap; }
+  .opt { display: block; }
+  .opt input:checked + .opt-face .tag { background: var(--btn-bg); }
+  .options { padding-bottom: 0.6rem; }
   .opt input:checked + .opt-face { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-ink); box-shadow: inset 0 0 0 2px var(--btn-ink); }
   .opt input:checked + .opt-face .opt-amt::before { content: "\2713\00a0"; }
   .tab input:focus-visible + span, .opt input:focus-visible + .opt-face, .fee-label input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
