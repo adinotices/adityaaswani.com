@@ -149,3 +149,9 @@ test('security.txt is published with contact, expiry and language', opts, () => 
   const exp = Date.parse(txt.match(/^Expires: (.+)$/m)[1]);
   assert.ok(exp > Date.now(), 'security.txt has expired; bump Expires (max one year out)');
 });
+
+test('every HTML page in dist, the /preview* pages included, carries a meta CSP (AA-S13)', opts, () => {
+  assert.ok(pages.some((p) => p.rel.startsWith('preview-')), 'no /preview-* page in dist');
+  const missing = pages.filter(({ html }) => !/<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*">/.test(html)).map((p) => p.rel);
+  assert.deepEqual(missing, []);
+});
