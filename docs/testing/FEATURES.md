@@ -54,8 +54,8 @@ Counts are from `--stats` on 2026-10-13, after this run.
 | 16 | Analytics | 3 | 3 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 8 | 7 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
-| 19 | Test matrix upkeep | 4 | 4 | 0 | Keeps this file honest. |
-| | **Total** | **198** | **141** | **31** | |
+| 19 | Test matrix upkeep | 5 | 5 | 0 | Keeps this file honest. |
+| | **Total** | **199** | **142** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -384,3 +384,4 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MATRIX-02 | PR adds or edits a row of that feature | Passes | NONE | feature-matrix.test › a changed or added row of the feature passes |
 | MATRIX-03 | New source file not in the path map | Fails until it is mapped | NONE | feature-matrix.test › an unmapped source file fails |
 | MATRIX-04 | Matrix-Skip trailer | Passes, with the reason printed | NONE | feature-matrix.test › Matrix-Skip skips the check |
+| MATRIX-05 | Firefox aborts a font download when a test navigates away (`downloadable font: download failed … status=2152398850`, NS_BINDING_ABORTED) | console-error check ignores navigation-aborted font loads (Firefox NS_BINDING_ABORTED); every other font error and console error still fails the test | NONE | console-filter.test › ignores a navigation-aborted font load; console-filter.test › still fails every other font error |
