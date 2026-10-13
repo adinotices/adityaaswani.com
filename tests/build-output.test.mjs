@@ -55,7 +55,7 @@ function refs(html) {
 test('every og:image is absolute and resolves to a file in dist', opts, () => {
   for (const { rel, html } of contentPages) {
     const imgs = [...html.matchAll(/<meta property="og:image" content="([^"]+)"/g)].map((m) => m[1]);
-    // Pages built on Layout always carry one; the standalone /preview* design pages have none.
+    // Pages built on Layout always carry one; the /zoom redirect is filtered out above.
     if (html.includes('rel="canonical"')) assert.ok(imgs.length >= 1, `${rel}: no og:image`);
     for (const img of imgs) {
       assert.ok(img.startsWith(SITE + '/'), `${rel}: og:image ${img} is not on ${SITE}`);
@@ -162,8 +162,12 @@ test('no file in dist is over 1 MB (AA-24: source photos stay out of public/)', 
   assert.deepEqual(big, []);
 });
 
-test('every HTML page in dist, the /preview* pages included, carries a meta CSP (AA-S13)', opts, () => {
-  assert.ok(pages.some((p) => p.rel.startsWith('preview-')), 'no /preview-* page in dist');
+test('the /preview* design pages are not on the public site (AA-22; they live on adityaaswani-preview)', opts, () => {
+  const previews = readdirSync(DIST).filter((name) => /^previews?(-|$)/.test(name));
+  assert.deepEqual(previews, []);
+});
+
+test('every HTML page in dist carries a meta CSP (AA-S13)', opts, () => {
   const missing = pages.filter(({ html }) => !/<meta http-equiv="Content-Security-Policy" content="default-src 'self';[^"]*">/.test(html)).map((p) => p.rel);
   assert.deepEqual(missing, []);
 });

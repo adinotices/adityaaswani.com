@@ -6,4 +6,5 @@ public/writing/feed/
 
 # Build output and Astro cache are never committed (GitHub Pages builds fresh)
 dist/
+dist-previews/
 .astro/

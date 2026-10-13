@@ -17,11 +17,9 @@ function htmlFiles(dir = DIST) {
   });
 }
 const pages = built ? htmlFiles().map((f) => ({ rel: relative(DIST, f), html: readFileSync(f, 'utf8') })) : [];
-// Pages rendered through Layout.astro; the /zoom redirect and the /preview* design pages are standalone
-// and get their policy inserted by the integration (AA-S13).
-const layoutPages = pages.filter((p) => p.rel !== 'zoom/index.html' && !/^previews?(-[a-z]+)?\//.test(p.rel));
-
-const previewPages = pages.filter((p) => /^previews?(-[a-z]+)?\//.test(p.rel));
+// Pages rendered through Layout.astro; the /zoom redirect is standalone and gets its policy inserted
+// by the integration (AA-S13).
+const layoutPages = pages.filter((p) => p.rel !== 'zoom/index.html');
 
 const cspOf = (html) => html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)"/)?.[1] ?? null;
 const directives = (csp) => Object.fromEntries(csp.split(';').map((d) => d.trim().split(/\s+/)).map(([k, ...v]) => [k, v]));
@@ -34,8 +32,7 @@ test('every Layout page has a meta CSP as the first element after the charset', 
   }
 });
 
-test('every HTML file in dist, the /preview* pages and the /zoom redirect included, has exactly one meta CSP (AA-S13)', opts, () => {
-  assert.ok(previewPages.length >= 7, `only ${previewPages.length} preview pages`);
+test('every HTML file in dist, the /zoom redirect included, has exactly one meta CSP (AA-S13)', opts, () => {
   for (const { rel, html } of pages) {
     assert.equal((html.match(/http-equiv="Content-Security-Policy"/g) || []).length, 1, rel);
     // Where there is a charset, the policy comes straight after it, ahead of every link it governs.
@@ -52,8 +49,7 @@ test('Google Fonts and the Substack embed are allowed only on the pages that loa
     assert.deepEqual(dirs['font-src'], ["'self'", ...(fonts ? [GOOGLE_FONTS.font] : [])], rel);
     assert.deepEqual(dirs['frame-src'], embed ? SUBSTACK_FRAME_SRC : undefined, rel);
   }
-  for (const { rel, html } of layoutPages) assert.ok(!html.includes(GOOGLE_FONTS.style), `${rel}: a Layout page loads Google Fonts`);
-  assert.ok(previewPages.every(({ html }) => cspOf(html).includes(GOOGLE_FONTS.font)), 'a preview page lost its font host');
+  for (const { rel, html } of pages) assert.ok(!html.includes(GOOGLE_FONTS.style), `${rel}: a prod page loads Google Fonts`);
 });
 
 test('every inline script hash appears in that page\'s CSP', opts, () => {
