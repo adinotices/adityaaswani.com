@@ -1,6 +1,7 @@
 // Shared fixtures for the e2e suite.
 // - Every test fails on a console error, an uncaught page error, a CSP violation or a
 //   failed same-origin request, unless the test calls guard.allow(/pattern/) first.
+//   Firefox's navigation-aborted font loads are ignored everywhere (console-filter.mjs).
 // - Analytics never record a test visit: Plausible events and the Cloudflare beacon are
 //   answered locally. In live runs (E2E_LIVE=1) the analytics scripts themselves still load
 //   from their CDNs, so the CSP is exercised against the real files.
@@ -8,6 +9,7 @@
 //   billing.stripe.com navigations get a stub page that names the URL.
 import { test as base, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { isIgnoredConsoleError } from './console-filter.mjs';
 
 export const supportLinks = JSON.parse(readFileSync(new URL('../src/data/support-links.json', import.meta.url), 'utf8'));
 export const CHECKOUT_URL = 'https://sutam.org/api/donate/checkout';
@@ -40,7 +42,7 @@ export const test = base.extend({
         });
       });
       page.on('console', (m) => {
-        if (m.type() === 'error' && !ok(m.text())) problems.push(`console: ${m.text()}`);
+        if (m.type() === 'error' && !ok(m.text()) && !isIgnoredConsoleError(m.text())) problems.push(`console: ${m.text()}`);
       });
       page.on('pageerror', (e) => {
         if (!ok(e.message)) problems.push(`pageerror: ${e.message}`);
