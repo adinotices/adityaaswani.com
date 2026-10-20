@@ -19,7 +19,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
   - `unit` means a Node test with a fake DOM (`tests/*.test.mjs`);
   - `build` means a check on `dist/` (`tests/build-output.test.mjs`, `tests/csp.test.mjs`).
 - **Test** is what covers it now:
-  - `x.spec › ID` is the test whose name starts with ID in `e2e/x.spec.mjs` (Playwright: Chromium, Firefox and WebKit, desktop 1280 px, Pixel 7 and iPhone 14);
+  - `x.spec › ID` is the test whose name starts with ID in `e2e/x.spec.mjs` (Playwright: Chromium, Firefox and WebKit, desktop 1280 px, Pixel 7 and iPhone 14). Web-tablet rows (iPad portrait 820x1180 and landscape 1180x820, Android tablet 800x1280) set the viewport inside the test, so they run in all five projects;
   - `x.test › name` is in `tests/x.test.mjs`;
   - `NONE` is a gap still open, with the reason.
 - `@live` rows call real third-party services. They run in the nightly box run, not in CI.
@@ -32,7 +32,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09).
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27).
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -42,8 +42,8 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 9 | 7 | 3 | Broken images, sideways scroll, fonts. |
-| 7 | Accessibility | 6 | 5 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 7 | 6 | 0 | First impression. |
+| 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
+| 8 | Home page content | 11 | 10 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 7 | 7 | 1 | Mail links and booking. |
@@ -55,7 +55,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **202** | **145** | **31** | |
+| | **Total** | **207** | **150** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -246,6 +246,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | A11Y-04 | Copy status announced | role=status gets "Copied" | unit | content.spec › COPY-01; copy-email.test › success path writes the data-copy text, announces Copied, then resets after the timer |
 | A11Y-05 | New-tab links announced | "(opens in a new tab)" on footer socials and forms | NONE | nav.spec › FOOT-02 |
 | A11Y-06 | Real screen readers (VoiceOver, TalkBack) | Reads in order | NONE | NONE (manual; monthly fresh-user pass) |
+| A11Y-07 | axe on `/` at web-tablet iPad portrait 820x1180, light and dark (AA-27) | 0 violations | NONE | content.spec › A11Y-07 |
 
 ## 8. Home page content (`/`)
 
@@ -258,6 +259,10 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-05 | Person JSON-LD | Parses, `@type` Person, `sameAs` equals the footer socials | build | content.spec › HOME-05; build-output.test › the home page has valid Person JSON-LD |
 | HOME-06 | Portrait | srcset 320/640/960 decodes | NONE | pages.spec › PAGE-01 |
 | HOME-07 | Contact line copy button | See COPY | NONE | content.spec › COPY-02 |
+| HOME-08 | Hero order, web-phone (390x844) | Headline, then intro, then both CTAs, then the portrait; "See what I'm building" is on the first screen | NONE | content.spec › HOME-08 |
+| HOME-09 | Hero order, web-tablet portrait: iPad 820x1180, iPad mini 768x1024, Android tablet 800x1280 (AA-27) | Same order as phone up to the two-column hero at 860 px. The intro and both CTAs end above y=600 and above the portrait. Was: a ~500 px portrait between headline and intro, CTAs at y≈952. | NONE | content.spec › HOME-09 (×3 profiles) |
+| HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
+| HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
 
 ## 9. Writing feed (build time)
 

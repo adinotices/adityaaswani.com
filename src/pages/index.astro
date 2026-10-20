@@ -188,8 +188,9 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .sprig { position: absolute; right: -22px; bottom: -14px; color: var(--sage); }
   .intro { max-width: 34rem; color: var(--ink-2); font-size: 1.1rem; margin-inline: auto; }
   .cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.4rem; justify-content: center; }
-  /* Phones: intro and CTAs first, so "See what I'm building" is on the first screen; the portrait follows. */
-  @media (max-width: 599.98px) {
+  /* Single column (phones and portrait tablets up to the two-column hero at 860px): intro and CTAs
+     first, so "See what I'm building" is on the first screen; the portrait follows (AA-27). */
+  @media (max-width: 859.98px) {
     .hero-body { order: 1; }
     .portrait { order: 2; }
   }

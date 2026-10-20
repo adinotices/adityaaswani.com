@@ -1,5 +1,6 @@
-// Page content and outbound links (FEATURES.md HOME-*, LINKS-*, CONTACT-*, MED-*, COPY-*).
-import { test, expect } from './fixtures.mjs';
+// Page content and outbound links (FEATURES.md HOME-*, LINKS-*, CONTACT-*, MED-*, COPY-*; A11Y-07).
+import AxeBuilder from '@axe-core/playwright';
+import { test, expect, expectNoHorizontalOverflow } from './fixtures.mjs';
 
 const external = (page) => page.locator('main a[href^="http"]:not([href^="https://adityaaswani.com"])');
 
@@ -97,6 +98,65 @@ test.describe('HOME', () => {
     const footer = await page.locator('.site-footer .socials a').evaluateAll((as) => as.map((a) => a.href.replace(/\/$/, '')));
     expect(ld.sameAs.map((s) => s.replace(/\/$/, ''))).toEqual(footer);
   });
+});
+
+// AA-27: below the two-column hero (860 px) the intro and CTAs come before the portrait,
+// so the first screen of a phone or a portrait tablet ends on "See what I'm building".
+test.describe('HOME hero by device (web-phone, web-tablet)', () => {
+  const box = (page, sel) => page.locator(sel).first().evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top + scrollY, bottom: r.bottom + scrollY, left: r.left, right: r.right };
+  });
+  const open = async (page, width, height) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+  };
+
+  test('HOME-08 phone 390x844: intro and both CTAs come before the portrait', async ({ page }) => {
+    await open(page, 390, 844);
+    const [intro, cta, photo] = await Promise.all([box(page, '.hero .intro'), box(page, '.hero .cta'), box(page, '.hero .portrait')]);
+    expect(intro.bottom).toBeLessThanOrEqual(cta.top);
+    expect(cta.bottom).toBeLessThanOrEqual(photo.top);
+    expect(cta.top).toBeLessThan(844);
+  });
+
+  for (const [name, w, h] of [['iPad portrait', 820, 1180], ['iPad mini portrait', 768, 1024], ['Android tablet portrait', 800, 1280]]) {
+    test(`HOME-09 ${name} ${w}x${h}: the intro and both CTAs sit above y=600, the portrait follows`, async ({ page }) => {
+      await open(page, w, h);
+      const [intro, photo] = await Promise.all([box(page, '.hero .intro'), box(page, '.hero .portrait')]);
+      expect(intro.bottom).toBeLessThan(600);
+      for (const label of ['See what I’m building', 'Read my writing']) {
+        const b = await box(page, `.hero .cta a:has-text("${label}")`);
+        expect(b.bottom, label).toBeLessThan(600);
+        expect(b.bottom, label).toBeLessThanOrEqual(photo.top);
+      }
+    });
+  }
+
+  test('HOME-10 iPad landscape 1180x820: two columns, the portrait beside the text, both CTAs on the first screen', async ({ page }) => {
+    await open(page, 1180, 820);
+    const [body, cta, photo] = await Promise.all([box(page, '.hero .hero-body'), box(page, '.hero .cta'), box(page, '.hero .portrait')]);
+    expect(body.right).toBeLessThanOrEqual(photo.left);
+    expect(cta.bottom).toBeLessThan(820);
+  });
+
+  test('HOME-11 no sideways scroll across the single-column tablet band (600, 768, 820, 859 px)', async ({ page }) => {
+    for (const w of [600, 768, 820, 859]) {
+      await open(page, w, 1024);
+      await expectNoHorizontalOverflow(page);
+    }
+  });
+
+  for (const scheme of ['light', 'dark']) {
+    test(`A11Y-07 / at iPad portrait 820x1180 has no axe violations in ${scheme} mode`, async ({ page, browserName }) => {
+      test.skip(browserName !== 'chromium', 'axe results do not depend on the engine');
+      await page.emulateMedia({ colorScheme: scheme });
+      await open(page, 820, 1180);
+      const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
+      expect(r.violations.map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target})`)).toEqual([]);
+    });
+  }
 });
 
 test.describe('LINKS: /links', () => {
