@@ -32,7 +32,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07).
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09).
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -52,10 +52,10 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 3 | 3 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 8 | 7 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **201** | **144** | **31** | |
+| | **Total** | **202** | **145** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -367,6 +367,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | DEPLOY-06 | Deploy proves the artefact changed | A served build marker differs after each deploy | NONE | NONE (no build marker in the HTML yet; BOX-RULES 2026-10-13; follow-up) |
 | DEPLOY-07 | Weekly rebuild | Monday 09:00 UTC rebuild succeeds | NONE | NONE (GitHub schedule; failure shows in Actions) |
 | DEPLOY-08 | Node version | Node 22 in CI, matching Astro 7's requirement | NONE | NONE (deploy.yml config) |
+| DEPLOY-09 | GitHub Actions pinned (AA-S15, 2026-10-20: checkout v7.0.1, setup-node v7.1.0, configure-pages v6.0.0, deploy-pages v5.0.1, cache v6.1.0) | Every `uses:` is a full release commit SHA with a `# vX.Y.Z` comment, one pin per action across deploy.yml and e2e.yml; majors are taken in a review brief, release notes read for changed defaults | NONE | workflows.test › every action in the workflows is pinned to a full commit SHA with a # vX.Y.Z comment; workflows.test › each action is pinned to one SHA and one release across the workflows |
 
 ## 18. Design previews (off-site)
 
