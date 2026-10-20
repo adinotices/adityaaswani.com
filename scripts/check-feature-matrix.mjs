@@ -4,7 +4,8 @@
 //   node scripts/check-feature-matrix.mjs --stats      print rows and gaps per feature
 //
 // A commit in the range with a "Matrix-Skip: <reason>" trailer skips the row check (dependency
-// bumps, pure refactors). The path map lives in docs/testing/feature-paths.json.
+// bumps, pure refactors), and so does a range whose commits are all by Dependabot, which cannot
+// add the trailer (AA-S14). The path map lives in docs/testing/feature-paths.json.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +31,16 @@ export function touchedRowIds(matrixDiff) {
     if (m) ids.add(m[1]);
   }
   return ids;
+}
+
+export const DEPENDABOT = 'dependabot[bot]';
+
+// Why the range needs no row, or undefined. `log` is `git log --format=%B`, `authors` one `%an` per commit.
+// A single human commit (a hand fix on a Dependabot branch included) brings the row check back.
+export function skipReasonFor({ log, authors }) {
+  const trailer = log.match(/^Matrix-Skip:\s*(.+)$/m)?.[1];
+  if (trailer) return trailer;
+  if (authors.length > 0 && authors.every((a) => a === DEPENDABOT)) return 'dependency bump (Dependabot)';
 }
 
 // Pure check. Returns { ok, problems }.
@@ -73,7 +84,17 @@ export function stats(markdown, map) {
   return out;
 }
 
-const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' });
+// What the check needs from git for <base>...HEAD in the checkout at `cwd`.
+export function readRange(base, cwd = root) {
+  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' });
+  const range = `${base}...HEAD`;
+  return {
+    changed: git('diff', '--name-only', range).split('\n').filter(Boolean),
+    matrixDiff: git('diff', '--unified=0', range, '--', MATRIX),
+    log: git('log', '--format=%B', `${base}..HEAD`),
+    authors: git('log', '--format=%an', `${base}..HEAD`).split('\n').filter(Boolean),
+  };
+}
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const map = JSON.parse(readFileSync(new URL(`../${MAP}`, import.meta.url), 'utf8'));
@@ -93,11 +114,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.error('usage: check-feature-matrix.mjs <base-ref> | --stats');
     process.exit(2);
   }
-  const range = `${base}...HEAD`;
-  const changed = git('diff', '--name-only', range).split('\n').filter(Boolean);
-  const matrixDiff = git('diff', '--unified=0', range, '--', MATRIX);
-  const log = git('log', '--format=%B', `${base}..HEAD`);
-  const skipReason = log.match(/^Matrix-Skip:\s*(.+)$/m)?.[1];
+  const { changed, matrixDiff, log, authors } = readRange(base);
+  const skipReason = skipReasonFor({ log, authors });
   const r = checkMatrix({ changed, matrixDiff, skipReason, map });
   if (r.skipped) console.log(`feature matrix check skipped: ${r.skipped}`);
   else if (r.ok) console.log(`feature matrix: ${changed.length} changed files, rows present for every feature touched`);

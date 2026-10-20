@@ -32,7 +32,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07).
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -54,8 +54,8 @@ Counts are from `--stats` on 2026-10-13, after this run.
 | 16 | Analytics | 3 | 3 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 8 | 7 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
-| 19 | Test matrix upkeep | 5 | 5 | 0 | Keeps this file honest. |
-| | **Total** | **199** | **142** | **31** | |
+| 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
+| | **Total** | **201** | **144** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -385,3 +385,5 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MATRIX-03 | New source file not in the path map | Fails until it is mapped | NONE | feature-matrix.test › an unmapped source file fails |
 | MATRIX-04 | Matrix-Skip trailer | Passes, with the reason printed | NONE | feature-matrix.test › Matrix-Skip skips the check |
 | MATRIX-05 | Firefox aborts a font download when a test navigates away (`downloadable font: download failed … status=2152398850`, NS_BINDING_ABORTED) | console-error check ignores navigation-aborted font loads (Firefox NS_BINDING_ABORTED); every other font error and console error still fails the test | NONE | console-filter.test › ignores a navigation-aborted font load; console-filter.test › still fails every other font error |
+| MATRIX-06 | Dependabot PR (every commit in the range authored by `dependabot[bot]`) touches a mapped path, e.g. an Actions bump in e2e.yml (#36 failed on 2026-10-19; AA-S14) | Skipped with "dependency bump (Dependabot)"; Dependabot cannot add the Matrix-Skip trailer | NONE | feature-matrix.test › a range of only Dependabot commits is skipped as a dependency bump; feature-matrix.test › readRange reads authors from real git history |
+| MATRIX-07 | Dependabot PR plus a human commit that changes a feature without a row | Not skipped: the check fails and names the feature; an empty range or a look-alike author name never skips | NONE | feature-matrix.test › a Dependabot range with one human commit touching a feature without a row still fails; feature-matrix.test › an empty range or a look-alike author is not a Dependabot skip |
