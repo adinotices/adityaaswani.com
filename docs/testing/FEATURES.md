@@ -32,7 +32,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27).
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28).
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -43,7 +43,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 9 | 7 | 3 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 12 | 11 | 0 | First impression. |
+| 8 | Home page content | 13 | 12 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 7 | 7 | 1 | Mail links and booking. |
@@ -55,7 +55,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **209** | **152** | **31** | |
+| | **Total** | **210** | **153** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -230,7 +230,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-02 | No sideways scroll | At the device width and at 320 px, on every page | NONE | pages.spec › PAGE-02 |
 | PAGE-03 | Fonts | Nunito Sans is loaded (self-hosted woff2) | NONE | pages.spec › PAGE-03 |
 | PAGE-04 | No console errors, page errors, CSP violations or failed same-origin requests | On every test of every page (guard fixture) | NONE | fixtures.mjs guard (all e2e tests) |
-| PAGE-05 | Images are not oversized | No dist file over 1 MB | build | build-output.test › no file in dist is over 1 MB (AA-24: source photos stay out of public/) |
+| PAGE-05 | Images are not oversized | No dist file over 1 MB. Each home product screenshot stays within its byte budget, the size of its 2026-10-11 capture (AA-28, 2026-10-21), so a retake cannot slow `/`. | build | build-output.test › no file in dist is over 1 MB (AA-24: source photos stay out of public/); product-screenshots.test › PAGE-05 every product screenshot stays under its byte budget |
 | PAGE-06 | Internal links resolve | Every internal href/src/srcset maps to a file, with a trailing slash | build | build-output.test › every internal href/src/srcset maps to a file in dist, with no trailing-slash redirect; build-output.test › no internal link lacks its trailing slash |
 | PAGE-07 | Slow 3G / PSI | LCP under 2.5 s on mobile | NONE | NONE (PSI is the weekly audit in ~/repos/audits, not a test) |
 | PAGE-08 | Reduced motion | No menu animation or transitions | NONE | NONE (CSS media query; low risk) |
@@ -264,6 +264,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
 | HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
+| HOME-13 | Product card screenshots (AA-28, 2026-10-21) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; pages.spec › PAGE-01 (the images decode) |
 
 ## 9. Writing feed (build time)
 
