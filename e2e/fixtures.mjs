@@ -3,8 +3,11 @@
 //   failed same-origin request, unless the test calls guard.allow(/pattern/) first.
 //   Firefox's navigation-aborted font loads are ignored everywhere (console-filter.mjs).
 // - Analytics never record a test visit: Plausible events and the Cloudflare beacon are
-//   answered locally. In live runs (E2E_LIVE=1) the analytics scripts themselves still load
-//   from their CDNs, so the CSP is exercised against the real files.
+//   answered locally. In live runs (E2E_LIVE=1) Plausible still loads from its CDN, so the CSP
+//   is exercised against the real file. The real Cloudflare beacon runs only in tests that
+//   opt in with test.use({ realBeacon: true }) (ANA-01); everywhere else it gets an empty
+//   script, because WebKit reports its preflighted /cdn-cgi/rum POST as a page error
+//   ("... due to access control checks") when a navigation cuts it off (ANA-04).
 // - Stripe pages are never opened: checkout.stripe.com, buy.stripe.com and
 //   billing.stripe.com navigations get a stub page that names the URL.
 import { test as base, expect } from '@playwright/test';
@@ -30,8 +33,9 @@ const STRIPE_STUB = (url) =>
   `<!doctype html><meta charset="utf-8"><title>Stripe stub</title><p id="stub-url">${url.replace(/</g, '&lt;')}</p>`;
 
 export const test = base.extend({
+  realBeacon: [false, { option: true }],
   guard: [
-    async ({ page }, use) => {
+    async ({ page, realBeacon }, use) => {
       const problems = [];
       const allowed = [];
       const ok = (text) => allowed.some((re) => re.test(text));
@@ -57,11 +61,9 @@ export const test = base.extend({
       });
       await page.route(/plausible\.io\/api\/event/, (r) => r.fulfill({ status: 202, body: 'ok' }));
       // Outside live runs the analytics scripts are answered locally too, so a CDN hiccup can't fail CI.
-      if (process.env.E2E_LIVE !== '1') {
-        await page.route(/^https:\/\/(plausible\.io\/js\/|static\.cloudflareinsights\.com\/)/, (r) =>
-          r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }),
-        );
-      }
+      const emptyScript = (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
+      if (process.env.E2E_LIVE !== '1') await page.route(/^https:\/\/plausible\.io\/js\//, emptyScript);
+      if (process.env.E2E_LIVE !== '1' || !realBeacon) await page.route(/^https:\/\/static\.cloudflareinsights\.com\//, emptyScript);
       await page.route(/cloudflareinsights\.com\/cdn-cgi\/rum/, (r) => r.fulfill({ status: 204 }));
       await page.route(/^https:\/\/(checkout|buy|billing)\.stripe\.com\//, (r) =>
         r.fulfill({ status: 200, contentType: 'text/html', body: STRIPE_STUB(r.request().url()) }),
