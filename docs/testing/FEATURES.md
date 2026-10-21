@@ -51,11 +51,11 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
 | 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
-| 16 | Analytics | 3 | 3 | 1 | Owner-facing only. |
+| 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **208** | **151** | **31** | |
+| | **Total** | **209** | **152** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
