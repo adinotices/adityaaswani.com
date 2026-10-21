@@ -43,7 +43,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 9 | 7 | 3 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 11 | 10 | 0 | First impression. |
+| 8 | Home page content | 12 | 11 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 7 | 7 | 1 | Mail links and booking. |
@@ -51,11 +51,11 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
 | 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
-| 16 | Analytics | 3 | 3 | 1 | Owner-facing only. |
+| 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **207** | **150** | **31** | |
+| | **Total** | **209** | **152** | **31** | |
 
 ## 1. Support: give flow (`/support/`)
 
@@ -263,6 +263,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-09 | Hero order, web-tablet portrait: iPad 820x1180, iPad mini 768x1024, Android tablet 800x1280 (AA-27) | Same order as phone up to the two-column hero at 860 px. The intro and both CTAs end above y=600 and above the portrait. Was: a ~500 px portrait between headline and intro, CTAs at y≈952. | NONE | content.spec › HOME-09 (×3 profiles) |
 | HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
+| HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
 
 ## 9. Writing feed (build time)
 
