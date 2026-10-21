@@ -358,6 +358,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 |---|---|---|---|---|
 | ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation. Skipped on preview builds, which have no analytics by design. | NONE | analytics.spec › ANA-01 |
 | ANA-02 | Test runs never count as visits | Plausible ignores webdriver. Events and the beacon are answered locally by the guard fixture. | NONE | fixtures.mjs guard |
+| ANA-04 | The Cloudflare beacon never fails a test that is not about analytics (nightly 2026-10-13 and 2026-10-21: NAV-05 on phone-webkit, `pageerror: …/cdn-cgi/rum due to access control checks`) | Outside ANA-01 the beacon gets an empty script, even with E2E_LIVE=1, so no /cdn-cgi/rum POST is ever cut off by a navigation. ANA-01 runs the real beacon (`realBeacon` option) and sees its rum POST answered locally. Test defect, not a site bug: real visitors' beacons talk to Cloudflare. | NONE | analytics.spec › ANA-01; nav.spec › NAV-05 (1000-run harness, TESTING.md) |
 | ANA-03 | A real visit is counted | The Plausible dashboard shows the page view | NONE | NONE (owner checks the dashboard; AA-23 decides whether both stay) |
 
 ## 17. Build and deploy
