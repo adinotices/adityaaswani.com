@@ -23,7 +23,7 @@ export type ProductStatus = "live" | "beta" | "coming-soon";
 
 export const statusLabel: Record<ProductStatus, string> = {
   live: "Live",
-  beta: "Beta",
+  beta: "Private beta",
   "coming-soon": "Coming soon",
 };
 
@@ -35,6 +35,8 @@ export interface Product {
   // Absent when there is nothing public to link to yet.
   url?: string;
   linkLabel: string;
+  // Month the product last changed in a way a visitor would notice, "YYYY-MM".
+  updated?: string;
   // Screenshot of the live site (taken with Steel on 2026-10-11), 16:10.
   screenshot?: { src640: string; src1280: string; alt: string };
 }
@@ -57,8 +59,9 @@ export const products: Product[] = [
     slug: "sutam",
     name: "Sutam",
     pitch:
-      "Dharma talks from across the Buddhist traditions, transcribed so you can read along, search, and return to what was said.",
+      "Dharma talks from across the Buddhist traditions, transcribed so you can read along, search, and return to what was said. Now with the Middle Discourses read aloud.",
     status: "live",
+    updated: "2026-10",
     url: "https://sutam.org",
     linkLabel: "sutam.org",
     screenshot: {
@@ -70,8 +73,9 @@ export const products: Product[] = [
   {
     slug: "pausepal",
     name: "PausePal",
-    pitch: "Meditate with a buddy every week. Get matched with one partner and a fixed time, and keep each other showing up.",
+    pitch: "Meditate with a buddy every week. Get matched with one partner at times that suit you both, and keep each other showing up.",
     status: "live",
+    updated: "2026-10",
     url: "https://pausepal.co",
     linkLabel: "pausepal.co",
     screenshot: {
@@ -84,16 +88,18 @@ export const products: Product[] = [
     slug: "samvara",
     name: "Samvara",
     pitch:
-      "A commitment tracker for keeping the promises we make to ourselves: put something at stake, keep the streak, choose the next rung.",
+      "The anti-habit tracker: name the habit you want to stop, put a small stake on staying clean, and pay only if you slip.",
     status: "coming-soon",
+    updated: "2026-10",
     linkLabel: "Get notified",
   },
   {
     slug: "amberhall",
     name: "Amberhall",
     pitch:
-      "A tabletop adventure run by an AI dungeon master. Friends join from their phones; the story, art and narration play on the big screen.",
-    status: "coming-soon",
+      "A tabletop adventure run by an AI game master. Friends join from their phones; the story, art and narration play on the big screen.",
+    status: "beta",
+    updated: "2026-10",
     url: "https://amberhall.quest",
     linkLabel: "amberhall.quest",
     screenshot: {

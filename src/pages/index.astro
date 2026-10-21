@@ -95,6 +95,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
               </div>
               <h3>{p.name}</h3>
               <p class="pitch">{p.pitch}</p>
+              {p.updated && <p class="updated">Updated {fmt(`${p.updated}-01`)}</p>}
               {p.url
                 ? <a class="more" href={p.url}>{p.linkLabel}<span aria-hidden="true"> ↗</span></a>
                 : <a class="more" href="#newsletter">{p.linkLabel}<span aria-hidden="true"> →</span></a>}
@@ -219,6 +220,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .motif--amberhall, .motif--savethedogs { background: var(--clay-tint); color: var(--clay-ink); }
   .card h3 { font-size: 1.55rem; }
   .pitch { color: var(--ink-2); flex: 1; font-size: 1rem; }
+  .updated { color: var(--ink-2); font-size: var(--fs-caption); }
   .more { font-weight: 800; text-decoration: none; margin-top: 0.4rem; display: inline-flex; align-items: center; min-height: 44px; }
   .more::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
   .more:hover { text-decoration: underline; }

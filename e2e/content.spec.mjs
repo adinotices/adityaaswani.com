@@ -74,6 +74,16 @@ test.describe('HOME', () => {
     expect([...parsed].sort((a, b) => b - a)).toEqual(parsed);
   });
 
+  test('HOME-12 each product card has a known status and, where set, the month it last changed', async ({ page }) => {
+    await page.goto('/');
+    const cards = page.locator('#building .card');
+    const badges = (await cards.locator('.badge').allTextContents()).map((t) => t.trim());
+    for (const b of badges) expect(['Live', 'Private beta', 'Coming soon']).toContain(b);
+    const updated = await cards.locator('.updated').allTextContents();
+    expect(updated.length).toBeGreaterThanOrEqual(1);
+    for (const u of updated) expect(u.trim()).toMatch(/^Updated (January|February|March|April|May|June|July|August|September|October|November|December) 20\d\d$/);
+  });
+
   test('HOME-03 the hero buttons scroll to their sections', async ({ page }) => {
     await page.goto('/');
     await page.locator('.hero a', { hasText: 'See what I’m building' }).click();
