@@ -70,6 +70,21 @@ test('HOME-13 every product screenshot has a non-empty alt that names the produc
   }
 });
 
+test('HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29)', async () => {
+  // savethedogs.io carries a red ticker ("Oct 23–25: Global Weekend of Action") in its top ~40 px. The site is
+  // frozen, so a retake shows it again; the capture is cropped below it. Ticker rows average about rgb(204, 4, 3).
+  const { default: sharp } = await import('sharp');
+  for (const [w, rows] of [[1280, 40], [640, 20]]) {
+    const { data, info } = await sharp(`${PUBLIC}products/savethedogs-${w}.webp`).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    for (let y = 0; y < rows; y++) {
+      let r = 0, g = 0;
+      for (let x = 0; x < info.width; x++) { const i = (y * info.width + x) * 3; r += data[i]; g += data[i + 1]; }
+      r /= info.width; g /= info.width;
+      assert.ok(!(r > 180 && g < 60), `savethedogs-${w}.webp row ${y} is ticker red (mean R ${r.toFixed(0)}, G ${g.toFixed(0)})`);
+    }
+  }
+});
+
 test('PAGE-05 every product screenshot stays under its byte budget', () => {
   for (const { slug } of shots) {
     for (const w of [640, 1280]) {
