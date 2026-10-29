@@ -21,6 +21,25 @@
     "previews": { "name": "Design previews (off-site)", "prefixes": ["PREV"] },
     "matrix": { "name": "Test matrix upkeep", "prefixes": ["MATRIX"] }
   },
+  "platforms": {
+    "_doc": "check-feature-matrix.mjs --summary/--gaps/--sync. Playwright projects map to platforms by name prefix. Rows of anyFeatures, anyRows (server-side, build-time or owner-checked rows with no browser in them) and rows citing no e2e test are platform-independent. `only` limits a row to the platforms it can apply to: the menu exists below 820 px (phones and the 800 px Android tablet; the iPad profiles are 820 and 1180 px wide).",
+    "web": ["web-desktop", "web-phone", "web-tablet"],
+    "native": ["android", "ios"],
+    "nativeReason": "web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass",
+    "projectPrefixes": { "desktop-": "web-desktop", "phone-": "web-phone", "tablet-": "web-tablet" },
+    "anyFeatures": ["essays", "deploy", "previews", "matrix"],
+    "anyRows": ["SUP-08", "STRIPE-01", "LIVE-04", "THX-12", "NEWS-09", "NEWS-13", "NEWS-14", "SEC-09", "SEO-07", "SEO-09", "ANA-03"],
+    "only": {
+      "MENU-01": ["web-phone", "web-tablet"], "MENU-02": ["web-phone", "web-tablet"], "MENU-03": ["web-phone", "web-tablet"],
+      "MENU-04": ["web-phone", "web-tablet"], "MENU-05": ["web-phone", "web-tablet"], "MENU-06": ["web-phone", "web-tablet"],
+      "MENU-07": ["web-phone", "web-tablet"], "MENU-09": ["web-phone", "web-tablet"], "MENU-16": ["web-phone", "web-tablet"],
+      "MENU-08": ["web-phone"], "HOME-08": ["web-phone"],
+      "HOME-09": ["web-tablet"], "HOME-10": ["web-tablet"], "HOME-11": ["web-tablet"], "A11Y-07": ["web-tablet"],
+      "PAGE-10": ["web-tablet"], "THEME-12": ["web-phone", "web-tablet"], "A11Y-06": ["web-phone", "web-tablet"],
+      "NEWS-08": ["web-phone", "web-tablet"], "LINKS-06": ["web-phone", "web-tablet"],
+      "SUP-16": ["web-phone", "web-tablet"], "GIVE-07": ["web-phone", "web-tablet"], "NEWS-05": ["web-phone", "web-tablet"]
+    }
+  },
   "paths": {
     "src/pages/support/index.astro": ["give"],
     "src/scripts/donate.js": ["give", "thanks"],

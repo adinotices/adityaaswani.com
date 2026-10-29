@@ -9,30 +9,32 @@ const NAV = [
   { label: 'Contact', path: '/contact/' },
 ];
 const HEADER_PAGES = PAGES.filter((p) => p.path !== '/links/');
-const isPhone = (testInfo) => testInfo.project.name.startsWith('phone');
+// The menu exists below 820 px (Header.astro): phones and the 800 px Android tablet. The iPad
+// profiles (820 and 1180 px) get the desktop nav.
+const hasMenu = (page) => page.viewportSize().width < 820;
 
-async function openMenuIfPhone(page, testInfo) {
-  if (isPhone(testInfo)) await page.locator('.menu-toggle').click();
+async function openMenuIfPhone(page) {
+  if (hasMenu(page)) await page.locator('.menu-toggle').click();
 }
 
 test.describe('NAV: header links', () => {
   for (const item of NAV) {
-    test(`NAV-01 "${item.label}" from /contact/ lands on ${item.path}${item.hash ?? ''}`, async ({ page }, testInfo) => {
+    test(`NAV-01 "${item.label}" from /contact/ lands on ${item.path}${item.hash ?? ''}`, async ({ page }) => {
       await page.goto('/contact/');
-      await openMenuIfPhone(page, testInfo);
+      await openMenuIfPhone(page);
       await page.locator('#site-nav a', { hasText: item.label }).click();
       await expect(page).toHaveURL(new RegExp(`${item.path.replace(/\//g, '\\/')}${item.hash ?? ''}$`));
       if (item.hash) await expect(page.locator(item.hash)).toBeInViewport();
     });
   }
 
-  test('NAV-02 on the home page the section links are in-page anchors and scroll', async ({ page }, testInfo) => {
+  test('NAV-02 on the home page the section links are in-page anchors and scroll', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#site-nav a', { hasText: 'Writing' })).toHaveAttribute('href', '#writing');
-    await openMenuIfPhone(page, testInfo);
+    await openMenuIfPhone(page);
     await page.locator('#site-nav a', { hasText: 'Writing' }).click();
     await expect(page.locator('#writing')).toBeInViewport();
-    if (isPhone(testInfo)) await expect(page.locator('.menu-toggle')).toHaveAttribute('aria-expanded', 'false');
+    if (hasMenu(page)) await expect(page.locator('.menu-toggle')).toHaveAttribute('aria-expanded', 'false');
   });
 
   // /links/ has its own top bar instead of the site header (LINKS-03).
@@ -72,7 +74,7 @@ test.describe('NAV: header links', () => {
 });
 
 test.describe('MENU: phone menu', () => {
-  test.beforeEach(({}, testInfo) => { test.skip(!isPhone(testInfo), 'phone projects only'); });
+  test.beforeEach(({ page }) => { test.skip(!hasMenu(page), 'menu layout only (viewport under 820 px)'); });
 
   test('MENU-01 the menu starts closed, opens on tap with focus on the first link', async ({ page }) => {
     await page.goto('/contact/');
@@ -136,7 +138,8 @@ test.describe('MENU: phone menu', () => {
   });
 
   for (const [width, visible] of [[320, 'none'], [390, 'short'], [440, 'full']]) {
-    test(`MENU-08 at ${width} px the Support pill shows the ${visible} label and fits`, async ({ page }) => {
+    test(`MENU-08 at ${width} px the Support pill shows the ${visible} label and fits`, async ({ page }, testInfo) => {
+      test.skip(!testInfo.project.name.startsWith('phone'), 'phone widths; phone projects only');
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
       const pill = page.locator('.actions a.support');
@@ -154,8 +157,8 @@ test.describe('MENU: phone menu', () => {
 
 test.describe('MENU: without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
-  test('MENU-09 with no JS the nav links are shown inline and the menu button is hidden', async ({ page }, testInfo) => {
-    test.skip(!isPhone(testInfo), 'phone projects only');
+  test('MENU-09 with no JS the nav links are shown inline and the menu button is hidden', async ({ page }) => {
+    test.skip(!hasMenu(page), 'menu layout only (viewport under 820 px)');
     await page.goto('/contact/');
     await expect(page.locator('.menu-toggle')).toBeHidden();
     await expect(page.locator('#site-nav a', { hasText: 'Contact' })).toBeVisible();

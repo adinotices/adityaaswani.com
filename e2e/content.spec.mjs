@@ -228,6 +228,20 @@ test.describe('CONTACT and MED', () => {
     await expect(page.locator('#share-feedback')).toBeInViewport();
   });
 
+  test('CONTACT-04 "Through someone else" lists each intermediary with an outbound link and an email', async ({ page }) => {
+    await page.goto('/contact/');
+    const cards = page.locator('.intermediary-card');
+    expect(await cards.count()).toBe(2);
+    for (const card of await cards.all()) {
+      await expect(card.locator('h4')).not.toBeEmpty();
+      const out = card.locator('.intermediary-links a[href^="https://"]');
+      await expect(out).toHaveCount(1);
+      await expect(out).toHaveAttribute('target', '_blank');
+      await expect(out).toHaveAttribute('rel', /noopener/);
+      await expect(card.locator('.intermediary-links a[href^="mailto:"]')).toHaveCount(1);
+    }
+  });
+
   test('MED-01 /learn-meditation schedules on cal.com and asks questions via /contact/', async ({ page }) => {
     await page.goto('/learn-meditation/');
     await expect(page.locator('main a[href="https://cal.com/adityaa"]')).toHaveCount(2);

@@ -50,6 +50,36 @@ for (const p of PAGES) {
   });
 }
 
+// Longest transition or animation on the page, in ms (the menu panel included when it is open).
+const longestMotion = (page) => page.evaluate(() => {
+  const ms = (v) => Math.max(...v.split(',').map((t) => parseFloat(t) * (t.trim().endsWith('ms') ? 1 : 1000)));
+  let max = 0;
+  for (const el of document.querySelectorAll('*')) {
+    const cs = getComputedStyle(el);
+    if (cs.transitionProperty !== 'none') max = Math.max(max, ms(cs.transitionDuration));
+    if (cs.animationName !== 'none') max = Math.max(max, ms(cs.animationDuration));
+  }
+  return max;
+});
+
+test('PAGE-08 with reduced motion no transition or animation runs, the open menu included', async ({ page }) => {
+  const menu = page.viewportSize().width < 820;
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  expect(await longestMotion(page), 'the cards animate without the preference').toBeGreaterThan(100);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const p of PAGES) {
+    await page.goto(p.path);
+    expect(await longestMotion(page), p.path).toBeLessThanOrEqual(0.01);
+  }
+  if (menu) {
+    await page.goto('/contact/');
+    await page.locator('.menu-toggle').click();
+    await expect(page.locator('#site-nav')).toBeVisible();
+    expect(await longestMotion(page), 'open menu').toBeLessThanOrEqual(0.01);
+  }
+});
+
 test('A11Y-02 the /support Other field and its error are announced', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'one engine');
   await page.goto('/support/');
