@@ -19,7 +19,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
   - `unit` means a Node test with a fake DOM (`tests/*.test.mjs`);
   - `build` means a check on `dist/` (`tests/build-output.test.mjs`, `tests/csp.test.mjs`).
 - **Test** is what covers it now:
-  - `x.spec › ID` is the test whose name starts with ID in `e2e/x.spec.mjs` (Playwright: Chromium, Firefox and WebKit, desktop 1280 px, Pixel 7 and iPhone 14). Web-tablet rows (iPad portrait 820x1180 and landscape 1180x820, Android tablet 800x1280) set the viewport inside the test, so they run in all five projects;
+  - `x.spec › ID` is the test whose name starts with ID in `e2e/x.spec.mjs` (Playwright: Chromium, Firefox and WebKit, desktop 1280 px, Pixel 7 and iPhone 14). Web-tablet rows (iPad portrait 820x1180 and landscape 1180x820, Android tablet 800x1280) set the viewport inside the test, so they run in all five projects. Since 2026-10-29 the whole suite also runs as the **web-tablet lane**: `E2E_PROFILE=tablet` swaps the five projects for `tablet-ipad-portrait` (WebKit, 820x1180), `tablet-ipad-landscape` (WebKit, 1180x820) and `tablet-android` (Chromium, 800x1280), all touch. `E2E_PROFILE=ipad-portrait` (or `ipad-landscape`, `android-tablet`) runs one. Tests that need the phone menu key off the viewport (< 820 px), so the Android tablet gets the menu and the iPads the desktop nav;
   - `x.test › name` is in `tests/x.test.mjs`;
   - `NONE` is a gap still open, with the reason.
 - `@live` rows call real third-party services. They run in the nightly box run, not in CI.
@@ -29,10 +29,12 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 - Add `E2E_LIVE=1` to include the `@live` rows.
 - Add `E2E_BASE_URL=https://adityaaswani.com` to test prod. The nightly does both: `~/repos/testing/nightly-adityaaswani.com.sh`.
 - `node scripts/check-feature-matrix.mjs --stats` prints the counts below.
+- `E2E_PROFILE=tablet npm run test:e2e` runs the web-tablet lane; screenshots go to `E2E_SHOTS_DIR` (default `test-results/tablet-shots/`).
+- `node scripts/check-feature-matrix.mjs --summary` and `--gaps <web-desktop|web-phone|web-tablet>` read the JSON reports in `e2e-report/` (one per lane: `e2e.json`, `e2e-tablet.json`) and print coverage per platform; `--sync` rewrites the table below.
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28).
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -41,21 +43,38 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 3 | Support: thank-you page | 12 | 11 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
-| 6 | Page rendering and layout | 9 | 7 | 3 | Broken images, sideways scroll, fonts. |
+| 6 | Page rendering and layout | 10 | 8 | 2 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
 | 8 | Home page content | 13 | 12 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
-| 11 | /contact and /learn-meditation | 7 | 7 | 1 | Mail links and booking. |
+| 11 | /contact and /learn-meditation | 8 | 8 | 1 | Mail links and booking. |
 | 12 | Copy-email buttons | 6 | 1 | 0 | Small. |
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
 | 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 9 | 8 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 10 | 9 | 4 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
-| 19 | Test matrix upkeep | 7 | 7 | 0 | Keeps this file honest. |
-| | **Total** | **210** | **153** | **31** | |
+| 19 | Test matrix upkeep | 8 | 8 | 0 | Keeps this file honest. |
+| | **Total** | **214** | **157** | **31** | |
+
+## Coverage by platform
+
+Platforms are web-desktop, web-phone and web-tablet (BOX-RULES 2026-10-20); the site has no native app, so android and ios have no rows. A web row counts as covered on a platform when a test it cites passed in that platform's projects in the last run. Rows that cite only unit or build tests, and the build/CI features (Writing feed, Build and deploy, Design previews, Matrix upkeep), are counted once as platform-independent. `only` in feature-paths.json limits a row to where it can apply (the phone menu, the tablet hero rows).
+
+<!-- coverage-by-platform:start (node scripts/check-feature-matrix.mjs --sync) -->
+Last synced 2026-10-29 from the e2e reports of: web-tablet, web-desktop, web-phone.
+
+| Platform | Covered | Applicable | Coverage |
+|---|---|---|---|
+| web-desktop | 123 | 129 | 95% |
+| web-phone | 135 | 147 | 92% |
+| web-tablet | 138 | 150 | 92% |
+| platform-independent (build, CI, unit) | 42 | 61 | 69% |
+| android | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
+| ios | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
+<!-- coverage-by-platform:end -->
 
 ## 1. Support: give flow (`/support/`)
 
@@ -233,8 +252,9 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-05 | Images are not oversized | No dist file over 1 MB. Each home product screenshot stays within its byte budget, the size of its 2026-10-11 capture (AA-28, 2026-10-21), so a retake cannot slow `/`. | build | build-output.test › no file in dist is over 1 MB (AA-24: source photos stay out of public/); product-screenshots.test › PAGE-05 every product screenshot stays under its byte budget |
 | PAGE-06 | Internal links resolve | Every internal href/src/srcset maps to a file, with a trailing slash | build | build-output.test › every internal href/src/srcset maps to a file in dist, with no trailing-slash redirect; build-output.test › no internal link lacks its trailing slash |
 | PAGE-07 | Slow 3G / PSI | LCP under 2.5 s on mobile | NONE | NONE (PSI is the weekly audit in ~/repos/audits, not a test) |
-| PAGE-08 | Reduced motion | No menu animation or transitions | NONE | NONE (CSS media query; low risk) |
+| PAGE-08 | Reduced motion | No transition or animation over 0.01 ms on any page, the open phone menu included; without the preference the cards do animate (2026-10-29) | NONE | pages.spec › PAGE-08 |
 | PAGE-09 | 200% zoom / large text | Readable, no overlap | NONE | NONE (font-size audit in scripts/font-size-audit, run by hand) |
+| PAGE-10 | Every page on web-tablet: iPad portrait 820x1180, iPad landscape 1180x820, Android tablet 800x1280 (touch) (2026-10-29) | Loads with its h1, no sideways scroll, no control under 24 px (WCAG 2.5.8; inline text links excepted). Controls under 44 px are listed "for review" in the log, not failed. A full-page screenshot per page per profile goes to the nightly's tablet-<stamp>/ folder. | NONE | tablet.spec › PAGE-10 (6 pages × 3 profiles) |
 
 ## 7. Accessibility
 
@@ -300,6 +320,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | CONTACT-01 | Mail links and the anonymous form | hello@ twice and support@ once as mailto. Tally opens in a new tab. | NONE | content.spec › CONTACT-01 |
 | CONTACT-02 | Deep link #share-feedback | Scrolls into view | NONE | content.spec › CONTACT-02 |
 | CONTACT-03 | Copy buttons for both addresses | See COPY | NONE | content.spec › COPY-01 |
+| CONTACT-04 | "Through someone else" (2026-10-29: the feature had no row) | Two intermediary cards, each with a name, an outbound link (website or YouTube, new tab, noopener) and a mailto | NONE | content.spec › CONTACT-04 |
 | MED-01 | Booking and questions | Two cal.com links. "Ask Questions" goes to /contact/. | NONE | content.spec › MED-01 |
 | EXT-01 | Every external link in the page bodies | target=_blank always has noopener | NONE | content.spec › EXT-01 |
 | EXT-02 | @live Link rot | Every non-social outbound link answers below 400 | NONE | content.spec › EXT-02 |
@@ -374,7 +395,8 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | DEPLOY-05 | Nightly against prod with live rows | Runs 03:00 UTC, emails dev@ on failure | NONE | ~/repos/testing/nightly-adityaaswani.com.sh |
 | DEPLOY-06 | Deploy proves the artefact changed | A served build marker differs after each deploy | NONE | NONE (no build marker in the HTML yet; BOX-RULES 2026-10-13; follow-up) |
 | DEPLOY-07 | Weekly rebuild | Monday 09:00 UTC rebuild succeeds | NONE | NONE (GitHub schedule; failure shows in Actions) |
-| DEPLOY-08 | Node version | Node 22 in CI, matching Astro 7's requirement | NONE | NONE (deploy.yml config) |
+| DEPLOY-08 | Node version | Node 22 in CI, new enough for every package's `engines`. **Found 2026-10-29:** on the self-hosted runner `node-version: "22"` resolved to the cached 22.23.3, so dependabot #37 (astro 7.4.2, `engines` >= 22.23.4) failed Build and E2E. Fix: `check-latest: true` on every setup-node (workflow branch `ci/node-check-latest-2026-10-29`, pushed by the head session). | NONE | NONE (until the workflow branch lands; then workflows.test › every setup-node takes the newest release of its line) |
+| DEPLOY-10 | PR and main E2E finish on the self-hosted gcp runner (AA-S16) | The E2E job ends green or red, never cancelled. **Open since 2026-10-20 (#40):** every E2E run, 8 on main and on PRs, was cancelled at the 15-min cap; the box runs the same suite in about 4 min. The fix splits the job per engine with a 30-min cap (same workflow branch). | NONE | NONE (CI-only; acceptance is the first green E2E run on main after the branch lands) |
 | DEPLOY-09 | GitHub Actions pinned (AA-S15, 2026-10-20: checkout v7.0.1, setup-node v7.1.0, configure-pages v6.0.0, deploy-pages v5.0.1, cache v6.1.0) | Every `uses:` is a full release commit SHA with a `# vX.Y.Z` comment, one pin per action across deploy.yml and e2e.yml; majors are taken in a review brief, release notes read for changed defaults | NONE | workflows.test › every action in the workflows is pinned to a full commit SHA with a # vX.Y.Z comment; workflows.test › each action is pinned to one SHA and one release across the workflows |
 
 ## 18. Design previews (off-site)
@@ -396,3 +418,4 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MATRIX-05 | Firefox aborts a font download when a test navigates away (`downloadable font: download failed … status=2152398850`, NS_BINDING_ABORTED) | console-error check ignores navigation-aborted font loads (Firefox NS_BINDING_ABORTED); every other font error and console error still fails the test | NONE | console-filter.test › ignores a navigation-aborted font load; console-filter.test › still fails every other font error |
 | MATRIX-06 | Dependabot PR (every commit in the range authored by `dependabot[bot]`) touches a mapped path, e.g. an Actions bump in e2e.yml (#36 failed on 2026-10-19; AA-S14) | Skipped with "dependency bump (Dependabot)"; Dependabot cannot add the Matrix-Skip trailer | NONE | feature-matrix.test › a range of only Dependabot commits is skipped as a dependency bump; feature-matrix.test › readRange reads authors from real git history |
 | MATRIX-07 | Dependabot PR plus a human commit that changes a feature without a row | Not skipped: the check fails and names the feature; an empty range or a look-alike author name never skips | NONE | feature-matrix.test › a Dependabot range with one human commit touching a feature without a row still fails; feature-matrix.test › an empty range or a look-alike author is not a Dependabot skip |
+| MATRIX-08 | Coverage per platform (2026-10-29): `--summary`, `--gaps <platform>`, `--sync` read the e2e JSON reports of the default and tablet lanes | A web row counts on a platform only where a test it cites passed in that platform's projects (a failed or skipped test is a gap); `only` limits rows to the platforms they apply to; build/CI rows count once as platform-independent; android and ios show as not applicable | NONE | feature-matrix.test › a web row is covered on a platform only where its cited test passed; feature-matrix.test › the coverage table lists every platform and marks android and ios not applicable; feature-matrix.test › FEATURES.md carries the coverage-by-platform markers |

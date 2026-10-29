@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkMatrix, featuresFor, touchedRowIds, stats, skipReasonFor, readRange, DEPENDABOT, MATRIX, MAP } from '../scripts/check-feature-matrix.mjs';
+import { checkMatrix, featuresFor, touchedRowIds, stats, skipReasonFor, readRange, platformCoverage, coverageTable, COVERAGE_START, COVERAGE_END, DEPENDABOT, MATRIX, MAP } from '../scripts/check-feature-matrix.mjs';
 
 const root = new URL('../', import.meta.url);
 const map = JSON.parse(readFileSync(new URL(MAP, root), 'utf8'));
@@ -161,4 +161,54 @@ test('every test a row cites exists', () => {
     }
   }
   assert.deepEqual(missing, []);
+});
+
+// Platform coverage (--summary / --gaps / --sync): a Playwright JSON report in miniature.
+const report = (...tests) => ({
+  suites: [{ title: 'x.spec.mjs', specs: [], suites: [{ title: 'NAV', specs: tests.map(([title, projectName, status]) => ({ title, tests: [{ projectName, status }] })) }] }],
+});
+const mini = [
+  '| ID | Case | Expected | Was | Test |',
+  '|---|---|---|---|---|',
+  '| NAV-05 | Wordmark | Home | NONE | nav.spec › NAV-05 |',
+  '| MENU-01 | Open | Opens | unit | nav.spec › MENU-01; mobile-nav.test › starts closed |',
+  '| PAGE-04 | No console errors | Guard | NONE | fixtures.mjs guard (all e2e tests) |',
+  '| PAGE-07 | PSI | LCP | NONE | NONE (weekly audit) |',
+  '| COPY-05 | Rapid clicks | One reset | unit | copy-email.test › two rapid clicks |',
+  '| DEPLOY-07 | Weekly rebuild | Succeeds | NONE | NONE (GitHub schedule) |',
+].join('\n');
+
+test('a web row is covered on a platform only where its cited test passed in that platform’s projects', () => {
+  const cov = platformCoverage(mini, map, [report(
+    ['NAV-05 the wordmark goes home', 'desktop-chromium', 'expected'],
+    ['NAV-05 the wordmark goes home', 'phone-webkit', 'unexpected'],
+    ['MENU-01 the menu opens', 'tablet-android', 'expected'],
+    ['MENU-01 the menu opens', 'desktop-chromium', 'skipped'],
+  )]);
+  const gapIds = (p) => cov.web[p].gaps.map((g) => g.id);
+  assert.deepEqual(gapIds('web-desktop'), ['PAGE-07']); // MENU-01 does not apply on desktop
+  assert.deepEqual(gapIds('web-phone'), ['NAV-05', 'MENU-01', 'PAGE-04', 'PAGE-07']); // a failed test is no coverage
+  assert.deepEqual(gapIds('web-tablet'), ['NAV-05', 'PAGE-07']);
+  assert.deepEqual([cov.web['web-desktop'].applicable, cov.web['web-desktop'].covered], [3, 2]);
+  assert.deepEqual([cov.web['web-tablet'].applicable, cov.web['web-tablet'].covered], [4, 2]);
+  // Unit-only rows and build/CI features are counted once, as platform-independent.
+  assert.deepEqual(cov.any, { rows: 2, covered: 1 });
+  assert.deepEqual(cov.ran.sort(), ['web-desktop', 'web-tablet']);
+});
+
+test('the coverage table lists every platform and marks android and ios not applicable', () => {
+  const cov = platformCoverage(mini, map, [report(['NAV-05 x', 'desktop-firefox', 'expected'])]);
+  const t = coverageTable(cov, map, '2026-10-29');
+  assert.ok(t.startsWith(COVERAGE_START) && t.endsWith(COVERAGE_END));
+  assert.match(t, /\| web-desktop \| 2 \| 3 \| 67% \|/);
+  assert.match(t, /\| web-tablet \| 0 \| 4 \| 0% \|/);
+  assert.match(t, /\| android \| – \| 0 \| not applicable/);
+  assert.match(t, /\| ios \| – \| 0 \| not applicable/);
+});
+
+test('FEATURES.md carries the coverage-by-platform markers and every `only` and `anyRows` id is a row', () => {
+  assert.ok(matrix.includes(COVERAGE_START) && matrix.includes(COVERAGE_END));
+  const ids = new Set([...matrix.matchAll(/^\|\s*([A-Z0-9]+-[0-9]+[a-z]?)\s*\|/gm)].map((m) => m[1]));
+  assert.deepEqual([...Object.keys(map.platforms.only), ...map.platforms.anyRows].filter((id) => !ids.has(id)), []);
+  for (const ps of Object.values(map.platforms.only)) for (const p of ps) assert.ok(map.platforms.web.includes(p), p);
 });
