@@ -37,7 +37,8 @@ export interface Product {
   linkLabel: string;
   // Month the product last changed in a way a visitor would notice, "YYYY-MM".
   updated?: string;
-  // Screenshot of the live site (taken with Steel on 2026-10-11), 16:10.
+  // Screenshot of the live site (Steel, 1280x800, light theme; retaken 2026-10-21), 16:10.
+  // When a pitch changes, retake its screenshot and update the alt to the hero text shown.
   screenshot?: { src640: string; src1280: string; alt: string };
 }
 
@@ -52,7 +53,7 @@ export const products: Product[] = [
     screenshot: {
       src640: "/products/savethedogs-640.webp",
       src1280: "/products/savethedogs-1280.webp",
-      alt: "SaveTheDogs home page: “Now let's get 16,000 beagles out of Marshall.” with a petition form",
+      alt: "SaveTheDogs home page: “Now let’s get 16,000 beagles out of Marshall.” beside a petition form",
     },
   },
   {
@@ -67,7 +68,7 @@ export const products: Product[] = [
     screenshot: {
       src640: "/products/sutam-640.webp",
       src1280: "/products/sutam-1280.webp",
-      alt: "Sutam home page: “Thus have I heard.” with a search box for what the teachers said",
+      alt: "Sutam home page: “Thus have I heard.” beside a search box and topics people look for",
     },
   },
   {
@@ -81,7 +82,7 @@ export const products: Product[] = [
     screenshot: {
       src640: "/products/pausepal-640.webp",
       src1280: "/products/pausepal-1280.webp",
-      alt: "PausePal home page: “Meditate with a buddy. Every week.”",
+      alt: "PausePal home page: “Meditate with a buddy. On your schedule.”",
     },
   },
   {
@@ -105,7 +106,7 @@ export const products: Product[] = [
     screenshot: {
       src640: "/products/amberhall-640.webp",
       src1280: "/products/amberhall-1280.webp",
-      alt: "Amberhall title screen with “I'm hosting” and “I'm playing” buttons over a dusk landscape",
+      alt: "Amberhall home page: the Amberhall logo, “Every table deserves a storyteller.” and Host a game and Join a game buttons",
     },
   },
 ];
