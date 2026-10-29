@@ -38,6 +38,9 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
+          # The self-hosted runner keeps old 22.x builds in its tool cache; "22" alone resolved to 22.23.3,
+          # below astro 7.4.2's engines (>=22.23.4, dependabot #37). Always take the newest 22.x.
+          check-latest: true
           cache: npm
 
       - name: Setup Pages

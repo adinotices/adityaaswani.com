@@ -23,3 +23,14 @@ test('each action is pinned to one SHA and one release across the workflows', ()
   const split = [...pins].filter(([, s]) => s.size > 1).map(([a, s]) => `${a}: ${[...s].join(' | ')}`);
   assert.deepEqual(split, []);
 });
+
+// DEPLOY-08: the self-hosted runner keeps old Node builds in its tool cache, so a bare "22" resolved
+// to 22.23.3 and astro 7.4.2 (engines >= 22.23.4) failed on dependabot #37 (2026-10-26).
+test('every setup-node takes the newest release of its line (check-latest: true)', () => {
+  const steps = readdirSync(dir).filter((f) => /\.ya?ml$/.test(f)).flatMap((f) =>
+    readFileSync(new URL(f, dir), 'utf8').split(/\n(?=\s*- (?:name|uses|run):)/)
+      .filter((s) => /uses:\s*actions\/setup-node@/.test(s))
+      .map((s) => ({ f, s })));
+  assert.ok(steps.length >= 3, `only ${steps.length} setup-node steps found`);
+  assert.deepEqual(steps.filter(({ s }) => !/^\s*check-latest:\s*true\s*$/m.test(s)).map(({ f }) => f), []);
+});

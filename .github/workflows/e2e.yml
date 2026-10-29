@@ -1,7 +1,7 @@
 name: E2E and feature matrix
 
 # docs/testing/FEATURES.md. The e2e job runs every non-live row in real Chromium, Firefox and
-# WebKit against the built site (about 5 minutes). The @live rows run in the nightly box run
+# WebKit against the built site (one job per engine). The @live rows run in the nightly box run
 # (~/repos/testing/nightly-adityaaswani.com.sh), not here.
 on:
   pull_request:
@@ -32,18 +32,31 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
+          # The self-hosted runner keeps old 22.x builds in its tool cache; "22" alone resolved to 22.23.3,
+          # below astro 7.4.2's engines (>=22.23.4, dependabot #37). Always take the newest 22.x.
+          check-latest: true
       - name: Every changed feature has a new or updated FEATURES.md row
         run: node scripts/check-feature-matrix.mjs "origin/${{ github.base_ref }}"
 
   e2e:
-    name: E2E (Chromium, Firefox, WebKit)
+    # AA-S16: on the self-hosted gcp runner the whole suite (845 tests) never finished inside 15 min,
+    # so every run since #40 was cancelled. One job per engine keeps each well under its cap; the
+    # single runner takes them one after another.
+    name: E2E (${{ matrix.engine }})
     runs-on: [self-hosted, linux, gcp]
-    timeout-minutes: 15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
+          # The self-hosted runner keeps old 22.x builds in its tool cache; "22" alone resolved to 22.23.3,
+          # below astro 7.4.2's engines (>=22.23.4, dependabot #37). Always take the newest 22.x.
+          check-latest: true
           cache: npm
       - run: npm ci
       - name: Cache Playwright browsers
@@ -51,19 +64,19 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json') }}
       - name: Install browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps ${{ matrix.engine }}
         if: steps.pw-cache.outputs.cache-hit != 'true'
       - name: Install browser system libraries
-        run: npx playwright install-deps chromium firefox webkit
+        run: npx playwright install-deps ${{ matrix.engine }}
         if: steps.pw-cache.outputs.cache-hit == 'true'
       - run: npm run build
-      - run: npm run test:e2e
+      - run: npm run test:e2e -- --project="*-${{ matrix.engine }}"
       - name: Upload traces of failed tests
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: e2e-traces
+          name: e2e-traces-${{ matrix.engine }}
           path: test-results/
           retention-days: 7

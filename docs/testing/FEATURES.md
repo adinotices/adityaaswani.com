@@ -54,10 +54,10 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 10 | 9 | 4 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 10 | 9 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 8 | 8 | 0 | Keeps this file honest. |
-| | **Total** | **213** | **156** | **31** | |
+| | **Total** | **213** | **156** | **30** | |
 
 ## Coverage by platform
 
@@ -394,7 +394,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | DEPLOY-05 | Nightly against prod with live rows | Runs 03:00 UTC, emails dev@ on failure | NONE | ~/repos/testing/nightly-adityaaswani.com.sh |
 | DEPLOY-06 | Deploy proves the artefact changed | A served build marker differs after each deploy | NONE | NONE (no build marker in the HTML yet; BOX-RULES 2026-10-13; follow-up) |
 | DEPLOY-07 | Weekly rebuild | Monday 09:00 UTC rebuild succeeds | NONE | NONE (GitHub schedule; failure shows in Actions) |
-| DEPLOY-08 | Node version | Node 22 in CI, new enough for every package's `engines`. **Found 2026-10-29:** on the self-hosted runner `node-version: "22"` resolved to the cached 22.23.3, so dependabot #37 (astro 7.4.2, `engines` >= 22.23.4) failed Build and E2E. Fix: `check-latest: true` on every setup-node (workflow branch `ci/node-check-latest-2026-10-29`, pushed by the head session). | NONE | NONE (until the workflow branch lands; then workflows.test › every setup-node takes the newest release of its line) |
+| DEPLOY-08 | Node version | Node 22 in CI, new enough for every package's `engines`. **Found 2026-10-29:** on the self-hosted runner `node-version: "22"` resolved to the cached 22.23.3, so dependabot #37 (astro 7.4.2, `engines` >= 22.23.4) failed Build and E2E. Fix: `check-latest: true` on every setup-node (workflow branch `ci/node-check-latest-2026-10-29`, pushed by the head session). | NONE | workflows.test › every setup-node takes the newest release of its line |
 | DEPLOY-10 | PR and main E2E finish on the self-hosted gcp runner (AA-S16) | The E2E job ends green or red, never cancelled. **Open since 2026-10-20 (#40):** every E2E run, 8 on main and on PRs, was cancelled at the 15-min cap; the box runs the same suite in about 4 min. The fix splits the job per engine with a 30-min cap (same workflow branch). | NONE | NONE (CI-only; acceptance is the first green E2E run on main after the branch lands) |
 | DEPLOY-09 | GitHub Actions pinned (AA-S15, 2026-10-20: checkout v7.0.1, setup-node v7.1.0, configure-pages v6.0.0, deploy-pages v5.0.1, cache v6.1.0) | Every `uses:` is a full release commit SHA with a `# vX.Y.Z` comment, one pin per action across deploy.yml and e2e.yml; majors are taken in a review brief, release notes read for changed defaults | NONE | workflows.test › every action in the workflows is pinned to a full commit SHA with a # vX.Y.Z comment; workflows.test › each action is pinned to one SHA and one release across the workflows |
 
