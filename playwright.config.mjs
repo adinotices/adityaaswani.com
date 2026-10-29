@@ -38,7 +38,11 @@ export default defineConfig({
   // Flaky = broken: no retries, fix the cause.
   retries: 0,
   fullyParallel: true,
-  workers: process.env.CI ? 3 : 6,
+  // CI runs on the self-hosted gcp runner: an e2-standard-4 (2 cores) that also runs other repos'
+  // jobs at the same time. With 3 workers there, WebKit and cold Firefox starved for CPU and tests hit
+  // the 30 s timeout (AA-S16, PR #47). 2 workers cut the slowest desktop-webkit test from 34 s to
+  // 21 s on a 2-CPU box with two busy neighbours.
+  workers: process.env.CI ? 2 : 6,
   timeout: 30_000,
   expect: { timeout: 5_000 },
   forbidOnly: !!process.env.CI,
