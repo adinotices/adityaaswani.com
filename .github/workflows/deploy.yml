@@ -19,9 +19,10 @@ permissions:
 
 # Allow only one deployment at a time
 concurrency:
-  # PR builds get their own group so they never queue behind (or hold up) a deploy.
-  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
-  cancel-in-progress: false
+  # PR builds get their own group so they never queue behind (or hold up) a deploy. A new push to a PR cancels
+  # its stale build (frees the single self-hosted runner); a deploy from main is never cancelled partway through.
+  group: ${{ github.event_name == 'pull_request' && format('deploy-pr-{0}', github.ref) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   BUILD_PATH: "."
@@ -30,6 +31,8 @@ jobs:
   build:
     name: Build
     runs-on: [self-hosted, linux, gcp]
+    # Measured 2026-10-29: p95 1.1 min, max 1.4 (39 runs); floor of 10 so a hung step can't hold the runner.
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -89,6 +92,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: [self-hosted, linux, gcp]
     name: Deploy
+    timeout-minutes: 20
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

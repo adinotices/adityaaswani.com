@@ -44,6 +44,9 @@ jobs:
     # well under its cap. The runner VM (ci-runner-1, e2-standard-4) also runs other repos' runners, so
     # these jobs share 4 vCPUs with whatever else is running; playwright.config.mjs uses 2 workers on CI.
     name: E2E (${{ matrix.name }})
+    # Dependabot PRs get the build and unit tests (deploy.yml) but not the four-engine browser run, which
+    # held the single self-hosted runner behind every bump.
+    if: github.actor != 'dependabot[bot]'
     runs-on: [self-hosted, linux, gcp]
     timeout-minutes: 30
     strategy:
