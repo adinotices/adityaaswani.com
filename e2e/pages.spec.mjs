@@ -12,10 +12,17 @@ for (const p of PAGES) {
       await expect(page.locator('main#main')).toHaveCount(1);
       await expect(page).toHaveTitle(/Aditya Aswani|Thank you/);
       // Bring each lazy image into view and wait for it to decode; a 404 or corrupt file rejects.
+      // Not scrollIntoViewIfNeeded: its "stable" check counts animation frames, and a starved
+      // WebKit paints one every few seconds, which ran `/` (12 images) out of the 30 s (AA-S19).
+      // Instant, or the site's smooth scroll is still moving; then wait for the lazy load itself,
+      // because WebKit rejects decode() on an image whose load has not started.
       const broken = [];
       for (const img of await page.locator('img').all()) {
         if (!(await img.isVisible())) continue;
-        await img.scrollIntoViewIfNeeded();
+        await img.evaluate((i) => {
+          i.scrollIntoView({ block: 'center', behavior: 'instant' });
+          return i.complete || new Promise((done) => { i.addEventListener('load', done); i.addEventListener('error', done); });
+        });
         const ok = await img.evaluate((i) => (i.complete && i.naturalWidth > 0 ? true : i.decode().then(() => i.naturalWidth > 0, () => false)));
         if (!ok) broken.push(await img.evaluate((i) => i.currentSrc || i.src));
       }
