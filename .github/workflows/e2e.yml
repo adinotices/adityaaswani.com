@@ -16,8 +16,10 @@ permissions:
   contents: read
 
 concurrency:
+  # A new push to a PR cancels its stale run. Pushes to main queue instead: with cancel-in-progress
+  # always on, a quick second merge cancelled the first merge's E2E (AA-S18, FEATURES.md DEPLOY-11).
   group: e2e-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   matrix:

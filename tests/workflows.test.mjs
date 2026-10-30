@@ -34,3 +34,15 @@ test('every setup-node takes the newest release of its line (check-latest: true)
   assert.ok(steps.length >= 3, `only ${steps.length} setup-node steps found`);
   assert.deepEqual(steps.filter(({ s }) => !/^\s*check-latest:\s*true\s*$/m.test(s)).map(({ f }) => f), []);
 });
+
+// DEPLOY-11 (AA-S18): #49's `cancel-in-progress: true` in e2e.yml also applied to pushes to main, so
+// 5dccd63's merge cancelled phone-webkit on 128f961 (run 40897311377). Only stale PR runs may be cancelled.
+test('pushes to main are never cancelled in progress (cancel-in-progress only for pull_request)', () => {
+  const lines = readdirSync(dir).filter((f) => /\.ya?ml$/.test(f)).flatMap((f) =>
+    readFileSync(new URL(f, dir), 'utf8').split('\n')
+      .map((line, i) => ({ where: `${f}:${i + 1}`, m: line.match(/^\s*cancel-in-progress:\s*(.+?)\s*$/) }))
+      .filter((l) => l.m));
+  assert.ok(lines.length >= 2, `only ${lines.length} cancel-in-progress: lines found`);
+  const ok = new Set(['false', "${{ github.event_name == 'pull_request' }}"]);
+  assert.deepEqual(lines.filter((l) => !ok.has(l.m[1])).map((l) => `${l.where}: ${l.m[1]}`), []);
+});
