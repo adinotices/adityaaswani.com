@@ -3,13 +3,14 @@ name: E2E and feature matrix
 # docs/testing/FEATURES.md. The e2e job runs every non-live row in real Chromium, Firefox and
 # WebKit against the built site (one job per engine). The @live rows run in the nightly box run
 # (~/repos/testing/nightly-adityaaswani.com.sh), not here.
+#
+# No paths-ignore here: the E2E (...) contexts are required checks (AA-S6), and a workflow that never
+# starts leaves them "Expected" for good (AA-S20, FEATURES.md DEPLOY-12). The changes job skips them instead.
 on:
   pull_request:
     branches: [ main ]
-    paths-ignore: [ '**.md', 'docs/**' ]
   push:
     branches: [ main ]
-    paths-ignore: [ '**.md', 'docs/**' ]
   workflow_dispatch:
 
 permissions:
@@ -22,6 +23,34 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    name: Changed paths
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      # code=false only if every changed file is **.md or docs/**. An empty diff or a manual run stays true,
+      # and --no-renames lists both sides, so moving code to a .md still counts as a code change.
+      - name: Does this change touch anything but docs?
+        id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          code=true
+          case "$EVENT" in
+            pull_request) changed=$(git diff --no-renames --name-only "origin/$BASE...HEAD") ;;
+            push) changed=$(git diff --no-renames --name-only HEAD~1) ;;
+            *) changed= ;;
+          esac
+          if [ -n "$changed" ] && ! grep -qvE '\.md$|^docs/' <<< "$changed"; then code=false; fi
+          echo "$changed"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+
   matrix:
     name: Feature matrix rows
     if: github.event_name == 'pull_request'
@@ -40,26 +69,25 @@ jobs:
       - name: Every changed feature has a new or updated FEATURES.md row
         run: node scripts/check-feature-matrix.mjs "origin/${{ github.base_ref }}"
 
-  e2e:
-    # AA-S16: on the self-hosted gcp runner the whole suite (845 tests) never finished inside 15 min,
-    # so every run since #40 was cancelled. One job per engine, and WebKit split by device, keeps each
-    # well under its cap. The runner VM (ci-runner-1, e2-standard-4) also runs other repos' runners, so
-    # these jobs share 4 vCPUs with whatever else is running; playwright.config.mjs uses 2 workers on CI.
-    name: E2E (${{ matrix.name }})
-    # Dependabot PRs get the build and unit tests (deploy.yml) but not the four-engine browser run, which
-    # held the single self-hosted runner behind every bump.
-    if: github.actor != 'dependabot[bot]'
+  # AA-S16: on the self-hosted gcp runner the whole suite (845 tests) never finished inside 15 min,
+  # so every run since #40 was cancelled. One job per engine, and WebKit split by device, keeps each
+  # well under its cap. The runner VM (ci-runner-1, e2-standard-4) also runs other repos' runners, so
+  # these jobs share 4 vCPUs with whatever else is running; playwright.config.mjs uses 2 workers on CI.
+  #
+  # Four jobs, not a matrix: `if` runs before a matrix expands, so a skipped matrix job reports one check
+  # literally named "E2E (${{ matrix.name }})" and the required E2E (...) contexts never report (AA-S20).
+  #
+  # The `if`: docs-only changes skip E2E. Dependabot PRs get the build and unit tests (deploy.yml) but not
+  # the browser run, which held the single self-hosted runner behind every bump. !cancelled() and
+  # != 'false' run E2E if the changes job itself fails: a skipped job passes a required check.
+  e2e-chromium:
+    name: E2E (chromium)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
     runs-on: [self-hosted, linux, gcp]
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { name: chromium, engine: chromium, projects: '*-chromium' }
-          - { name: firefox, engine: firefox, projects: desktop-firefox }
-          - { name: desktop-webkit, engine: webkit, projects: desktop-webkit }
-          - { name: phone-webkit, engine: webkit, projects: phone-webkit }
-    steps:
+    env: { PW_ENGINE: chromium, PW_PROJECTS: '*-chromium' }
+    steps: &e2e-steps
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -74,26 +102,53 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ env.PW_ENGINE }}-${{ hashFiles('package-lock.json') }}
       - name: Install browsers
-        run: npx playwright install --with-deps ${{ matrix.engine }}
+        run: npx playwright install --with-deps "$PW_ENGINE"
         if: steps.pw-cache.outputs.cache-hit != 'true'
       - name: Install browser system libraries
-        run: npx playwright install-deps ${{ matrix.engine }}
+        run: npx playwright install-deps "$PW_ENGINE"
         if: steps.pw-cache.outputs.cache-hit == 'true'
       - run: npm run build
       # The first launch of a browser on the runner is slow (three cold Firefox launches at once took
       # 10-17 s each and their tests timed out); pay it here, outside any test's 30 s budget. The load
       # line shows how busy the shared VM was when the tests started.
-      - name: Warm up ${{ matrix.engine }}
+      - name: Warm up ${{ env.PW_ENGINE }}
         run: |
           nproc; uptime
-          node -e "require('@playwright/test').${{ matrix.engine }}.launch().then(async (b) => { await (await b.newPage()).goto('about:blank'); await b.close(); })"
-      - run: npm run test:e2e -- --project="${{ matrix.projects }}"
+          node -e "require('@playwright/test').$PW_ENGINE.launch().then(async (b) => { await (await b.newPage()).goto('about:blank'); await b.close(); })"
+      - run: npm run test:e2e -- --project="$PW_PROJECTS"
       - name: Upload traces of failed tests
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: e2e-traces-${{ matrix.name }}
+          name: traces-${{ github.job }}
           path: test-results/
           retention-days: 7
+
+  e2e-firefox:
+    name: E2E (firefox)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 30
+    env: { PW_ENGINE: firefox, PW_PROJECTS: desktop-firefox }
+    steps: *e2e-steps
+
+  e2e-desktop-webkit:
+    name: E2E (desktop-webkit)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 30
+    env: { PW_ENGINE: webkit, PW_PROJECTS: desktop-webkit }
+    steps: *e2e-steps
+
+  e2e-phone-webkit:
+    name: E2E (phone-webkit)
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 30
+    env: { PW_ENGINE: webkit, PW_PROJECTS: phone-webkit }
+    steps: *e2e-steps
