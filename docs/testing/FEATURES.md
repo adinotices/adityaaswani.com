@@ -323,7 +323,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | CONTACT-04 | "Through someone else" (2026-10-29: the feature had no row) | Two intermediary cards, each with a name, an outbound link (website or YouTube, new tab, noopener) and a mailto | NONE | content.spec › CONTACT-04 |
 | MED-01 | Booking and questions | Two cal.com links. "Ask Questions" goes to /contact/. | NONE | content.spec › MED-01 |
 | EXT-01 | Every external link in the page bodies | target=_blank always has noopener | NONE | content.spec › EXT-01 |
-| EXT-02 | @live Link rot | Every non-social outbound link answers below 400 | NONE | content.spec › EXT-02 |
+| EXT-02 | @live Link rot (desktop-chromium only; one sweep per run) | Every non-social outbound link answers below 400. Retries a 5xx or network error once after 2 s (a transient upstream 500 is not rot; Apple Podcasts, nightly 2026-10-31); a 4xx fails at once. The failure lists every bad link. | NONE | content.spec › EXT-02; link-check.test › 500 then 301 passes / 404 fails at once |
 | EXT-03 | Social network links | Still the right profiles | NONE | NONE (they refuse scripted requests; monthly fresh-user pass) |
 
 ## 12. Copy-email buttons (home, /contact)

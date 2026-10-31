@@ -37,7 +37,8 @@
       "HOME-09": ["web-tablet"], "HOME-10": ["web-tablet"], "HOME-11": ["web-tablet"], "A11Y-07": ["web-tablet"],
       "PAGE-10": ["web-tablet"], "THEME-12": ["web-phone", "web-tablet"], "A11Y-06": ["web-phone", "web-tablet"],
       "NEWS-08": ["web-phone", "web-tablet"], "LINKS-06": ["web-phone", "web-tablet"],
-      "SUP-16": ["web-phone", "web-tablet"], "GIVE-07": ["web-phone", "web-tablet"], "NEWS-05": ["web-phone", "web-tablet"]
+      "SUP-16": ["web-phone", "web-tablet"], "GIVE-07": ["web-phone", "web-tablet"], "NEWS-05": ["web-phone", "web-tablet"],
+      "EXT-02": ["web-desktop"]
     }
   },
   "paths": {

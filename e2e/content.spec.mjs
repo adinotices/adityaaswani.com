@@ -1,6 +1,7 @@
 // Page content and outbound links (FEATURES.md HOME-*, LINKS-*, CONTACT-*, MED-*, COPY-*; A11Y-07).
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect, expectNoHorizontalOverflow } from './fixtures.mjs';
+import { findBadLinks } from './link-check.mjs';
 
 const external = (page) => page.locator('main a[href^="http"]:not([href^="https://adityaaswani.com"])');
 
@@ -260,8 +261,11 @@ test.describe('CONTACT and MED', () => {
   });
 });
 
-test('EXT-02 @live every outbound link on the site still answers (link rot)', async ({ page, request, browserName }) => {
-  test.skip(browserName !== 'chromium', 'one HTTP sweep');
+test('EXT-02 @live every outbound link on the site still answers (link rot)', async ({ page, request }, testInfo) => {
+  // One lane only: the sweep is plain HTTP, not browser behaviour. Gated on browserName it ran in every
+  // Chromium project (desktop, phone, tablet-android; against the build and against prod), so each
+  // outbound host got five probes a night.
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'one HTTP sweep, desktop-chromium only');
   test.setTimeout(180_000);
   // Social networks refuse scripted requests (403/429/999); they are checked by hand in the
   // monthly fresh-user pass (AGENTS.md), not here.
@@ -273,11 +277,8 @@ test('EXT-02 @live every outbound link on the site still answers (link rot)', as
       if (!h.startsWith('https://adityaaswani.com') && !SKIP.test(h)) urls.add(h);
     }
   }
-  const bad = [];
-  for (const u of urls) {
-    const r = await request.get(u, { timeout: 20_000, headers: { 'User-Agent': 'Mozilla/5.0 (adityaaswani.com link check)' } }).catch((e) => ({ status: () => e.message }));
-    const s = r.status();
-    if (!(typeof s === 'number' && s < 400)) bad.push(`${s} ${u}`);
-  }
-  expect(bad).toEqual([]);
+  // GET, 20 s timeout, redirects followed (Playwright default). A 5xx or network error is retried once
+  // after 2 s; a 4xx fails at once (e2e/link-check.mjs). The failure lists every bad link.
+  const get = async (u) => (await request.get(u, { timeout: 20_000, headers: { 'User-Agent': 'Mozilla/5.0 (adityaaswani.com link check)' } })).status();
+  expect(await findBadLinks(urls, get)).toEqual([]);
 });
