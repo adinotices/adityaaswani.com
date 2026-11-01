@@ -1,6 +1,7 @@
 // Every page, every browser (FEATURES.md PAGE-*, A11Y-*, SEO-*, ERR404-*).
 import AxeBuilder from '@axe-core/playwright';
-import { test, expect, PAGES, expectNoHorizontalOverflow } from './fixtures.mjs';
+import { gzipSync } from 'node:zlib';
+import { test, expect, PAGES, PROD, expectNoHorizontalOverflow } from './fixtures.mjs';
 
 for (const p of PAGES) {
   test.describe(p.path, () => {
@@ -87,6 +88,65 @@ test('PAGE-08 with reduced motion no transition or animation runs, the open menu
   }
 });
 
+// WCAG 1.4.4: text at 200% keeps working. The site sizes text in rem, so a 32 px root is what a
+// visitor's "very large" browser font gives. Nothing may scroll sideways or get clipped.
+for (const p of PAGES) {
+  test(`PAGE-09 ${p.path} with text at 200%: no sideways scroll, nothing cut off`, async ({ page, browserName }) => {
+    test.skip(browserName === 'firefox', 'layout at a larger root size is covered in Chromium and WebKit');
+    await page.goto(p.path);
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize))).toBe(32);
+    await expectNoHorizontalOverflow(page);
+    const clipped = await page.evaluate(() => [...document.querySelectorAll('h1, h2, h3, p, a.btn, button, label')]
+      .filter((el) => el.offsetParent && !el.closest('.sr-only, .skip-link') && el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0 && getComputedStyle(el).overflowX !== 'visible')
+      .map((el) => `${el.tagName} ${el.textContent.trim().slice(0, 30)}`));
+    expect(clipped).toEqual([]);
+  });
+}
+
+// A budget that does not depend on the box's load, unlike a timed LCP: the bytes a phone must fetch
+// before the first screen can paint, gzipped as GitHub Pages serves them. At PSI's Slow 4G (1.6 Mbps,
+// 150 ms RTT, 4 round trips) 2.5 s of LCP leaves room for about 380 KB. Today's pages need 139 and
+// 105 KB, so 200 KB fails on a real regression long before the ceiling.
+const BUDGET_KB = { '/': 200, '/support/': 200 };
+for (const [path, budget] of Object.entries(BUDGET_KB)) {
+  test(`PAGE-11 ${path} stays inside the critical-bytes budget and blocks on no third party`, async ({ page, browserName, baseURL }) => {
+    test.skip(browserName !== 'chromium', 'bytes do not depend on the engine');
+    const bodies = new Map();
+    page.on('response', async (r) => {
+      const type = r.request().resourceType();
+      if (!['document', 'stylesheet', 'font', 'image'].includes(type)) return;
+      if (r.status() !== 200 || new URL(r.url()).origin !== new URL(baseURL).origin) return;
+      bodies.set(r.url(), { type, body: r.body().catch(() => Buffer.alloc(0)) });
+    });
+    await page.goto(path, { waitUntil: 'load' });
+    const hero = await page.evaluate(() => {
+      const lcp = document.querySelector('.hero .portrait img');
+      return lcp ? { src: lcp.currentSrc, lazy: lcp.loading === 'lazy', top: lcp.getBoundingClientRect().top } : null;
+    });
+    if (path === '/') {
+      expect(hero?.lazy, 'the portrait is the LCP image and must not be lazy').toBe(false);
+      await page.waitForFunction(() => document.querySelector('.hero .portrait img').complete);
+    }
+    let bytes = 0;
+    const list = [];
+    for (const [url, { type, body }] of bodies) {
+      // Images count only if they are the LCP image: lazy cards below the fold don't block the first paint.
+      if (type === 'image' && url !== hero?.src) continue;
+      const raw = await body;
+      const size = type === 'font' || type === 'image' ? raw.length : gzipSync(raw).length;
+      bytes += size;
+      list.push(`${(size / 1024).toFixed(1)} KB ${new URL(url).pathname}`);
+    }
+    console.log(`[PAGE-11] ${path}: ${(bytes / 1024).toFixed(0)} KB of ${budget} KB (${list.join(', ')})`);
+    expect(bytes / 1024, list.join('\n')).toBeLessThanOrEqual(budget);
+    // Scripts from other origins must not hold up the first paint.
+    const blocking = await page.locator('head script[src^="http"]:not([async]):not([defer])').count();
+    expect(blocking).toBe(0);
+  });
+}
+
 test('A11Y-02 the /support Other field and its error are announced', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'one engine');
   await page.goto('/support/');
@@ -142,6 +202,29 @@ test('SEO-02 robots.txt, security.txt and the web manifest are served', async ({
   expect((await request.get('/site.webmanifest')).status()).toBe(200);
 });
 
+test('SEO-05 every public page is indexable: its own canonical, no robots noindex', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'one engine');
+  for (const p of PAGES.filter((x) => x.path !== '/support/thanks/')) {
+    await page.goto(p.path);
+    await expect(page.locator('link[rel="canonical"]'), p.path).toHaveAttribute('href', `${PROD}${p.path}`);
+    await expect(page.locator('meta[name="robots"]'), p.path).toHaveCount(0);
+  }
+});
+
+test('SEO-10 every icon a page or the web manifest names answers 200 as an image', async ({ page, request, browserName }) => {
+  test.skip(browserName !== 'chromium', 'one HTTP sweep');
+  await page.goto('/');
+  const manifest = await (await request.get('/site.webmanifest')).json();
+  expect(manifest.name).toBe('Aditya Aswani');
+  const links = await page.locator('link[rel~="icon"], link[rel="apple-touch-icon"]').evaluateAll((ls) => ls.map((l) => new URL(l.href).pathname));
+  expect(links.length).toBeGreaterThanOrEqual(4);
+  for (const path of [...links, ...manifest.icons.map((i) => i.src)]) {
+    const r = await request.get(path);
+    expect(r.status(), path).toBe(200);
+    expect(r.headers()['content-type'], path).toMatch(/^image\//);
+  }
+});
+
 test('SEO-03 each page shares a title, description and an image that loads', async ({ page, request }) => {
   for (const p of PAGES) {
     await page.goto(p.path);
@@ -159,4 +242,14 @@ test('ZOOM-01 /zoom sends visitors on to the Zoom room', async ({ page, browserN
   await page.route(/zoom\.us/, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>zoom stub</title>' }));
   await page.goto('/zoom');
   await page.waitForURL(/cmu\.zoom\.us\/j\/4722169152/);
+});
+
+test.describe('ZOOM: without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+  test('ZOOM-02 with JavaScript off the meta refresh still sends visitors to the Zoom room', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'one engine');
+    await page.route(/zoom\.us/, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>zoom stub</title>' }));
+    await page.goto('/zoom');
+    await page.waitForURL(/cmu\.zoom\.us\/j\/4722169152/);
+  });
 });

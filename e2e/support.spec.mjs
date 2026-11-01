@@ -220,6 +220,67 @@ test.describe('GIVE: checkout request', () => {
   });
 });
 
+test.describe('GIVE: two tabs and the keyboard', () => {
+  test('GIVE-08 two tabs giving at once each send their own request and open their own session', async ({ page, context, checkout }) => {
+    // The fixtures answer the first tab; the second gets the same answers, and neither Worker
+    // response goes out until both requests have arrived, so the two are really in flight together.
+    const tab = await context.newPage();
+    const second = [];
+    let release;
+    const both = new Promise((r) => { release = r; });
+    const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+    const session = (id) => ({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify({ ok: true, url: `https://checkout.stripe.com/c/pay/${id}`, id }) });
+    await tab.route(CHECKOUT_URL, async (route) => {
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+      second.push(route.request().postDataJSON());
+      release();
+      return route.fulfill(session('cs_test_tab2'));
+    });
+    await tab.route(/^https:\/\/checkout\.stripe\.com\//, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>Stripe stub</title>' }));
+    await tab.goto('/support/');
+    await tab.locator('label.tab', { hasText: 'One-time' }).click();
+    await tab.locator('.opt', { hasText: /^\s*\$50\s*$/ }).filter({ visible: true }).click();
+
+    await page.unroute(CHECKOUT_URL);
+    const first = [];
+    await page.route(CHECKOUT_URL, async (route) => {
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+      first.push(route.request().postDataJSON());
+      await both;
+      return route.fulfill(session('cs_test_tab1'));
+    });
+    await page.bringToFront();
+    await giveBtn(page).click();
+    await expect(giveBtn(page)).toHaveAttribute('aria-busy', 'true');
+    await tab.bringToFront();
+    await tab.locator('#give-btn').click();
+
+    await tab.waitForURL(/checkout\.stripe\.com\/c\/pay\/cs_test_tab2/);
+    await page.waitForURL(/checkout\.stripe\.com\/c\/pay\/cs_test_tab1/);
+    expect(first).toEqual([{ site: 'aditya', amount_cents: 500, interval: 'month', cover_fees: false }]);
+    expect(second).toEqual([{ site: 'aditya', amount_cents: 5000, interval: 'once', cover_fees: false }]);
+    expect(checkout.calls).toEqual([]); // the fixture's route was replaced, not answered twice
+    await tab.close();
+  });
+
+  test('A11Y-03 keyboard only: arrows change the amount, Tab reaches the fee box and Give, Enter gives', async ({ page, checkout, browserName }) => {
+    test.skip(browserName === 'webkit', 'Safari does not Tab to form controls by default (Option+Tab); covered in Chromium and Firefox');
+    await page.locator('input[name="m-amt"]:checked').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('input[name="m-amt"]:checked')).toHaveValue('1000');
+    await expect(giveBtn(page)).toHaveText('Give $10 a month');
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#fee-cb')).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(page.locator('#fee-cb')).toBeChecked();
+    await page.keyboard.press('Tab');
+    await expect(giveBtn(page)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await page.waitForURL(/checkout\.stripe\.com/);
+    expect(checkout.calls).toEqual([{ site: 'aditya', amount_cents: 1000, interval: 'month', cover_fees: true }]);
+  });
+});
+
 test.describe('ERR: checkout failures', () => {
   test.beforeEach(({ guard }) => {
     guard.allow(/Failed to load resource|status of (4|5)\d\d|NetworkError|net::ERR|Load failed|CORS|access control|sutam\.org/i);
@@ -300,6 +361,18 @@ test.describe('ERR: checkout failures', () => {
   });
 });
 
+test('ERR-09 a Worker error page that is not JSON counts as unavailable and offers the direct link', async ({ page, guard }) => {
+  guard.allow(/Failed to load resource|status of 502/i);
+  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+  await page.route(CHECKOUT_URL, (route) => (route.request().method() === 'OPTIONS'
+    ? route.fulfill({ status: 204, headers: cors })
+    : route.fulfill({ status: 502, headers: cors, contentType: 'text/html', body: '<html>Bad gateway</html>' })));
+  await giveBtn(page).click();
+  await expect(page.locator('#give-status')).toContainText("Checkout couldn't open just now.");
+  await expect(page.locator('#give-status a')).toHaveAttribute('href', monthly.tiers.find((t) => t.cents === monthly.defaultCents).url);
+  await expect(giveBtn(page)).not.toHaveAttribute('aria-busy');
+});
+
 test.describe('SUP: without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
 
@@ -315,6 +388,29 @@ test.describe('SUP: without JavaScript', () => {
 });
 
 test.describe('SUP: page content', () => {
+  test('SUP-16 the Other field opens the numeric keypad on a phone', async ({ page }) => {
+    await pick(page, 'Other');
+    const input = page.locator('#other-amount');
+    await expect(input).toHaveAttribute('inputmode', 'decimal');
+    await expect(input).toHaveAttribute('type', 'number');
+  });
+
+  test('SUP-32 the page says plainly that a gift is not tax-deductible, and who handles the payment', async ({ page }) => {
+    await expect(page.locator('.deductible')).toBeVisible();
+    await expect(page.locator('.deductible')).toContainText("it isn't tax-deductible");
+    await expect(page.locator('.secure')).toContainText('Secure checkout by Stripe.');
+  });
+
+  test('SUP-33 the site ships live-mode Stripe links, never test ones', async ({ page }) => {
+    expect(supportLinks.mode).toBe('live');
+    // A test-mode Payment Link has /test_ in its path and a test portal /p/login/test_.
+    const urls = JSON.stringify(supportLinks).match(/https:\/\/[^"]+stripe\.com[^"]*/g);
+    expect(urls.length).toBeGreaterThanOrEqual(11);
+    expect(urls.filter((u) => /\/test_/.test(u))).toEqual([]);
+    await expect(page.locator('.test-badge')).toHaveCount(0);
+    expect(await page.locator('#give').getAttribute('data-config')).not.toContain('/test_');
+  });
+
   test('SUP-30 the manage-or-cancel link points at the Stripe customer portal', async ({ page }) => {
     await expect(page.locator('#cancel-note a')).toHaveAttribute('href', supportLinks.checkout.portalUrl);
   });
