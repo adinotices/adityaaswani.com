@@ -173,7 +173,7 @@ import { identity, products, statusLabel, newsletter, support } from '../data/si
   .build-item:hover { border-color: var(--clay); color: var(--ink); }
   .build-name { font-family: var(--serif); font-variation-settings: "SOFT" 100; font-weight: 560; font-size: 1.15rem; }
 
-  .social-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; }
+  .social-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(9.375rem, 100%), 1fr)); gap: 0.6rem; }
   .social-link { display: flex; align-items: center; gap: 0.6rem; min-height: 46px; padding: 0.4rem 1rem; border-radius: 999px; background: var(--card); border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 0.95rem; }
   .social-link:hover { border-color: var(--clay); color: var(--ink); }
   .social-link svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
@@ -181,7 +181,7 @@ import { identity, products, statusLabel, newsletter, support } from '../data/si
   .subscribe-section form { margin: 0; }
   label { display: block; font-weight: 700; margin-bottom: 0.4rem; }
   .row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  input[type="email"] { flex: 1 1 12rem; min-height: 48px; padding: 0.6rem 1.1rem; border-radius: 999px; border: 2px solid var(--ink-2); background: var(--card); color: var(--ink); font: inherit; }
+  input[type="email"] { flex: 1 1 12rem; max-width: 100%; min-height: 48px; padding: 0.6rem 1.1rem; border-radius: 999px; border: 2px solid var(--ink-2); background: var(--card); color: var(--ink); font: inherit; }
   input[type="email"]::placeholder { color: var(--ink-2); opacity: 0.85; }
   .fine { color: var(--ink-2); font-size: 0.9rem; }
 

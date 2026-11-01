@@ -50,9 +50,45 @@ for (const f of FORMS) {
       await expect(input).toHaveAttribute('required', '');
       const id = await input.getAttribute('id');
       await expect(page.locator(`label[for="${id}"]`)).toHaveCount(1);
+      // A11Y-05: the button says the form opens a new tab.
+      await expect(page.locator(`form:has(${f.input}) button[type="submit"] .sr-only`)).toHaveText(' (opens in a new tab)');
     });
   });
 }
+
+for (const f of FORMS) {
+  test(`NEWS-05 ${f.path} on a touch screen the field and the button are at least 44 px tall and side by side or stacked, never cut off`, async ({ page }, testInfo) => {
+    test.skip(!/^(phone|tablet)-/.test(testInfo.project.name), 'touch profiles only');
+    await page.goto(f.path);
+    const form = page.locator(`form:has(${f.input})`);
+    for (const el of [form.locator(f.input), form.locator('button[type="submit"]')]) {
+      await el.scrollIntoViewIfNeeded();
+      const box = await el.boundingBox();
+      expect(box.height, await el.evaluate((e) => e.outerHTML.slice(0, 60))).toBeGreaterThanOrEqual(44);
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize().width);
+    }
+  });
+}
+
+test.describe('NEWS: without JavaScript', () => {
+  test.use({ javaScriptEnabled: false });
+  for (const f of FORMS) {
+    test(`NEWS-07 ${f.path} subscribes with JavaScript off`, async ({ page, context }) => {
+      const posts = [];
+      await context.route(ENDPOINT, (r) => {
+        posts.push({ method: r.request().method(), body: r.request().postData() });
+        return r.fulfill({ status: 200, contentType: 'text/html', body: '<title>subscribed stub</title>' });
+      });
+      await page.goto(f.path);
+      const popup = context.waitForEvent('page');
+      await page.locator(f.input).fill('reader@example.com');
+      await page.locator(`form:has(${f.input}) button[type="submit"]`).click();
+      await (await popup).waitForLoadState();
+      expect(posts).toEqual([{ method: 'POST', body: 'email=reader%40example.com' }]);
+    });
+  }
+});
 
 test('NEWS-04 the "Get notified" link on a coming-soon product lands on the newsletter form', async ({ page }) => {
   await page.goto('/');

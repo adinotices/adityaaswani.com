@@ -33,6 +33,7 @@
       "MENU-01": ["web-phone", "web-tablet"], "MENU-02": ["web-phone", "web-tablet"], "MENU-03": ["web-phone", "web-tablet"],
       "MENU-04": ["web-phone", "web-tablet"], "MENU-05": ["web-phone", "web-tablet"], "MENU-06": ["web-phone", "web-tablet"],
       "MENU-07": ["web-phone", "web-tablet"], "MENU-09": ["web-phone", "web-tablet"], "MENU-16": ["web-phone", "web-tablet"],
+      "MENU-10": ["web-phone", "web-tablet"], "MENU-11": ["web-phone", "web-tablet"], "MENU-13": ["web-phone", "web-tablet"], "MENU-14": ["web-phone", "web-tablet"],
       "MENU-08": ["web-phone"], "HOME-08": ["web-phone"],
       "HOME-09": ["web-tablet"], "HOME-10": ["web-tablet"], "HOME-11": ["web-tablet"], "A11Y-07": ["web-tablet"],
       "PAGE-10": ["web-tablet"], "THEME-12": ["web-phone", "web-tablet"], "A11Y-06": ["web-phone", "web-tablet"],
@@ -81,6 +82,7 @@
     "scripts/design-previews-axe.mjs": ["previews"],
     "scripts/font-size-audit/": ["a11y"],
     "scripts/check-feature-matrix.mjs": ["matrix"],
+    "scripts/check-deploy-marker.mjs": ["deploy"],
     "docs/testing/feature-paths.json": ["matrix"]
   },
   "mustMap": ["src/", "scripts/", "public/", "design-previews/"]

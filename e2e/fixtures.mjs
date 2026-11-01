@@ -12,7 +12,7 @@
 //   billing.stripe.com navigations get a stub page that names the URL.
 import { test as base, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { isIgnoredConsoleError } from './console-filter.mjs';
+import { isIgnoredConsoleError, isIgnoredRequestFailure } from './console-filter.mjs';
 
 export const supportLinks = JSON.parse(readFileSync(new URL('../src/data/support-links.json', import.meta.url), 'utf8'));
 export const CHECKOUT_URL = 'https://sutam.org/api/donate/checkout';
@@ -54,8 +54,7 @@ export const test = base.extend({
       page.on('requestfailed', (r) => {
         const sameOrigin = new URL(r.url()).origin === new URL(page.url() || 'about:blank').origin;
         const why = r.failure()?.errorText ?? '';
-        // Navigations away and our own aborts are not failures of the site.
-        if (sameOrigin && !/ABORTED|cancelled|NS_BINDING_ABORTED/i.test(why) && !ok(r.url())) {
+        if (sameOrigin && !isIgnoredRequestFailure(why) && !ok(r.url())) {
           problems.push(`requestfailed: ${r.url()} ${why}`);
         }
       });

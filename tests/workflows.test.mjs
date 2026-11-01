@@ -27,6 +27,18 @@ test('each action is pinned to one SHA and one release across the workflows', ()
   assert.deepEqual(split, []);
 });
 
+// DEPLOY-13 (#49): the self-hosted runner is shared by five repos, so a hung job must end by itself.
+test('every job in every workflow has its own timeout-minutes', () => {
+  const missing = [];
+  for (const f of readdirSync(dir).filter((n) => /\.ya?ml$/.test(n))) {
+    const jobs = readFileSync(new URL(f, dir), 'utf8').split(/^jobs:$/m)[1];
+    const blocks = jobs.split(/^(?=  [a-z][a-z0-9_-]*:$)/m).filter((b) => b.trim());
+    assert.ok(blocks.length >= 2, `${f}: only ${blocks.length} jobs parsed`);
+    for (const b of blocks) if (!/^    timeout-minutes: \d+$/m.test(b)) missing.push(`${f}: ${b.split('\n')[0].trim()}`);
+  }
+  assert.deepEqual(missing, []);
+});
+
 // DEPLOY-08: the self-hosted runner keeps old Node builds in its tool cache, so a bare "22" resolved
 // to 22.23.3 and astro 7.4.2 (engines >= 22.23.4) failed on dependabot #37 (2026-10-26).
 test('every setup-node takes the newest release of its line (check-latest: true)', () => {
