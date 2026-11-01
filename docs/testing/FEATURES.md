@@ -34,7 +34,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09. Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09; 2026-11-10 (HOME-14–15: Building card fixes, #54, rebased). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -45,7 +45,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 5 | Light/dark theme | 13 | 10 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 13 | 11 | 1 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 8 | 7 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 15 | 14 | 0 | First impression. |
+| 8 | Home page content | 17 | 16 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 11 | 10 | 1 | Mail links and booking. |
@@ -54,10 +54,10 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 8 | 8 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 14 | 13 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 15 | 14 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 10 | 10 | 0 | Keeps this file honest. |
-| | **Total** | **242** | **184** | **22** | |
+| | **Total** | **245** | **187** | **22** | |
 
 ## Coverage by platform
 
@@ -283,7 +283,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| HOME-01 | Product cards | 5 cards. Live ones link out over https. Coming-soon ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
+| HOME-01 | Product cards | 4 cards. Live ones link out over https. Coming-soon ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
 | HOME-02 | Writing section | 1–6 essays, newest first, each linking to essays.adityaaswani.com/p/… | NONE | content.spec › HOME-02 |
 | HOME-03 | Hero buttons | Scroll to Building and Writing | NONE | content.spec › HOME-03 |
 | HOME-04 | Meditation and Support sections | Book opens cal.com in a new tab. Support goes to /support/. | NONE | content.spec › HOME-04 |
@@ -295,7 +295,9 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
 | HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
-| HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; its capture is cropped below the ticker, since the frozen site would show it again on a retake). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; product-screenshots.test › HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29); pages.spec › PAGE-01 (the images decode) |
+| HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; that card and its capture left the site on 2026-11-01, HOME-15). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; pages.spec › PAGE-01 (the images decode) |
+| HOME-14 | PausePal card text matches its picture (AA-30, 2026-11-01) | The picture reads "Meditate with a buddy. On your schedule."; the pitch says "on your schedule" and never "every week" | NONE | content.spec › HOME-14 |
+| HOME-15 | Archived projects have no Building card (2026-11-01) | SaveTheDogs (archived 2026-10-20) is on neither the home Building section nor the /links build list. The /links petition card to savethedogs.io stays: the Marshall campaign is not what was archived. | NONE | content.spec › HOME-15 |
 | HOME-17 | Smaller home links (2026-11-01: no row) | "How I teach" opens /learn-meditation/, "All essays" goes to essays.adityaaswani.com, the contact line links /contact/ and mailto | NONE | content.spec › HOME-17 |
 | HOME-18 | Home with text at 200% on a 390 px phone (2026-11-01) | Body text and links keep their words whole, and each card's screenshot still meets the card edges, because its bleed matches the card padding. | NONE | pages.spec › HOME-18 (Chromium and WebKit) |
 
@@ -320,7 +322,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
 | LINKS-01 | Main cards | 4 cards. External ones open in a new tab with noopener. Support stays on the site and opens /support/. | NONE | content.spec › LINKS-01 |
-| LINKS-02 | Build list | 5 products. Ones without a site go to /#newsletter in view. | NONE | content.spec › LINKS-02 |
+| LINKS-02 | Build list | 4 products. Ones without a site go to /#newsletter in view. | NONE | content.spec › LINKS-02 |
 | LINKS-03 | Own top bar | No site header. Support pill and theme switch present. og:image is og-links.jpg. | NONE | content.spec › LINKS-03 |
 | LINKS-04 | Social tiles | 12 tiles, new tab, noopener | NONE | content.spec › LINKS-04 |
 | LINKS-05 | Subscribe form | See NEWS-01..03 | NONE | newsletter.spec › NEWS-01 (/links/) |
