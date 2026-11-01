@@ -92,6 +92,7 @@ body {
   font-family: var(--sans);
   font-size: 1.0625rem;
   line-height: 1.65;
+  overflow-wrap: break-word; /* a long address or title wraps at large text sizes (PAGE-09) */
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
