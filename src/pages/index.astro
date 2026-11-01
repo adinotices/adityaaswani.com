@@ -209,7 +209,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .cards { list-style: none; display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
   .card { position: relative; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
   @media (prefers-reduced-motion: no-preference) { .card:hover, .essay:hover { transform: translateY(-3px) rotate(-0.4deg); } }
-  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+  .card-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
   /* Screenshot cards: 16:10 image bleeds to the card edges; the badge takes the motif's place */
   .shot {
     width: calc(100% + 3rem); max-width: none; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top;

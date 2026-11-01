@@ -98,7 +98,9 @@ const items = nav.map((n) => ({ ...n, href: onHome ? n.href.replace('/#', '#') :
       font-weight: 700; font-size: 1.1rem; color: var(--ink);
     }
     :global(html.js) .support { white-space: nowrap; }
-    :global(html.js) .bar { grid-template-areas: "brand actions"; }
+    /* Flex, not the grid: with text at 200% the Support pill and menu button drop to a second row
+       instead of pushing past the screen edge (PAGE-09). */
+    :global(html.js) .bar { display: flex; flex-wrap: wrap; justify-content: space-between; }
     :global(html.js) .nav {
       display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
       background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);

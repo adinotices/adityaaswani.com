@@ -34,44 +34,44 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 41 | 27 | 5 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 43 | 29 | 4 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
 | 3 | Support: thank-you page | 12 | 11 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
-| 6 | Page rendering and layout | 10 | 8 | 2 | Broken images, sideways scroll, fonts. |
+| 6 | Page rendering and layout | 11 | 9 | 1 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 13 | 12 | 0 | First impression. |
-| 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
+| 8 | Home page content | 14 | 13 | 0 | First impression. |
+| 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 8 | 8 | 1 | Mail links and booking. |
 | 12 | Copy-email buttons | 6 | 1 | 0 | Small. |
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
-| 14 | Search and sharing | 9 | 5 | 2 | Indexing and share cards. |
+| 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 12 | 11 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
-| 19 | Test matrix upkeep | 8 | 8 | 0 | Keeps this file honest. |
-| | **Total** | **216** | **159** | **30** | |
+| 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
+| | **Total** | **223** | **166** | **24** | |
 
 ## Coverage by platform
 
 Platforms are web-desktop, web-phone and web-tablet (BOX-RULES 2026-10-20); the site has no native app, so android and ios have no rows. A web row counts as covered on a platform when a test it cites passed in that platform's projects in the last run. Rows that cite only unit or build tests, and the build/CI features (Writing feed, Build and deploy, Design previews, Matrix upkeep), are counted once as platform-independent. `only` in feature-paths.json limits a row to where it can apply (the phone menu, the tablet hero rows).
 
 <!-- coverage-by-platform:start (node scripts/check-feature-matrix.mjs --sync) -->
-Last synced 2026-10-29 from the e2e reports of: web-tablet, web-desktop, web-phone.
+Last synced 2026-11-01 from the e2e reports of: web-tablet, web-desktop, web-phone.
 
 | Platform | Covered | Applicable | Coverage |
 |---|---|---|---|
-| web-desktop | 123 | 129 | 95% |
-| web-phone | 135 | 147 | 92% |
-| web-tablet | 138 | 150 | 92% |
-| platform-independent (build, CI, unit) | 42 | 61 | 69% |
+| web-desktop | 132 | 136 | 97% |
+| web-phone | 147 | 157 | 94% |
+| web-tablet | 150 | 160 | 94% |
+| platform-independent (build, CI, unit) | 46 | 60 | 77% |
 | android | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 | ios | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 <!-- coverage-by-platform:end -->
@@ -103,10 +103,12 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-13 | Fix an invalid Other amount | The error clears as soon as the value is valid | NONE | support.spec › SUP-13 |
 | SUP-14 | Other typed, switch frequency and back | One-time keeps its own preset (Other box hidden). Back on Monthly the typed value is still there and labelled. | NONE | support.spec › SUP-14 |
 | SUP-15 | Other plus fees | Total = amount + fee. Impact line is the nearest tier's. | unit | support.spec › SUP-15; donate.test › nearestLine |
-| SUP-16 | Other on a phone | Numeric keypad (`inputmode=decimal`), no sideways scroll | NONE | support.spec › SUP-12 (phone projects); pages.spec › PAGE-02 |
+| SUP-16 | Other on a phone | Numeric keypad (`inputmode=decimal`), no sideways scroll | NONE | support.spec › SUP-16; pages.spec › PAGE-02 |
 | SUP-20 | No JavaScript | Ladder hidden. The Give button is the $5 monthly Payment Link. The noscript list has the one-time link, then each tier's plain and fee link, in order. The first link opens. | NONE | support.spec › SUP-20 |
 | SUP-30 | Manage or cancel | The link is the Worker account's Stripe customer portal | NONE | support.spec › SUP-30 |
 | SUP-31 | Project links | Open in a new tab with noopener | NONE | support.spec › SUP-31 |
+| SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
+| SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
 | GIVE-02 | Double click, or a click while "Opening secure checkout…" | One request. The button shows busy (`aria-busy`). | NONE | support.spec › GIVE-02 |
 | GIVE-03 | Keyboard: Enter and Space on the focused button | Each starts checkout | NONE | support.spec › GIVE-03 |
@@ -114,7 +116,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | GIVE-05 | Worker answers ok with a non-Stripe URL | Never followed. Error message shown. | unit | support.spec › GIVE-05; donate.test › startCheckout rejects non-checkout urls |
 | GIVE-06 | Type an Other amount, then press Give once (Safari) | **Bug found 2026-10-13:** WebKit dropped the first click, because `change` re-rendered the button text between mousedown and mouseup. Fixed by writing text only when it changes. One press now opens checkout in every engine. | NONE | support.spec › GIVE-06 (monthly + one-time) |
 | GIVE-07 | Tap on a real iPhone or Android phone | Same as GIVE-01 with touch events | NONE | NONE (no native app; WebKit/Chromium phone emulation only. Real-device pass is the monthly fresh-user run in AGENTS.md) |
-| GIVE-08 | Two tabs giving at once | Independent requests. Each tab opens its own session. | NONE | NONE (no shared state between tabs; low risk) |
+| GIVE-08 | Two tabs giving at once | Independent requests. Each tab opens its own session. | NONE | support.spec › GIVE-08 |
 | ERR-01 | Worker 429 rate_limited | "Too many attempts; please wait a minute." No direct link. Button recovers. | unit | support.spec › ERR-01; donate.test › startCheckout 429; donate.test › errorMessage |
 | ERR-02 | Worker 400 invalid_amount | The range message, no direct link | unit | support.spec › ERR-02; donate.test › startCheckout 400 invalid_amount |
 | ERR-03 | Worker down (503) on a monthly preset, fees off and on | "Checkout couldn't open just now." plus a direct link to that tier's plain or fee Payment Link. The link opens. | NONE | support.spec › ERR-03 (fees off, on) |
@@ -123,7 +125,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | ERR-06 | Network failure (offline, DNS, CORS) | Same as ERR-03. The button recovers. | unit | support.spec › ERR-06; donate.test › startCheckout network throw |
 | ERR-07 | Worker never answers | Times out after 10 s with the direct link | unit | support.spec › ERR-07 (Chromium); donate.test › startCheckout times out when fetch never resolves |
 | ERR-08 | Change the amount after an error | The status message clears | NONE | support.spec › ERR-08 |
-| ERR-09 | Worker error body is not JSON | Treated as unavailable | unit | donate.test › startCheckout non-JSON error body |
+| ERR-09 | Worker error body is not JSON | Treated as unavailable | unit | support.spec › ERR-09; donate.test › startCheckout non-JSON error body |
 | LIVE-01 | @live Give from an origin the Worker refuses (preview, localhost) | The real Worker refuses the preflight (403). The page shows the error and the direct Payment Link. | NONE | support.spec › LIVE-01 (skipped against prod: it would open a live session) |
 | LIVE-02 | @live Worker validation for adityaaswani.com | amount 50 and 100001 give 400 invalid_amount without a Stripe call. A foreign origin gets 403. | NONE | support.spec › LIVE-02 |
 | LIVE-03 | @live Every Payment Link and portal URL in support-links.json | Each answers 200 at Stripe (a deleted or renamed link gives 404) | NONE | support.spec › LIVE-03 |
@@ -146,9 +148,9 @@ Plain HTML forms. Each POSTs `email` to Substack's no-JS endpoint (`newsletter.f
 | NEWS-02 | Empty, "not-an-email", "a@" | Browser validation stops it. No request, no new tab, the field is invalid. | NONE | newsletter.spec › NEWS-02 (3 values × 3 pages) |
 | NEWS-03 | Labels and autocomplete | type=email, autocomplete=email, required, one label | NONE | newsletter.spec › NEWS-03 |
 | NEWS-04 | "Get notified" on a coming-soon product card | Scrolls to the newsletter form | NONE | newsletter.spec › NEWS-04 |
-| NEWS-05 | On a phone | Input and button reachable, 44 px targets, no sideways scroll | NONE | pages.spec › PAGE-02; pages.spec › A11Y-01 |
+| NEWS-05 | On a phone | Input and button reachable, 44 px targets, no sideways scroll | NONE | newsletter.spec › NEWS-05 (3 forms, phone and tablet profiles); pages.spec › PAGE-02 |
 | NEWS-06 | Dark mode | Readable (axe contrast) | NONE | pages.spec › A11Y-01 (dark) |
-| NEWS-07 | No JavaScript | Works (no JS needed) | NONE | newsletter.spec › NEWS-01 (the form needs no JS) |
+| NEWS-07 | No JavaScript | Works (no JS needed) | NONE | newsletter.spec › NEWS-07 (3 forms, JavaScript off) |
 | NEWS-08 | Pop-up blocker or in-app browser (Instagram) refuses target=_blank | Falls back to the same tab in most in-app browsers | NONE | NONE (needs real in-app browsers; monthly fresh-user pass) |
 | NEWS-09 | Already subscribed address | Substack's "already subscribed" page | NONE | NONE (would need a real subscriber; Substack-side behaviour) |
 | NEWS-10 | Double submit | Two tabs. Substack dedupes the address. | NONE | NONE (low risk; Substack-side) |
@@ -204,11 +206,11 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MENU-07 | Touch targets | Menu links, theme switch, menu button and Support pill are at least 44 px tall | NONE | nav.spec › MENU-07 |
 | MENU-08 | Support pill at 320, 390, 440 px | Heart only, "Support", "Support my work". Always labelled for screen readers. Fits the bar. | NONE | nav.spec › MENU-08 (3 widths) |
 | MENU-09 | No JavaScript on a phone | No menu button. Nav links shown inline. | NONE | nav.spec › MENU-09 |
-| MENU-10 | Tab past the last item | Tabbing from the last link to the theme switch keeps it open; tabbing past it closes | unit | mobile-nav.test › Tab from the last link to the Appearance toggle keeps the menu open; Tab past it closes |
-| MENU-11 | Focus moves to the Support pill | Closes | unit | mobile-nav.test › focusout to another header control (Support pill) closes |
+| MENU-10 | Tab past the last item | Tabbing from the last link to the theme switch keeps it open; tabbing past it closes | unit | nav.spec › MENU-10; mobile-nav.test › Tab from the last link to the Appearance toggle keeps the menu open; Tab past it closes |
+| MENU-11 | Focus moves to the Support pill | Closes | unit | nav.spec › MENU-11; mobile-nav.test › focusout to another header control (Support pill) closes |
 | MENU-12 | Link inside the menu | Closes without stealing focus, so hash links still scroll | unit | nav.spec › NAV-02 (phone); mobile-nav.test › link click closes without moving focus |
-| MENU-13 | Click inside the header but not on a link | Stays open | unit | mobile-nav.test › click inside header (not a link) does not close |
-| MENU-14 | Focus moving within the menu | Stays open | unit | mobile-nav.test › focusout to an inside link does not close; mobile-nav.test › focusout from a link to the toggle does not close |
+| MENU-13 | Click inside the header but not on a link | Stays open | unit | nav.spec › MENU-13; mobile-nav.test › click inside header (not a link) does not close |
+| MENU-14 | Focus moving within the menu | Stays open | unit | nav.spec › MENU-14; mobile-nav.test › focusout to an inside link does not close; mobile-nav.test › focusout from a link to the toggle does not close |
 | MENU-15 | Listener cleanup | destroy() removes every listener | unit | mobile-nav.test › destroy removes listeners |
 | MENU-16 | Real iOS Safari tap and VoiceOver | Same as MENU-01..05 | NONE | NONE (emulated iPhone WebKit only; monthly fresh-user pass on a device) |
 | FOOT-01 | Footer links | Building, Writing, Meditation, Links, Contact and Support, in order. Support opens /support/. | NONE | nav.spec › FOOT-01 |
@@ -253,8 +255,9 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-06 | Internal links resolve | Every internal href/src/srcset maps to a file, with a trailing slash | build | build-output.test › every internal href/src/srcset maps to a file in dist, with no trailing-slash redirect; build-output.test › no internal link lacks its trailing slash |
 | PAGE-07 | Slow 3G / PSI | LCP under 2.5 s on mobile | NONE | NONE (PSI is the weekly audit in ~/repos/audits, not a test) |
 | PAGE-08 | Reduced motion | No transition or animation over 0.01 ms on any page, the open phone menu included; without the preference the cards do animate (2026-10-29) | NONE | pages.spec › PAGE-08 |
-| PAGE-09 | 200% zoom / large text | Readable, no overlap | NONE | NONE (font-size audit in scripts/font-size-audit, run by hand) |
+| PAGE-09 | Text at 200% (root 32 px; WCAG 1.4.4) on every page | No sideways scroll and no clipped text, on desktop, phone and tablet. **Bug found 2026-11-01:** on a 390 px phone every page scrolled sideways (449–505 px wide): the header's Support pill and menu button could not wrap, the /links and /thanks email fields kept a 12–14rem basis, and a product badge and long links could not break. 150% was already clean. Fixed: the phone header bar wraps, the fields shrink, text breaks. Layout at normal size is unchanged (pixel diff, audit report). | NONE | pages.spec › PAGE-09 (6 pages, Chromium and WebKit) |
 | PAGE-10 | Every page on web-tablet: iPad portrait 820x1180, iPad landscape 1180x820, Android tablet 800x1280 (touch) (2026-10-29) | Loads with its h1, no sideways scroll, no control under 24 px (WCAG 2.5.8; inline text links excepted). Controls under 44 px are listed "for review" in the log, not failed. A full-page screenshot per page per profile goes to the nightly's tablet-<stamp>/ folder. | NONE | tablet.spec › PAGE-10 (6 pages × 3 profiles) |
+| PAGE-11 | Critical bytes on `/` and /support/ (2026-11-01; PAGE-07 is a timed PSI number that can't run on a loaded box) | Bytes needed for the first screen (document, CSS, preloaded fonts, LCP image; gzipped text) stay within a budget derived from PSI Slow 4G. The portrait is not lazy. No third-party script blocks parsing. | NONE | pages.spec › PAGE-11 (Chromium) |
 
 ## 7. Accessibility
 
@@ -262,9 +265,9 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 |---|---|---|---|---|
 | A11Y-01 | axe (WCAG 2.1 A/AA + best practice) on every page, light and dark, desktop and phone | 0 violations. The thank-you page is checked with the upsell showing. | NONE | pages.spec › A11Y-01 (6 pages × 2 schemes × Chromium desktop + phone) |
 | A11Y-02 | /support Other field error | Described by the error, which is aria-live; no axe violations with the error showing | NONE | pages.spec › A11Y-02 |
-| A11Y-03 | Keyboard-only giving | Tab to an amount, arrows to change, Tab to Give, Enter | NONE | support.spec › GIVE-03 (button); radio arrows are native |
+| A11Y-03 | Keyboard-only giving | Tab to an amount, arrows to change, Tab to Give, Enter | NONE | support.spec › A11Y-03 (Chromium and Firefox, Safari needs Option+Tab); support.spec › GIVE-03 |
 | A11Y-04 | Copy status announced | role=status gets "Copied" | unit | content.spec › COPY-01; copy-email.test › success path writes the data-copy text, announces Copied, then resets after the timer |
-| A11Y-05 | New-tab links announced | "(opens in a new tab)" on footer socials and forms | NONE | nav.spec › FOOT-02 |
+| A11Y-05 | New-tab links announced | "(opens in a new tab)" on footer socials and forms | NONE | nav.spec › FOOT-02; newsletter.spec › NEWS-03 (form buttons) |
 | A11Y-06 | Real screen readers (VoiceOver, TalkBack) | Reads in order | NONE | NONE (manual; monthly fresh-user pass) |
 | A11Y-07 | axe on `/` at web-tablet iPad portrait 820x1180, light and dark (AA-27) | 0 violations | NONE | content.spec › A11Y-07 |
 
@@ -277,7 +280,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-03 | Hero buttons | Scroll to Building and Writing | NONE | content.spec › HOME-03 |
 | HOME-04 | Meditation and Support sections | Book opens cal.com in a new tab. Support goes to /support/. | NONE | content.spec › HOME-04 |
 | HOME-05 | Person JSON-LD | Parses, `@type` Person, `sameAs` equals the footer socials | build | content.spec › HOME-05; build-output.test › the home page has valid Person JSON-LD |
-| HOME-06 | Portrait | srcset 320/640/960 decodes | NONE | pages.spec › PAGE-01 |
+| HOME-06 | Portrait | srcset 320/640/960 decodes | NONE | content.spec › HOME-06; pages.spec › PAGE-01 |
 | HOME-07 | Contact line copy button | See COPY | NONE | content.spec › COPY-02 |
 | HOME-08 | Hero order, web-phone (390x844) | Headline, then intro, then both CTAs, then the portrait; "See what I'm building" is on the first screen | NONE | content.spec › HOME-08 |
 | HOME-09 | Hero order, web-tablet portrait: iPad 820x1180, iPad mini 768x1024, Android tablet 800x1280 (AA-27) | Same order as phone up to the two-column hero at 860 px. The intro and both CTAs end above y=600 and above the portrait. Was: a ~500 px portrait between headline and intro, CTAs at y≈952. | NONE | content.spec › HOME-09 (×3 profiles) |
@@ -285,6 +288,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
 | HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
 | HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; its capture is cropped below the ticker, since the frozen site would show it again on a retake). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; product-screenshots.test › HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29); pages.spec › PAGE-01 (the images decode) |
+| HOME-17 | Smaller home links (2026-11-01: no row) | "How I teach" opens /learn-meditation/, "All essays" goes to essays.adityaaswani.com, the contact line links /contact/ and mailto | NONE | content.spec › HOME-17 |
 
 ## 9. Writing feed (build time)
 
@@ -299,7 +303,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | ESSAY-05 | Non-https or malformed item | Rejected | unit | essays-feed.test › parseFeed rejects non-https urls and invalid items |
 | ESSAY-06 | Broken feed, HTTP 500, network error, cover 404 | Falls back to site.ts. The build never fails. | unit | essays-feed.test › parseFeed throws on broken or non-RSS input; essays-feed.test › loadEssays falls back on broken feed / HTTP 500 / fetch rejection / cover download failure |
 | ESSAY-07 | Built site shows the essays with covers that load | Covers decode on the live page | NONE | pages.spec › PAGE-01 (home); content.spec › HOME-02 |
-| ESSAY-08 | A new essay appears within a week without a commit | The Monday 09:00 UTC rebuild picks it up | NONE | NONE (scheduled workflow; checked by eye in the nightly log's HOME-02 titles) |
+| ESSAY-08 | A new essay appears within a week without a commit | The Monday 09:00 UTC rebuild picks it up. The nightly fails if the live build is over 8 days old (DEPLOY-07). | NONE | deploy-marker.test › DEPLOY-07 a live build over 8 days old |
 | ESSAY-09 | Curation (excluding a post) | Not supported (AA-26 decision pending) | NONE | NONE (feature not built) |
 
 ## 10. /links page
@@ -359,11 +363,12 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | SEO-02 | robots.txt, security.txt, manifest | Served. robots points at the sitemap. | build | pages.spec › SEO-02; build-output.test › robots.txt allows all and points at the sitemap |
 | SEO-03 | Share cards | og:title, description, image and url on every page. The image answers 200. | build | pages.spec › SEO-03; build-output.test › every og:image is absolute and resolves to a file in dist |
 | SEO-04 | Default share image | 1200×630, under 300 KB; no page shares the original photo | build | build-output.test › the default share image is 1200x630 and under 300 KB, and no page shares the original photo |
-| SEO-05 | Canonical | Present on indexable pages, absent on noindex ones | NONE | thanks.spec › THX-01 |
+| SEO-05 | Canonical and indexing on public pages (2026-11-01: the old citation only checked that the thank-you page has none) | Each public page has its own canonical and no robots noindex, on the build and on prod; noindex pages have no canonical | NONE | pages.spec › SEO-05; thanks.spec › THX-01 |
 | SEO-06 | noindex | /support/thanks/ and the 404 page carry noindex | NONE | thanks.spec › THX-01; pages.spec › ERR404-01 |
 | SEO-07 | Preview builds | noindex and no analytics (PUBLIC_PREVIEW=1) | NONE | NONE (checked by curl in review runs; see PREV-02) |
 | SEO-08 | /links share card | og-links.jpg | NONE | content.spec › LINKS-03 |
 | SEO-09 | Search Console / rich results | Valid | NONE | NONE (external tool, manual) |
+| SEO-10 | Favicons and web-manifest icons (2026-11-01: PAGE-06 checks HTML references, not the manifest) | Every icon a page or site.webmanifest names answers 200 as an image; the manifest is valid JSON | NONE | pages.spec › SEO-10 |
 
 ## 15. 404 and redirects
 
@@ -373,13 +378,13 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | ERR404-02 | Retired URLs (/preview/, /previews/, /preview-pixel/, /aditya-photo-new.jpg) | 404 | build | pages.spec › ERR404-02; build-output.test › the /preview* design pages are not on the public site (AA-22; they live on adityaaswani-preview) |
 | ERR404-03 | Path without a trailing slash | 301 to the slash, keeping the query (see THX-08) | NONE | thanks.spec › THX-08 |
 | ZOOM-01 | /zoom | Sends the visitor to the Zoom room | NONE | pages.spec › ZOOM-01 |
-| ZOOM-02 | /zoom with JS off | The meta refresh still redirects | NONE | pages.spec › ZOOM-01 (the meta refresh needs no JS) |
+| ZOOM-02 | /zoom with JS off | The meta refresh still redirects | NONE | pages.spec › ZOOM-02 (JavaScript off) |
 
 ## 16. Analytics
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation. Skipped on preview builds, which have no analytics by design. | NONE | analytics.spec › ANA-01 |
+| ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation. Skipped on preview builds, which have no analytics by design; never skipped against prod, where noindex is a failure (2026-11-01). | NONE | analytics.spec › ANA-01 |
 | ANA-02 | Test runs never count as visits | Plausible ignores webdriver. Events and the beacon are answered locally by the guard fixture. | NONE | fixtures.mjs guard |
 | ANA-04 | The Cloudflare beacon never fails a test that is not about analytics (nightly 2026-10-13 and 2026-10-21: NAV-05 on phone-webkit, `pageerror: …/cdn-cgi/rum due to access control checks`) | Outside ANA-01 the beacon gets an empty script, even with E2E_LIVE=1, so no /cdn-cgi/rum POST is ever cut off by a navigation. ANA-01 runs the real beacon (`realBeacon` option) and sees its rum POST answered locally. Test defect, not a site bug: real visitors' beacons talk to Cloudflare. Harness (`E2E_LIVE=1 npx playwright test e2e/nav.spec.mjs -g NAV-05 --project=phone-webkit --repeat-each=1000 --workers=8`, box load ~50): before 11 failed of 888 (run stopped at its time cap), after 0 failed of 1000. | NONE | analytics.spec › ANA-01; nav.spec › NAV-05 |
 | ANA-03 | A real visit is counted | The Plausible dashboard shows the page view | NONE | NONE (owner checks the dashboard; AA-23 decides whether both stay) |
@@ -392,14 +397,15 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | DEPLOY-02 | PR e2e | All non-live e2e rows in Chromium, Firefox and WebKit | NONE | .github/workflows/e2e.yml |
 | DEPLOY-03 | PR matrix check | Fails a PR that changes a feature without a row | NONE | .github/workflows/e2e.yml (matrix job); feature-matrix.test |
 | DEPLOY-04 | Artifact includes .well-known | The Pages tarball contains security.txt | NONE | deploy.yml "Check the artifact" step (after the head session pushes AA-S12) |
-| DEPLOY-05 | Nightly against prod with live rows | Runs 03:00 UTC, emails dev@ on failure | NONE | ~/repos/testing/nightly-adityaaswani.com.sh |
-| DEPLOY-06 | Deploy proves the artefact changed | A served build marker differs after each deploy | NONE | NONE (no build marker in the HTML yet; BOX-RULES 2026-10-13; follow-up) |
-| DEPLOY-07 | Weekly rebuild | Monday 09:00 UTC rebuild succeeds | NONE | NONE (GitHub schedule; failure shows in Actions) |
-| DEPLOY-08 | Node version | Node 22 in CI, new enough for every package's `engines`. **Found 2026-10-29:** on the self-hosted runner `node-version: "22"` resolved to the cached 22.23.3, so dependabot #37 (astro 7.4.2, `engines` >= 22.23.4) failed Build and E2E. Fix: `check-latest: true` on every setup-node (workflow branch `ci/node-check-latest-2026-10-29`, pushed by the head session). | NONE | workflows.test › every setup-node takes the newest release of its line |
-| DEPLOY-10 | PR and main E2E finish on the self-hosted gcp runner (AA-S16) | The E2E job ends green or red, never cancelled. **Open since 2026-10-20 (#40):** every E2E run, 8 on main and on PRs, was cancelled at the 15-min cap; the box runs the same suite in about 4 min. The fix splits the job per engine with a 30-min cap (same workflow branch). **2026-10-29, PR #47's own run:** 6 tests (webkit HOME-03 x2, PAGE-01; the first 3 Firefox tests) hit the 30 s test timeout. Cause: the runner VM ci-runner-1 (e2-standard-4) hosts the runners of five repos and runs their jobs at the same time (samvara-product's 30-min test-postgres overlapped the whole webkit job), so 3 Playwright workers starved for CPU; not browser downloads (install took 8 s) and not network (everything is local or stubbed). Fix: 2 workers on CI, WebKit split into desktop and phone jobs, a browser warm-up step before the tests; the 30 s test timeout and 30-min job cap stay. | NONE | NONE (CI-only; acceptance is the first green E2E run on main after the branch lands) |
+| DEPLOY-05 | Nightly against prod with live rows | Runs 03:00 UTC, emails dev@ on failure. Its `deploy-marker` step checks what is live (DEPLOY-06). | NONE | ~/repos/testing/nightly-adityaaswani.com.sh |
+| DEPLOY-06 | Deploy proves the artefact changed (BOX-RULES 2026-10-13) | Every page of a deploy build carries `<meta name="build" content="<sha> <built at>">`. The nightly fails if the live commit is not main's an hour after the merge, or there is no marker. A 200 is not proof. | NONE | deploy-marker.test › DEPLOY-06 the live commit is behind main an hour after the merge; deploy-marker.test › DEPLOY-06 no marker on the live site; deploy-marker.test › DEPLOY-06 a deploy build carries the marker |
+| DEPLOY-07 | Weekly rebuild | Monday 09:00 UTC rebuild succeeds (10-19 and 10-26 ran, GitHub starting them hours late). The nightly fails if the live build is over 8 days old, which also catches GitHub switching a schedule off. | NONE | deploy-marker.test › DEPLOY-07 a live build over 8 days old |
+| DEPLOY-08 | Node version | Node 22 in CI, new enough for every package's `engines`. **Found 2026-10-29:** on the self-hosted runner `node-version: "22"` resolved to the cached 22.23.3, so dependabot #37 (astro 7.4.2, `engines` >= 22.23.4) failed Build and E2E. Fixed by #47: `check-latest: true` on every setup-node. | NONE | workflows.test › every setup-node takes the newest release of its line |
+| DEPLOY-10 | PR and main E2E finish on the self-hosted gcp runner (AA-S16) | The E2E jobs end green or red, never cancelled. **Open 2026-10-20 to 2026-10-30:** every E2E run was cancelled at the 15-min cap after #40. Cause: the runner VM ci-runner-1 (e2-standard-4) hosts the runners of five repos and runs their jobs at the same time, so 3 Playwright workers starved for CPU. Fixed by #47 (one job per engine, 2 workers, a browser warm-up, a 30-min cap) and #51 (PAGE-01). **Accepted 2026-10-31:** main green in runs 41114915822, 41137836632, 41184511842. The margin is thin while the VM co-schedules. | NONE | workflows.test › each required E2E context is its own job (no matrix), gated on changes; e2e.yml on main (the three runs) |
 | DEPLOY-09 | GitHub Actions pinned (AA-S15, 2026-10-20: checkout v7.0.1, setup-node v7.1.0, configure-pages v6.0.0, deploy-pages v5.0.1, cache v6.1.0) | Every `uses:` is a full release commit SHA with a `# vX.Y.Z` comment, one pin per action across deploy.yml and e2e.yml; majors are taken in a review brief, release notes read for changed defaults | NONE | workflows.test › every action in the workflows is pinned to a full commit SHA with a # vX.Y.Z comment; workflows.test › each action is pinned to one SHA and one release across the workflows |
 | DEPLOY-11 | A push to main is never cancelled by the next push (AA-S18) | Each merge to main runs E2E to green or red; only a stale PR run may be cancelled (`cancel-in-progress: ${{ github.event_name == 'pull_request' }}` in every workflow, as deploy.yml already had). **Found 2026-10-29 (review run 8):** #49 set `cancel-in-progress: true` in e2e.yml, so 5dccd63's merge cancelled phone-webkit on 128f961 at 15:38:47 UTC (run 40897311377). Required checks under branch protection (AA-S6) must never be left cancelled on main. | NONE | workflows.test › pushes to main are never cancelled in progress (cancel-in-progress only for pull_request) |
 | DEPLOY-12 | A docs-only change never strands the required E2E checks (AA-S20) | `E2E (chromium)`, `E2E (firefox)`, `E2E (desktop-webkit)` and `E2E (phone-webkit)` report on every PR and push: run when any changed file is outside `**.md` and `docs/**`, skipped (which passes a required check) when all are, and on Dependabot PRs. e2e.yml has no trigger-level path filter; a `changes` job gates the four jobs. They are separate jobs, not a matrix: **found 2026-10-30,** a matrix job skipped by a job-level `if` reports one check literally named `E2E (${{ matrix.name }})`, so the four contexts would stay "Expected" (probe run 41129264256; separate jobs report their names, probe run 41129471522). If `changes` fails, E2E runs instead of being skipped. | NONE | workflows.test › e2e.yml has no trigger-level paths filter; workflows.test › each required E2E context is its own job (no matrix), gated on changes; workflows.test › the changes job fetches full history and the feature matrix job does not depend on it; workflows.test › changes: code=false only when every changed file is **.md or docs/**; workflows.test › changes: a rename out of code, an empty diff and a manual run all still run E2E |
+| DEPLOY-13 | Every workflow job has its own `timeout-minutes` (#49, 2026-10-29; shipped without a row) | A hung job ends by itself instead of holding the shared runner | NONE | workflows.test › every job in every workflow has its own timeout-minutes |
 
 ## 18. Design previews (off-site)
 
@@ -420,4 +426,5 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MATRIX-05 | Firefox aborts a font download when a test navigates away (`downloadable font: download failed … status=2152398850`, NS_BINDING_ABORTED) | console-error check ignores navigation-aborted font loads (Firefox NS_BINDING_ABORTED); every other font error and console error still fails the test | NONE | console-filter.test › ignores a navigation-aborted font load; console-filter.test › still fails every other font error |
 | MATRIX-06 | Dependabot PR (every commit in the range authored by `dependabot[bot]`) touches a mapped path, e.g. an Actions bump in e2e.yml (#36 failed on 2026-10-19; AA-S14) | Skipped with "dependency bump (Dependabot)"; Dependabot cannot add the Matrix-Skip trailer | NONE | feature-matrix.test › a range of only Dependabot commits is skipped as a dependency bump; feature-matrix.test › readRange reads authors from real git history |
 | MATRIX-07 | Dependabot PR plus a human commit that changes a feature without a row | Not skipped: the check fails and names the feature; an empty range or a look-alike author name never skips | NONE | feature-matrix.test › a Dependabot range with one human commit touching a feature without a row still fails; feature-matrix.test › an empty range or a look-alike author is not a Dependabot skip |
-| MATRIX-08 | Coverage per platform (2026-10-29): `--summary`, `--gaps <platform>`, `--sync` read the e2e JSON reports of the default and tablet lanes | A web row counts on a platform only where a test it cites passed in that platform's projects (a failed or skipped test is a gap); `only` limits rows to the platforms they apply to (EXT-02 is web-desktop only: a plain-HTTP sweep that runs in one lane, 2026-10-31); build/CI rows count once as platform-independent; android and ios show as not applicable | NONE | feature-matrix.test › a web row is covered on a platform only where its cited test passed; feature-matrix.test › the coverage table lists every platform and marks android and ios not applicable; feature-matrix.test › FEATURES.md carries the coverage-by-platform markers |
+| MATRIX-08 | Coverage per platform (2026-10-29): `--summary`, `--gaps <platform>`, `--sync` read the e2e JSON reports of the default and tablet lanes | A web row counts on a platform only where a test it cites passed in that platform's projects (a failed or skipped test is a gap); `only` limits rows to the platforms they apply to (EXT-02 is web-desktop only: a plain-HTTP sweep that runs in one lane, 2026-10-31; MENU-10, 11, 13 and 14 are phone and tablet only since they run in real browsers, 2026-11-01: the menu does not exist on web-desktop); build/CI rows count once as platform-independent; android and ios show as not applicable | NONE | feature-matrix.test › a web row is covered on a platform only where its cited test passed; feature-matrix.test › the coverage table lists every platform and marks android and ios not applicable; feature-matrix.test › FEATURES.md carries the coverage-by-platform markers |
+| MATRIX-09 | Chromium cancels a page's loads with `net::ERR_NETWORK_CHANGED` (2026-11-01: PR #55 run 41291487197, NAV-01 on the gcp runner, its own assertions passing; a local image load, so the machine's interfaces changed, most likely a neighbouring job on the shared VM; not proven, no ssh to it) | The guard ignores that exact error in the console and in failed requests, so a neighbour's job cannot fail a test. Every other `net::` error, failed request and 404 still fails it. No retries. | NONE | console-filter.test › ignores a load the machine's network change cancelled; console-filter.test › still fails every other request failure and net:: error; console-filter.test › navigation and test aborts stay ignored in every engine |
