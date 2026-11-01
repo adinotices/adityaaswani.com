@@ -124,3 +124,28 @@ test('changes: a rename out of code, an empty diff and a manual run all still ru
   assert.equal(changesOutput('pull_request', []), 'code=true');
   assert.equal(changesOutput('workflow_dispatch', ['README.md']), 'code=true');
 });
+
+// DEPLOY-10 (AA-S21): a busy runner gives each repo a fixed CPU share, so 2 WebKit workers each ran on half
+// of it and tests hit the 30 s timeout. The config keys off PW_ENGINE, so the jobs must keep setting it.
+const workersFor = (env) => {
+  const { CI, PW_ENGINE, ...rest } = process.env;
+  const out = execFileSync(process.execPath, ['--input-type=module', '-e',
+    "console.log((await import('./playwright.config.mjs')).default.workers)"],
+  { cwd: new URL('..', import.meta.url), env: { ...rest, ...env }, encoding: 'utf8' });
+  return Number(out.trim());
+};
+
+test('WebKit runs one worker on CI; other engines two; the box six', () => {
+  assert.equal(workersFor({ CI: 'true', PW_ENGINE: 'webkit' }), 1);
+  assert.equal(workersFor({ CI: 'true', PW_ENGINE: 'chromium' }), 2);
+  assert.equal(workersFor({ CI: 'true', PW_ENGINE: 'firefox' }), 2);
+  assert.equal(workersFor({}), 6);
+});
+
+test('both WebKit E2E jobs set PW_ENGINE: webkit, which the one-worker rule keys off', () => {
+  const yml = readFileSync(new URL('e2e.yml', dir), 'utf8');
+  for (const job of ['e2e-desktop-webkit', 'e2e-phone-webkit']) {
+    const block = yml.slice(yml.indexOf(`  ${job}:`)).split(/\n\n/)[0];
+    assert.match(block, /env: \{ PW_ENGINE: webkit,/, job);
+  }
+});
