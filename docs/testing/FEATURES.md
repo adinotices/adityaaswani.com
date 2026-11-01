@@ -71,7 +71,7 @@ Last synced 2026-11-01 from the e2e reports of: web-tablet, web-desktop, web-pho
 | web-desktop | 132 | 136 | 97% |
 | web-phone | 147 | 157 | 94% |
 | web-tablet | 150 | 160 | 94% |
-| platform-independent (build, CI, unit) | 45 | 59 | 76% |
+| platform-independent (build, CI, unit) | 46 | 60 | 77% |
 | android | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 | ios | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 <!-- coverage-by-platform:end -->
