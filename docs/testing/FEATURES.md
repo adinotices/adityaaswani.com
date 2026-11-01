@@ -56,8 +56,8 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
-| 19 | Test matrix upkeep | 8 | 8 | 0 | Keeps this file honest. |
-| | **Total** | **222** | **165** | **24** | |
+| 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
+| | **Total** | **223** | **166** | **24** | |
 
 ## Coverage by platform
 
@@ -427,3 +427,4 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | MATRIX-06 | Dependabot PR (every commit in the range authored by `dependabot[bot]`) touches a mapped path, e.g. an Actions bump in e2e.yml (#36 failed on 2026-10-19; AA-S14) | Skipped with "dependency bump (Dependabot)"; Dependabot cannot add the Matrix-Skip trailer | NONE | feature-matrix.test › a range of only Dependabot commits is skipped as a dependency bump; feature-matrix.test › readRange reads authors from real git history |
 | MATRIX-07 | Dependabot PR plus a human commit that changes a feature without a row | Not skipped: the check fails and names the feature; an empty range or a look-alike author name never skips | NONE | feature-matrix.test › a Dependabot range with one human commit touching a feature without a row still fails; feature-matrix.test › an empty range or a look-alike author is not a Dependabot skip |
 | MATRIX-08 | Coverage per platform (2026-10-29): `--summary`, `--gaps <platform>`, `--sync` read the e2e JSON reports of the default and tablet lanes | A web row counts on a platform only where a test it cites passed in that platform's projects (a failed or skipped test is a gap); `only` limits rows to the platforms they apply to (EXT-02 is web-desktop only: a plain-HTTP sweep that runs in one lane, 2026-10-31; MENU-10, 11, 13 and 14 are phone and tablet only since they run in real browsers, 2026-11-01: the menu does not exist on web-desktop); build/CI rows count once as platform-independent; android and ios show as not applicable | NONE | feature-matrix.test › a web row is covered on a platform only where its cited test passed; feature-matrix.test › the coverage table lists every platform and marks android and ios not applicable; feature-matrix.test › FEATURES.md carries the coverage-by-platform markers |
+| MATRIX-09 | Chromium cancels a page's loads with `net::ERR_NETWORK_CHANGED` (2026-11-01: PR #55 run 41291487197, NAV-01 on the gcp runner, its own assertions passing; a local image load, so the machine's interfaces changed, most likely a neighbouring job on the shared VM; not proven, no ssh to it) | The guard ignores that exact error in the console and in failed requests, so a neighbour's job cannot fail a test. Every other `net::` error, failed request and 404 still fails it. No retries. | NONE | console-filter.test › ignores a load the machine's network change cancelled; console-filter.test › still fails every other request failure and net:: error; console-filter.test › navigation and test aborts stay ignored in every engine |
