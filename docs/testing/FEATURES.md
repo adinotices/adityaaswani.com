@@ -34,11 +34,11 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09. Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09; 2026-11-10 (SUP-34: PausePal copy on /support, #57, rebased). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 45 | 31 | 3 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 46 | 32 | 3 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
 | 3 | Support: thank-you page | 13 | 12 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 29 | 18 | 1 | Every page, every phone. |
@@ -54,10 +54,10 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 8 | 8 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 14 | 13 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 15 | 14 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 10 | 10 | 0 | Keeps this file honest. |
-| | **Total** | **242** | **184** | **22** | |
+| | **Total** | **244** | **186** | **22** | |
 
 ## Coverage by platform
 
@@ -109,6 +109,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-31 | Project links | Open in a new tab with noopener | NONE | support.spec › SUP-31 |
 | SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
 | SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
+| SUP-34 | Project copy: PausePal (2026-11-01: the page still said "a fixed weekly time" after the 2026-10-11 move to a rolling match) | The PausePal line says "on your schedule" and uses only what pausepal.co says (pick a few windows in your week, get paired with someone whose times overlap). The page never says "fixed weekly", "same time each week" or "weekly time". | NONE | support.spec › SUP-34 |
 | SUP-35 | Monthly/One-time tabs with text at 200% on a 390 px phone (fresh-user pass 2026-11-01) | Both labels stay inside the pill; the tabs stack when they no longer fit side by side. **Bug found 2026-11-01:** "One-time" spilled out of the pill and over the edge of the card, on the page's main control. | NONE | support.spec › SUP-35 (Chromium and WebKit) |
 | SUP-36 | /support states Sutam's size truthfully (fresh-user pass 2026-11-01) | The Sutam line does not claim "thousands" of talks. sutam.org's own home page says "Over 1,400 Dharma talks" as read on 2026-11-01. | NONE | support.spec › SUP-36 |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
