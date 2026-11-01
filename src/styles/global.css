@@ -171,8 +171,8 @@ a:hover { color: var(--clay-ink); text-decoration-thickness: 2px; }
 .badge::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
 .badge--live { background: var(--sage-tint); color: var(--sage-ink); }
 .badge--beta { background: var(--clay-tint); color: var(--clay-ink); }
-.badge--coming-soon { background: transparent; color: var(--ink-2); }
-.badge--coming-soon::before { background: transparent; border: 2px solid currentColor; }
+.badge--coming-soon, .badge--personal { background: transparent; color: var(--ink-2); }
+.badge--coming-soon::before, .badge--personal::before { background: transparent; border: 2px solid currentColor; }
 
 /* Long-form pages */
 .page { padding: clamp(2rem, 6vw, 4rem) 0 clamp(3rem, 8vw, 5rem); }
