@@ -18,6 +18,10 @@ const ogSize = ogSizes[ogImage];
 // Design-preview builds (PUBLIC_PREVIEW=1, deployed to Cloudflare Pages) are never
 // indexed and never report to Plausible.
 const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
+// Set by GitHub Actions: which commit this build is, and when it was built. The nightly compares it
+// with main, so a failed deploy or a missed Monday rebuild shows (scripts/check-deploy-marker.mjs).
+const buildSha = process.env.GITHUB_SHA;
+const buildMarker = buildSha ? `${buildSha} ${new Date().toISOString()}` : null;
 ---
 
 <!DOCTYPE html>
@@ -38,6 +42,7 @@ const isPreview = import.meta.env.PUBLIC_PREVIEW === "1";
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="generator" content={Astro.generator} />
+    {buildMarker && <meta name="build" content={buildMarker} />}
     <title>{title}</title>
     <script is:inline>
       (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add('js');})();
