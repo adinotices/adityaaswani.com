@@ -137,6 +137,46 @@ test.describe('MENU: phone menu', () => {
     }
   });
 
+  test('MENU-10 tabbing past the theme switch closes the menu; tabbing from the last link to it does not', async ({ page, browserName }) => {
+    test.skip(browserName === 'webkit', 'Safari does not Tab to links by default (Option+Tab); covered in Chromium and Firefox');
+    await page.goto('/contact/');
+    await page.locator('.menu-toggle').click();
+    await page.locator('#site-nav a').last().focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#site-nav .theme-toggle')).toBeFocused();
+    await expect(page.locator('#site-nav')).toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#site-nav')).toBeHidden();
+    await expect(page.locator('.menu-toggle')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('MENU-11 focus moving to the Support pill closes the menu', async ({ page }) => {
+    await page.goto('/contact/');
+    await page.locator('.menu-toggle').click();
+    await page.locator('.actions a.support').focus();
+    await expect(page.locator('#site-nav')).toBeHidden();
+  });
+
+  test('MENU-13 tapping the header bar but not a link leaves the menu open', async ({ page }) => {
+    await page.goto('/contact/');
+    await page.locator('.menu-toggle').click();
+    const brand = await page.locator('.site-header a.brand').boundingBox();
+    const bar = await page.locator('.bar').boundingBox();
+    // The gap between the wordmark and the actions, inside the header.
+    await page.mouse.click(brand.x + brand.width + 8, bar.y + brand.height / 2);
+    await expect(page.locator('#site-nav')).toBeVisible();
+    await expect(page.locator('.menu-toggle')).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('MENU-14 focus moving between links and the button leaves the menu open', async ({ page }) => {
+    await page.goto('/contact/');
+    await page.locator('.menu-toggle').click();
+    await page.locator('#site-nav a').nth(2).focus();
+    await expect(page.locator('#site-nav')).toBeVisible();
+    await page.locator('.menu-toggle').focus();
+    await expect(page.locator('#site-nav')).toBeVisible();
+  });
+
   for (const [width, visible] of [[320, 'none'], [390, 'short'], [440, 'full']]) {
     test(`MENU-08 at ${width} px the Support pill shows the ${visible} label and fits`, async ({ page }, testInfo) => {
       test.skip(!testInfo.project.name.startsWith('phone'), 'phone widths; phone projects only');

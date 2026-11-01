@@ -102,6 +102,38 @@ test.describe('HOME', () => {
     await expect(page).toHaveURL(/\/support\/$/);
   });
 
+  test('HOME-06 the portrait offers 320, 640 and 960 px and each one is a real image', async ({ page, request }) => {
+    await page.goto('/');
+    const img = page.locator('.hero .portrait img');
+    await expect(img).toHaveAttribute('srcset', '/aditya-320.webp 320w, /aditya-640.webp 640w, /aditya-960.webp 960w');
+    await expect(img).toHaveAttribute('fetchpriority', 'high');
+    expect(await img.getAttribute('alt')).toBeTruthy();
+    for (const w of [320, 640, 960]) {
+      const r = await request.get(`/aditya-${w}.webp`);
+      expect(r.status(), `${w}w`).toBe(200);
+      expect(r.headers()['content-type']).toContain('image/webp');
+      const naturalWidth = await page.evaluate(async (src) => {
+        const i = new Image();
+        i.src = src;
+        await i.decode();
+        return i.naturalWidth;
+      }, `/aditya-${w}.webp`);
+      expect(naturalWidth).toBe(w);
+    }
+  });
+
+  test('HOME-17 the smaller home links: How I teach, All essays and the contact line', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#writing .all a')).toHaveAttribute('href', 'https://essays.adityaaswani.com');
+    await expect(page.locator('#newsletter .contact-line a[href="mailto:hello@adityaaswani.com"]')).toHaveCount(1);
+    await page.locator('#newsletter .contact-line a', { hasText: 'contact page' }).click();
+    await expect(page).toHaveURL(/\/contact\/$/);
+    await page.goto('/');
+    await page.locator('#meditation a', { hasText: 'How I teach' }).click();
+    await expect(page).toHaveURL(/\/learn-meditation\/$/);
+    await expect(page.locator('h1')).toHaveText('Learn Meditation');
+  });
+
   test('HOME-05 the Person JSON-LD parses and names the same socials as the footer', async ({ page }) => {
     await page.goto('/');
     const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
