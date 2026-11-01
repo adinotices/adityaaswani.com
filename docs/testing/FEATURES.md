@@ -38,12 +38,12 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 43 | 29 | 4 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 44 | 30 | 4 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
 | 3 | Support: thank-you page | 12 | 11 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
-| 6 | Page rendering and layout | 11 | 9 | 1 | Broken images, sideways scroll, fonts. |
+| 6 | Page rendering and layout | 12 | 10 | 1 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 8 | 7 | 1 | Contrast and labels on every page. |
 | 8 | Home page content | 14 | 13 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
@@ -57,7 +57,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
-| | **Total** | **229** | **172** | **24** | |
+| | **Total** | **231** | **174** | **24** | |
 
 ## Coverage by platform
 
@@ -109,6 +109,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-31 | Project links | Open in a new tab with noopener | NONE | support.spec › SUP-31 |
 | SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
 | SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
+| SUP-35 | Monthly/One-time tabs with text at 200% on a 390 px phone (fresh-user pass 2026-11-01) | Both labels stay inside the pill; the tabs stack when they no longer fit side by side. **Bug found 2026-11-01:** "One-time" spilled out of the pill and over the edge of the card, on the page's main control. | NONE | support.spec › SUP-35 (Chromium and WebKit) |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
 | GIVE-02 | Double click, or a click while "Opening secure checkout…" | One request. The button shows busy (`aria-busy`). | NONE | support.spec › GIVE-02 |
 | GIVE-03 | Keyboard: Enter and Space on the focused button | Each starts checkout | NONE | support.spec › GIVE-03 |
@@ -258,6 +259,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-09 | Text at 200% (root 32 px; WCAG 1.4.4) on every page | No sideways scroll and no clipped text, on desktop, phone and tablet. **Bug found 2026-11-01:** on a 390 px phone every page scrolled sideways (449–505 px wide): the header's Support pill and menu button could not wrap, the /links and /thanks email fields kept a 12–14rem basis, and a product badge and long links could not break. 150% was already clean. Fixed: the phone header bar wraps, the fields shrink, text breaks. Layout at normal size is unchanged (pixel diff, audit report). | NONE | pages.spec › PAGE-09 (6 pages, Chromium and WebKit) |
 | PAGE-10 | Every page on web-tablet: iPad portrait 820x1180, iPad landscape 1180x820, Android tablet 800x1280 (touch) (2026-10-29) | Loads with its h1, no sideways scroll, no control under 24 px (WCAG 2.5.8; inline text links excepted). Controls under 44 px are listed "for review" in the log, not failed. A full-page screenshot per page per profile goes to the nightly's tablet-<stamp>/ folder. | NONE | tablet.spec › PAGE-10 (6 pages × 3 profiles) |
 | PAGE-11 | Critical bytes on `/` and /support/ (2026-11-01; PAGE-07 is a timed PSI number that can't run on a loaded box) | Bytes needed for the first screen (document, CSS, preloaded fonts, LCP image; gzipped text) stay within a budget derived from PSI Slow 4G. The portrait is not lazy. No third-party script blocks parsing. | NONE | pages.spec › PAGE-11 (Chromium) |
+| PAGE-12 | Text at 200% on a 390 px phone: words stay readable (fresh-user pass 2026-11-01) | Body text, buttons and links keep their words whole, and the /contact mail buttons break only at the @ or a dot. Inline addresses in a sentence may still wrap anywhere: a break point there would split them at normal size too. **Bug found 2026-11-01:** /contact showed `hello@a / dityaas / wani.co / m`, /thanks `Unconditiona / lly.`, and the menu theme button went oval. Gutters and card padding were rem, so they doubled and took the width from the text. They are px now; layout at normal size is unchanged (pixel diff, PR). Headings are out of scope: at 50 px and up, one long word can be wider than a phone. PAGE-09 could not see this: nothing overflows, the words just break. | NONE | pages.spec › PAGE-12 (6 pages and the menu, Chromium and WebKit) |
 
 ## 7. Accessibility
 

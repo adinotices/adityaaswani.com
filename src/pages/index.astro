@@ -207,13 +207,13 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
 
   /* Product cards */
   .cards { list-style: none; display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
-  .card { position: relative; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
+  .card { position: relative; padding: 24px; display: flex; flex-direction: column; gap: 0.6rem; transition: transform 0.25s, box-shadow 0.25s; }
   @media (prefers-reduced-motion: no-preference) { .card:hover, .essay:hover { transform: translateY(-3px) rotate(-0.4deg); } }
   .card-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
   /* Screenshot cards: 16:10 image bleeds to the card edges; the badge takes the motif's place */
   .shot {
-    width: calc(100% + 3rem); max-width: none; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top;
-    margin: -1.5rem -1.5rem 0.4rem; border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--line);
+    width: calc(100% + 48px); max-width: none; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top;
+    margin: -24px -24px 0.4rem; border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--line);
   }
   .card--shot .card-top { justify-content: flex-start; }
   .motif { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50% 46% 52% 48%; background: var(--sage-tint); color: var(--sage-ink); }
@@ -253,7 +253,7 @@ const personJson = JSON.stringify(person).replace(/</g, '\\u003c');
   .support h2 { font-size: clamp(1.9rem, 4.5vw, 2.7rem); margin-bottom: 0.8rem; }
   .support p { color: var(--ink-2); font-size: 1.15rem; margin-bottom: 1.4rem; }
 
-  .news { padding: clamp(1.5rem, 4vw, 2.6rem); text-align: center; }
+  .news { padding: clamp(24px, 4vw, 41.6px); text-align: center; }
   .news h2 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin-bottom: 0.5rem; }
   .news > p { color: var(--ink-2); }
   form { margin-top: 1.4rem; text-align: left; }
