@@ -26,6 +26,8 @@ const results = [];
 try {
   const browser = await puppeteer.connect({ browserWSEndpoint: `wss://connect.steel.dev?apiKey=${key}&sessionId=${session.id}`, defaultViewport: null });
   const page = await browser.newPage();
+  // A cloud browser may hide navigator.webdriver, so opt out of Plausible explicitly (FEATURES.md ANA-02).
+  await page.evaluateOnNewDocument(() => { try { localStorage.setItem('plausible_ignore', 'true'); } catch {} });
   for (const vp of VIEWPORTS) {
     await page.setViewport(vp);
     for (const path of PATHS) {

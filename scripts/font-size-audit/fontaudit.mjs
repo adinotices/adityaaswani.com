@@ -171,6 +171,8 @@ async function withSession(fn) {
 
 async function open(browser, pg, w, scheme) {
   const page = await browser.newPage();
+  // A cloud browser may hide navigator.webdriver, so opt out of Plausible explicitly (adityaaswani.com FEATURES.md ANA-02).
+  await page.evaluateOnNewDocument(() => { try { localStorage.setItem("plausible_ignore", "true"); } catch {} });
   if (cfg.bypassCSP !== false) await page.setBypassCSP(true);
   if (cfg.local) {
     await page.setRequestInterception(true);

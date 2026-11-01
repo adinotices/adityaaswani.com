@@ -66,10 +66,11 @@ const buildMarker = buildSha ? `${buildSha} ${new Date().toISOString()}` : null;
     <meta name="theme-color" content="#f8f1e3" />
 
     <!-- Privacy-friendly analytics by Plausible -->
-    {!isPreview && <script async src="https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js"></script>}
+    {/* Automated browsers never load it: navigator.webdriver, or Plausible's own localStorage opt-out (FEATURES.md ANA-05 to ANA-08). */}
     {!isPreview && <script is:inline>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
+      plausible.init();
+      (function(){var off=navigator.webdriver===true;try{off=off||localStorage.plausible_ignore==='true'}catch(e){}if(off)return;var s=document.createElement('script');s.async=true;s.src='https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js';document.head.appendChild(s)})();
     </script>}
     <!-- Cloudflare Web Analytics (cookieless) -->
     {!isPreview && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>}

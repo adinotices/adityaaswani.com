@@ -99,7 +99,8 @@ test.describe('light OS', () => {
   test('THEME-09 the site stores nothing but the theme and sets no cookies', async ({ page, context }) => {
     for (const p of PAGES) await page.goto(p.path);
     await (await toggle(page)).click();
-    const keys = await page.evaluate(() => Object.keys(localStorage));
+    // plausible_ignore is the test fixture's own opt-out (ANA-07); the site never writes it.
+    const keys = await page.evaluate(() => Object.keys(localStorage).filter((k) => k !== 'plausible_ignore'));
     expect(keys).toEqual(['theme']);
     const own = (await context.cookies()).filter((c) => /localhost|adityaaswani\.com/.test(c.domain));
     expect(own).toEqual([]);

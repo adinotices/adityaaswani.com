@@ -44,7 +44,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 11 | 9 | 1 | Broken images, sideways scroll, fonts. |
-| 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
+| 7 | Accessibility | 8 | 7 | 1 | Contrast and labels on every page. |
 | 8 | Home page content | 14 | 13 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
@@ -53,11 +53,11 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
 | 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
-| 16 | Analytics | 4 | 4 | 1 | Owner-facing only. |
+| 16 | Analytics | 8 | 8 | 1 | Owner-facing only. |
 | 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
-| 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
+| 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
-| | **Total** | **223** | **166** | **24** | |
+| | **Total** | **229** | **172** | **24** | |
 
 ## Coverage by platform
 
@@ -68,10 +68,10 @@ Last synced 2026-11-01 from the e2e reports of: web-tablet, web-desktop, web-pho
 
 | Platform | Covered | Applicable | Coverage |
 |---|---|---|---|
-| web-desktop | 132 | 136 | 97% |
-| web-phone | 147 | 157 | 94% |
-| web-tablet | 150 | 160 | 94% |
-| platform-independent (build, CI, unit) | 46 | 60 | 77% |
+| web-desktop | 136 | 140 | 97% |
+| web-phone | 151 | 161 | 94% |
+| web-tablet | 154 | 164 | 94% |
+| platform-independent (build, CI, unit) | 48 | 62 | 77% |
 | android | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 | ios | – | 0 | not applicable: web-only site, no native app; real-device rows (GIVE-07, MENU-16, A11Y-06) are the monthly fresh-user pass |
 <!-- coverage-by-platform:end -->
@@ -270,6 +270,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | A11Y-05 | New-tab links announced | "(opens in a new tab)" on footer socials and forms | NONE | nav.spec › FOOT-02; newsletter.spec › NEWS-03 (form buttons) |
 | A11Y-06 | Real screen readers (VoiceOver, TalkBack) | Reads in order | NONE | NONE (manual; monthly fresh-user pass) |
 | A11Y-07 | axe on `/` at web-tablet iPad portrait 820x1180, light and dark (AA-27) | 0 violations | NONE | content.spec › A11Y-07 |
+| A11Y-08 | The font-size audit opens live pages in Steel, which may hide webdriver | Every page it opens sets `plausible_ignore` first, so an audit is not a visit | NONE | analytics-opt-out.test › the font-size audit sets plausible_ignore on every page |
 
 ## 8. Home page content (`/`)
 
@@ -385,7 +386,11 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
 | ANA-01 | @live Plausible and the Cloudflare beacon load under the CSP | Both scripts 200, `window.plausible` defined, no CSP violation. Skipped on preview builds, which have no analytics by design; never skipped against prod, where noindex is a failure (2026-11-01). | NONE | analytics.spec › ANA-01 |
-| ANA-02 | Test runs never count as visits | Plausible ignores webdriver. Events and the beacon are answered locally by the guard fixture. | NONE | fixtures.mjs guard |
+| ANA-02 | Test runs never count as visits (owner saw 7 uniques on /support/thanks with no donations, 2026-11-01) | Every Playwright context sets `localStorage.plausible_ignore`, so no page loads the Plausible script; events and the beacon are answered locally by the guard fixture. The flag is the fixture's: THEME-09 ignores it, the site never writes it. | NONE | analytics.spec › ANA-02 |
+| ANA-05 | A real visitor (no webdriver, no opt-out) | The Plausible script tag is in the page, same src, async, not blocked by the CSP; `window.plausible` works | NONE | analytics.spec › ANA-05 |
+| ANA-06 | Automated browser (`navigator.webdriver` true) | The Plausible script is not loaded; `window.plausible` is still a function, so a call cannot throw | NONE | analytics.spec › ANA-06 |
+| ANA-07 | Browser that hides webdriver but has `localStorage.plausible_ignore = "true"` (Plausible's documented opt-out) | The Plausible script is not loaded | NONE | analytics.spec › ANA-07 |
+| ANA-08 | A person whose browser blocks localStorage | Reading the opt-out throws, is caught, and the visit is still counted: the script loads | NONE | analytics.spec › ANA-08 |
 | ANA-04 | The Cloudflare beacon never fails a test that is not about analytics (nightly 2026-10-13 and 2026-10-21: NAV-05 on phone-webkit, `pageerror: …/cdn-cgi/rum due to access control checks`) | Outside ANA-01 the beacon gets an empty script, even with E2E_LIVE=1, so no /cdn-cgi/rum POST is ever cut off by a navigation. ANA-01 runs the real beacon (`realBeacon` option) and sees its rum POST answered locally. Test defect, not a site bug: real visitors' beacons talk to Cloudflare. Harness (`E2E_LIVE=1 npx playwright test e2e/nav.spec.mjs -g NAV-05 --project=phone-webkit --repeat-each=1000 --workers=8`, box load ~50): before 11 failed of 888 (run stopped at its time cap), after 0 failed of 1000. | NONE | analytics.spec › ANA-01; nav.spec › NAV-05 |
 | ANA-03 | A real visit is counted | The Plausible dashboard shows the page view | NONE | NONE (owner checks the dashboard; AA-23 decides whether both stay) |
 
@@ -414,6 +419,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PREV-01 | Not on the public site | /preview* answers 404 | build | pages.spec › ERR404-02 |
 | PREV-02 | Preview deploy | noindex header, no analytics, fonts load | NONE | NONE (scripts/design-previews-axe.mjs by hand; quarterly refresh, docs/DESIGN-PREVIEWS.md) |
 | PREV-03 | axe baseline on the variants | Matches the recorded baseline | NONE | NONE (scripts/design-previews-axe.mjs by hand) |
+| PREV-04 | The axe run opens pages in Steel, which may hide webdriver | Every page it opens sets `plausible_ignore` first, so pointing it at a live origin is not a visit | NONE | analytics-opt-out.test › the design-preview axe run sets plausible_ignore on every page |
 
 ## 19. Test matrix upkeep
 
