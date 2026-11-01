@@ -19,12 +19,13 @@ export const identity = {
   },
 };
 
-export type ProductStatus = "live" | "beta" | "coming-soon";
+export type ProductStatus = "live" | "beta" | "coming-soon" | "personal";
 
 export const statusLabel: Record<ProductStatus, string> = {
   live: "Live",
   beta: "Private beta",
   "coming-soon": "Coming soon",
+  personal: "Personal tool",
 };
 
 export interface Product {
@@ -44,19 +45,6 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    slug: "savethedogs",
-    name: "SaveTheDogs",
-    pitch: "Ridglan has shut down. Now the campaign to free the 16,000 beagles at Marshall BioResources.",
-    status: "live",
-    url: "https://savethedogs.io",
-    linkLabel: "savethedogs.io",
-    screenshot: {
-      src640: "/products/savethedogs-640.webp",
-      src1280: "/products/savethedogs-1280.webp",
-      alt: "SaveTheDogs home page: “Now let’s get 16,000 beagles out of Marshall.” beside a petition form",
-    },
-  },
-  {
     slug: "sutam",
     name: "Sutam",
     pitch:
@@ -74,7 +62,7 @@ export const products: Product[] = [
   {
     slug: "pausepal",
     name: "PausePal",
-    pitch: "Meditate with a buddy every week. Get matched with one partner at times that suit you both, and keep each other showing up.",
+    pitch: "Meditate with a buddy, on your schedule. Get matched with one partner at times that suit you both, and keep each other showing up.",
     status: "live",
     updated: "2026-10",
     url: "https://pausepal.co",
@@ -108,6 +96,15 @@ export const products: Product[] = [
       src1280: "/products/amberhall-1280.webp",
       alt: "Amberhall home page: the Amberhall logo, “Every table deserves a storyteller.” and Host a game and Join a game buttons",
     },
+  },
+  {
+    slug: "tala",
+    name: "Tala",
+    pitch:
+      "An AI-assisted publishing tool I'm building for myself: I film one idea, and it cuts the video and drafts the posts for each platform. Nothing goes out until I approve it.",
+    status: "personal",
+    updated: "2026-10",
+    linkLabel: "Follow along",
   },
 ];
 
