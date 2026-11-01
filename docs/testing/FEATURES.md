@@ -38,7 +38,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 43 | 29 | 4 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 44 | 30 | 4 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
 | 3 | Support: thank-you page | 12 | 11 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
@@ -57,7 +57,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
-| | **Total** | **223** | **166** | **24** | |
+| | **Total** | **224** | **167** | **24** | |
 
 ## Coverage by platform
 
@@ -109,6 +109,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-31 | Project links | Open in a new tab with noopener | NONE | support.spec › SUP-31 |
 | SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
 | SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
+| SUP-34 | Project copy: PausePal (2026-11-01: the page still said "a fixed weekly time" after the 2026-10-11 move to a rolling match) | The PausePal line says "on your schedule" and uses only what pausepal.co says (pick a few windows in your week, get paired with someone whose times overlap). The page never says "fixed weekly", "same time each week" or "weekly time". | NONE | support.spec › SUP-34 |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
 | GIVE-02 | Double click, or a click while "Opening secure checkout…" | One request. The button shows busy (`aria-busy`). | NONE | support.spec › GIVE-02 |
 | GIVE-03 | Keyboard: Enter and Space on the focused button | Each starts checkout | NONE | support.spec › GIVE-03 |

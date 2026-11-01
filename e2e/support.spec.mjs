@@ -401,6 +401,12 @@ test.describe('SUP: page content', () => {
     await expect(page.locator('.secure')).toContainText('Secure checkout by Stripe.');
   });
 
+  test('SUP-34 the PausePal line describes the rolling match, not a fixed weekly time', async ({ page }) => {
+    const line = page.locator('.project-list li', { has: page.getByRole('link', { name: 'PausePal' }) });
+    await expect(line).toContainText('on your schedule');
+    await expect(page.locator('main')).not.toContainText(/fixed weekly|same time each week|weekly time/i);
+  });
+
   test('SUP-33 the site ships live-mode Stripe links, never test ones', async ({ page }) => {
     expect(supportLinks.mode).toBe('live');
     // A test-mode Payment Link has /test_ in its path and a test portal /p/login/test_.
