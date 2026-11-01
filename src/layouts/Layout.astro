@@ -65,15 +65,13 @@ const buildMarker = buildSha ? `${buildSha} ${new Date().toISOString()}` : null;
     <link rel="preload" as="font" type="font/woff2" href={frauncesUrl} crossorigin />
     <meta name="theme-color" content="#f8f1e3" />
 
-    <!-- Privacy-friendly analytics by Plausible -->
-    {/* Automated browsers never load it: navigator.webdriver, or Plausible's own localStorage opt-out (FEATURES.md ANA-05 to ANA-08). */}
+    <!-- Privacy-friendly analytics: Plausible and Cloudflare Web Analytics (cookieless) -->
+    {/* Automated browsers load neither: navigator.webdriver, or Plausible's own localStorage opt-out, which also covers Cloudflare, since that beacon has none (FEATURES.md ANA-02, ANA-05 to ANA-08). */}
     {!isPreview && <script is:inline>
       window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
       plausible.init();
-      (function(){var off=navigator.webdriver===true;try{off=off||localStorage.plausible_ignore==='true'}catch(e){}if(off)return;var s=document.createElement('script');s.async=true;s.src='https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js';document.head.appendChild(s)})();
+      (function(){var off=navigator.webdriver===true;try{off=off||localStorage.plausible_ignore==='true'}catch(e){}if(off)return;function add(src,token){var s=document.createElement('script');s.async=true;s.src=src;if(token)s.setAttribute('data-cf-beacon',JSON.stringify({token:token}));document.head.appendChild(s)}add('https://plausible.io/js/pa-bwqzj0WiW7cQd51RChC7F.js');add('https://static.cloudflareinsights.com/beacon.min.js','cfcbbc56a1534a87bef6280a5026c2dd')})();
     </script>}
-    <!-- Cloudflare Web Analytics (cookieless) -->
-    {!isPreview && <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"cfcbbc56a1534a87bef6280a5026c2dd"}'></script>}
     <slot name="head" />
   </head>
   <body>

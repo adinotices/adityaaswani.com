@@ -8,8 +8,8 @@
 //   opt in with test.use({ realBeacon: true }) (ANA-01); everywhere else it gets an empty
 //   script, because WebKit reports its preflighted /cdn-cgi/rum POST as a page error
 //   ("... due to access control checks") when a navigation cuts it off (ANA-04).
-// - Every context sets Plausible's opt-out (localStorage.plausible_ignore), so Layout.astro never
-//   loads the script even in a browser that hides navigator.webdriver. test.use({ realVisitor: true })
+// - Every context sets Plausible's opt-out (localStorage.plausible_ignore), so Layout.astro loads
+//   neither script, even in a browser that hides navigator.webdriver. test.use({ realVisitor: true })
 //   turns that off and makes navigator.webdriver read false, so the page behaves as for a person;
 //   its events still stop at the guard's route (ANA-01, ANA-05).
 // - Stripe pages are never opened: checkout.stripe.com, buy.stripe.com and
