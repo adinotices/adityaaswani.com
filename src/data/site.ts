@@ -19,12 +19,13 @@ export const identity = {
   },
 };
 
-export type ProductStatus = "live" | "beta" | "coming-soon";
+export type ProductStatus = "live" | "beta" | "coming-soon" | "personal";
 
 export const statusLabel: Record<ProductStatus, string> = {
   live: "Live",
   beta: "Private beta",
   "coming-soon": "Coming soon",
+  personal: "Personal tool",
 };
 
 export interface Product {
@@ -95,6 +96,15 @@ export const products: Product[] = [
       src1280: "/products/amberhall-1280.webp",
       alt: "Amberhall home page: the Amberhall logo, “Every table deserves a storyteller.” and Host a game and Join a game buttons",
     },
+  },
+  {
+    slug: "tala",
+    name: "Tala",
+    pitch:
+      "An AI-assisted publishing tool I'm building for myself: I film one idea, and it cuts the video and drafts the posts for each platform. Nothing goes out until I approve it.",
+    status: "personal",
+    updated: "2026-10",
+    linkLabel: "Follow along",
   },
 ];
 

@@ -34,7 +34,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 (HOME-14–15: Building card fixes). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 (HOME-14–16: Building card fixes). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -45,7 +45,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 10 | 8 | 2 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 7 | 6 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 15 | 14 | 0 | First impression. |
+| 8 | Home page content | 16 | 15 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 2 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 8 | 8 | 1 | Mail links and booking. |
@@ -57,7 +57,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 12 | 11 | 3 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 3 | 2 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 8 | 8 | 0 | Keeps this file honest. |
-| | **Total** | **218** | **161** | **30** | |
+| | **Total** | **219** | **162** | **30** | |
 
 ## Coverage by platform
 
@@ -260,7 +260,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| A11Y-01 | axe (WCAG 2.1 A/AA + best practice) on every page, light and dark, desktop and phone | 0 violations. The thank-you page is checked with the upsell showing. | NONE | pages.spec › A11Y-01 (6 pages × 2 schemes × Chromium desktop + phone) |
+| A11Y-01 | axe (WCAG 2.1 A/AA + best practice) on every page, light and dark, desktop and phone | 0 violations. The thank-you page is checked with the upsell showing. The Personal tool badge (2026-11-01) is covered on / and /links. | NONE | pages.spec › A11Y-01 (6 pages × 2 schemes × Chromium desktop + phone) |
 | A11Y-02 | /support Other field error | Described by the error, which is aria-live; no axe violations with the error showing | NONE | pages.spec › A11Y-02 |
 | A11Y-03 | Keyboard-only giving | Tab to an amount, arrows to change, Tab to Give, Enter | NONE | support.spec › GIVE-03 (button); radio arrows are native |
 | A11Y-04 | Copy status announced | role=status gets "Copied" | unit | content.spec › COPY-01; copy-email.test › success path writes the data-copy text, announces Copied, then resets after the timer |
@@ -272,7 +272,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| HOME-01 | Product cards | 4 cards. Live ones link out over https. Coming-soon ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
+| HOME-01 | Product cards | 5 cards. Live ones link out over https. Coming-soon and personal-tool ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
 | HOME-02 | Writing section | 1–6 essays, newest first, each linking to essays.adityaaswani.com/p/… | NONE | content.spec › HOME-02 |
 | HOME-03 | Hero buttons | Scroll to Building and Writing | NONE | content.spec › HOME-03 |
 | HOME-04 | Meditation and Support sections | Book opens cal.com in a new tab. Support goes to /support/. | NONE | content.spec › HOME-04 |
@@ -283,10 +283,11 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-09 | Hero order, web-tablet portrait: iPad 820x1180, iPad mini 768x1024, Android tablet 800x1280 (AA-27) | Same order as phone up to the two-column hero at 860 px. The intro and both CTAs end above y=600 and above the portrait. Was: a ~500 px portrait between headline and intro, CTAs at y≈952. | NONE | content.spec › HOME-09 (×3 profiles) |
 | HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
-| HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
+| HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta, Coming soon or Personal tool (2026-11-01); a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
 | HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; that card and its capture left the site on 2026-11-01, HOME-15). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; pages.spec › PAGE-01 (the images decode) |
 | HOME-14 | PausePal card text matches its picture (AA-30, 2026-11-01) | The picture reads "Meditate with a buddy. On your schedule."; the pitch says "on your schedule" and never "every week" | NONE | content.spec › HOME-14 |
 | HOME-15 | Archived projects have no Building card (2026-11-01) | SaveTheDogs (archived 2026-10-20) is on neither the home Building section nor the /links build list. The /links petition card to savethedogs.io stays: the Marshall campaign is not what was archived. | NONE | content.spec › HOME-15 |
+| HOME-16 | Personal-tool card, Tala (2026-11-01) | Badge "Personal tool", no site and no screenshot, shows a motif, "Follow along" goes to the newsletter form on / and on /links | NONE | content.spec › HOME-16 |
 
 ## 9. Writing feed (build time)
 
@@ -309,7 +310,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
 | LINKS-01 | Main cards | 4 cards. External ones open in a new tab with noopener. Support stays on the site and opens /support/. | NONE | content.spec › LINKS-01 |
-| LINKS-02 | Build list | 4 products. Ones without a site go to /#newsletter in view. | NONE | content.spec › LINKS-02 |
+| LINKS-02 | Build list | 5 products. Ones without a site go to /#newsletter in view. | NONE | content.spec › LINKS-02 |
 | LINKS-03 | Own top bar | No site header. Support pill and theme switch present. og:image is og-links.jpg. | NONE | content.spec › LINKS-03 |
 | LINKS-04 | Social tiles | 12 tiles, new tab, noopener | NONE | content.spec › LINKS-04 |
 | LINKS-05 | Subscribe form | See NEWS-01..03 | NONE | newsletter.spec › NEWS-01 (/links/) |

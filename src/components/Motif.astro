@@ -30,4 +30,8 @@ const { slug } = Astro.props;
     <path d="M28 22c0-3 2-5 4-5s4 2 4 5"/>
     <path d="M32 12c-1-2 0-4 2-5" stroke-width="2"/>
   </>)}
+  {slug === 'tala' && (<>
+    <circle cx="32" cy="32" r="24"/>
+    <path d="M18 32v0M25 25v14M32 18v28M39 25v14M46 32v0" stroke-width="3.2"/>
+  </>)}
 </svg>
