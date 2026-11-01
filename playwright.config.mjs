@@ -38,11 +38,14 @@ export default defineConfig({
   // Flaky = broken: no retries, fix the cause.
   retries: 0,
   fullyParallel: true,
-  // CI runs on the self-hosted gcp runner: an e2-standard-4 (2 cores) that also runs other repos'
-  // jobs at the same time. With 3 workers there, WebKit and cold Firefox starved for CPU and tests hit
-  // the 30 s timeout (AA-S16, PR #47). 2 workers cut the slowest desktop-webkit test from 34 s to
-  // 21 s on a 2-CPU box with two busy neighbours.
-  workers: process.env.CI ? 2 : 6,
+  // CI runs on the self-hosted gcp runner: an e2-standard-4 (4 vCPUs, 2 cores) that also runs other repos'
+  // jobs at the same time. Each repo's runner is a systemd service with the same cpu.weight, so a busy VM
+  // hands this job a fixed share of the CPU however many workers it starts; more workers only split that
+  // share. With 3 workers, WebKit and cold Firefox starved and tests hit the 30 s timeout (AA-S16, PR #47).
+  // WebKit gets 1: its "stable" check counts painted frames, so it starves first, and a busy morning still
+  // beat 2 workers (AA-S21, DEPLOY-10). At a capped share, 1 worker halved test times (slowest 29.8 s to
+  // 13.5 s) for the same wall clock (372 s each). PW_ENGINE comes from e2e.yml.
+  workers: process.env.CI ? (process.env.PW_ENGINE === 'webkit' ? 1 : 2) : 6,
   timeout: 30_000,
   expect: { timeout: 5_000 },
   forbidOnly: !!process.env.CI,
