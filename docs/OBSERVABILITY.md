@@ -5,8 +5,9 @@
 
 ## Web analytics
 - Cloudflare Web Analytics (cookieless): Cloudflare dash > Analytics & Logs > Web Analytics > site `adityaaswani.com`.
-- Beacon is an external script in `src/layouts/Layout.astro` (token `cfcbbc56a1534a87bef6280a5026c2dd`). The `/zoom` redirect and the design variants in `design-previews/` (built only for the preview project) do not carry it.
-- Plausible is also installed in the same layout. Its inline bootstrap skips browsers with `navigator.webdriver` or `localStorage.plausible_ignore === "true"`.
+- Beacon is added at runtime by the inline bootstrap in `src/layouts/Layout.astro` (token `cfcbbc56a1534a87bef6280a5026c2dd`). The `/zoom` redirect and the design variants in `design-previews/` (built only for the preview project) do not carry it.
+- Plausible is also installed in the same layout. It shares that bootstrap.
+- The bootstrap loads neither script in browsers with `navigator.webdriver` or `localStorage.plausible_ignore === "true"`, so Cloudflare, which has no opt-out of its own, skips the same visits as Plausible.
 - No CSP is set (GitHub Pages cannot send custom headers; no meta CSP), so no allowlist changes are needed.
 
 ## Logs
