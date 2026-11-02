@@ -95,6 +95,13 @@ test('SUP-35 with text at 200% on a 390 px phone both frequency tabs stay inside
   expect(spill).toEqual([]);
 });
 
+test('SUP-36 the Sutam line does not overstate the number of talks', async ({ page }) => {
+  await page.goto('/support/');
+  const line = page.locator('.project-list li', { hasText: 'Sutam' });
+  await expect(line).toContainText('more than a thousand Dhamma talks');
+  await expect(line).not.toContainText('thousands');
+});
+
 test.describe('SUP: Other amount', () => {
   test('SUP-10 Other with nothing typed disables Give and sends nothing', async ({ page, checkout }) => {
     await pick(page, 'Other');

@@ -38,7 +38,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 44 | 30 | 4 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 45 | 31 | 4 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
 | 3 | Support: thank-you page | 13 | 12 | 1 | The upsell and the manage-or-cancel link after paying. |
 | 4 | Header, mobile menu, footer | 29 | 18 | 1 | Every page, every phone. |
@@ -57,7 +57,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
-| | **Total** | **236** | **179** | **24** | |
+| | **Total** | **237** | **180** | **24** | |
 
 ## Coverage by platform
 
@@ -110,6 +110,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
 | SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
 | SUP-35 | Monthly/One-time tabs with text at 200% on a 390 px phone (fresh-user pass 2026-11-01) | Both labels stay inside the pill; the tabs stack when they no longer fit side by side. **Bug found 2026-11-01:** "One-time" spilled out of the pill and over the edge of the card, on the page's main control. | NONE | support.spec › SUP-35 (Chromium and WebKit) |
+| SUP-36 | /support states Sutam's size truthfully (fresh-user pass 2026-11-01) | The Sutam line does not claim "thousands" of talks. sutam.org's own home page says "Over 1,400 Dharma talks" as read on 2026-11-01. | NONE | support.spec › SUP-36 |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
 | GIVE-02 | Double click, or a click while "Opening secure checkout…" | One request. The button shows busy (`aria-busy`). | NONE | support.spec › GIVE-02 |
 | GIVE-03 | Keyboard: Enter and Space on the focused button | Each starts checkout | NONE | support.spec › GIVE-03 |
