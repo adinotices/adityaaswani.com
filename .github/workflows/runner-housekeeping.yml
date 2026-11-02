@@ -1,0 +1,94 @@
+name: Runner housekeeping
+
+# Safety net for ci-runner-1, the one GCP VM that hosts all six self-hosted runners (this repo's
+# gcp-adityaaswani.com and five others). On 2026-11-01/02 its 96 GB root disk filled with ~700 orphaned
+# Docker volumes and every runner went offline for ~16 h. See docs/CI-RUNNER.md.
+#
+# prune (Sunday 05:30 UTC, before the 06:00 audits): removes only stopped containers, anonymous volumes no
+#   container references, dangling images and unused build cache over 10 GB. Anything a running job uses is
+#   in use and Docker refuses to prune it, so this is safe while other repos' jobs run on the VM.
+# disk-gauge (daily 05:00 UTC): df only, no pruning. Fails when / is above 80 % so the failure email names it.
+# A manual run does both.
+
+on:
+  schedule:
+    - cron: '0 5 * * *'   # disk-gauge
+    - cron: '30 5 * * 0'  # prune
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner-housekeeping
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    name: Prune Docker
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '30 5 * * 0'
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 30
+    steps:
+      - name: Disk before
+        timeout-minutes: 3
+        run: |
+          df -h /
+          sudo -n docker system df
+
+      # sudo -n: fail at once if passwordless sudo is gone instead of hanging on a prompt.
+      # until=1h on containers and images: never touch anything created in the last hour, so a job that
+      # has just created (but not yet started) a container is left alone.
+      - name: Remove stopped containers
+        timeout-minutes: 5
+        run: sudo -n docker container prune -f --filter until=1h
+
+      # Anonymous volumes only (no -a): named volumes are kept, and a volume any container uses is skipped.
+      - name: Remove orphaned anonymous volumes
+        timeout-minutes: 10
+        run: sudo -n docker volume prune -f
+
+      # Dangling (untagged, unreferenced) only; no -a, so tagged images and their layers stay cached.
+      - name: Remove dangling images
+        timeout-minutes: 5
+        run: sudo -n docker image prune -f --filter until=1h
+
+      - name: Trim build cache to 10 GB
+        timeout-minutes: 10
+        run: sudo -n docker builder prune -f --keep-storage 10GB
+
+      - name: Disk after
+        if: always()
+        timeout-minutes: 3
+        run: |
+          df -h /
+          sudo -n docker system df || true
+
+      - name: Root disk at or below 80 %
+        if: always()
+        timeout-minutes: 1
+        run: |
+          used=$(df --output=pcent / | tail -n 1 | tr -dc '0-9')
+          echo "ci-runner-1 / is ${used}% used after prune" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$used" -gt 80 ]; then
+            echo "::error title=ci-runner-1 disk ${used}%::Root disk is ${used}% used after prune (limit 80%). See docs/CI-RUNNER.md."
+            exit 1
+          fi
+          echo "Root disk ${used}% used (limit 80%)"
+
+  disk-gauge:
+    name: Disk gauge
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 5 * * *'
+    runs-on: [self-hosted, linux, gcp]
+    timeout-minutes: 2
+    steps:
+      - name: Root disk at or below 80 %
+        run: |
+          df -h /
+          used=$(df --output=pcent / | tail -n 1 | tr -dc '0-9')
+          echo "ci-runner-1 / is ${used}% used" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$used" -gt 80 ]; then
+            echo "::error title=ci-runner-1 disk ${used}%::Root disk is ${used}% used (limit 80%). See docs/CI-RUNNER.md."
+            exit 1
+          fi
+          echo "Root disk ${used}% used (limit 80%)"

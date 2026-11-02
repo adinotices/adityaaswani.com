@@ -1,0 +1,4 @@
+self-hosted-runner:
+  # ci-runner-1 runners (see docs/CI-RUNNER.md)
+  labels:
+    - gcp
