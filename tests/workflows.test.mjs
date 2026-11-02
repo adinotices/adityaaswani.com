@@ -161,3 +161,59 @@ test('both WebKit E2E jobs set PW_ENGINE: webkit, which the one-worker rule keys
     assert.match(block, /env: \{ PW_ENGINE: webkit,/, job);
   }
 });
+
+// DEPLOY-14: ci-runner-1's disk filled with orphaned Docker volumes on 2026-11-01/02 and all six runners
+// went offline for ~16 h. runner-housekeeping.yml prunes weekly and gauges the disk daily.
+const hk = readFileSync(new URL('runner-housekeeping.yml', dir), 'utf8');
+const hkJob = (name) => {
+  const rest = hk.slice(hk.indexOf(`\n  ${name}:\n`) + 1);
+  const next = rest.slice(1).search(/\n  [a-z][a-z0-9-]*:\n/);
+  return next < 0 ? rest : rest.slice(0, next + 1);
+};
+const hkSteps = (name) => hkJob(name).split(/\n(?=      - name:)/).slice(1);
+
+test('housekeeping: weekly prune Sunday 05:30 UTC, daily gauge 05:00 UTC, manual run, never twice, self-hosted', () => {
+  assert.match(hk, /^    - cron: '30 5 \* \* 0'/m);
+  assert.match(hk, /^    - cron: '0 5 \* \* \*'/m);
+  assert.match(hk, /^  workflow_dispatch:$/m);
+  assert.match(hk, /^concurrency:\n  group: runner-housekeeping\n  cancel-in-progress: false$/m);
+  assert.match(hkJob('prune'), /if: github\.event_name == 'workflow_dispatch' \|\| github\.event\.schedule == '30 5 \* \* 0'/);
+  assert.match(hkJob('disk-gauge'), /if: github\.event_name == 'workflow_dispatch' \|\| github\.event\.schedule == '0 5 \* \* \*'/);
+  for (const job of ['prune', 'disk-gauge']) assert.match(hkJob(job), /^    runs-on: \[self-hosted, linux, gcp\]$/m, job);
+  assert.match(hkJob('disk-gauge'), /^    timeout-minutes: 2$/m);
+  assert.doesNotMatch(hk, /ubuntu-latest|docker (?:system|network) prune/);
+});
+
+test('housekeeping: prunes only stopped/orphaned/dangling resources, sudo never prompts, every step has a timeout', () => {
+  const runs = hk.split('\n').filter((l) => /docker \w+ prune/.test(l)).map((l) => l.trim());
+  assert.deepEqual(runs, [
+    'run: sudo -n docker container prune -f --filter until=1h',
+    'run: sudo -n docker volume prune -f',
+    'run: sudo -n docker image prune -f --filter until=1h',
+    'run: sudo -n docker builder prune -f --keep-storage 10GB',
+  ]);
+  assert.doesNotMatch(hk.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n'), /\bsudo (?!-n )/);
+  assert.doesNotMatch(hkJob('disk-gauge'), /prune/);
+  for (const job of ['prune']) for (const s of hkSteps(job)) assert.match(s, /^        timeout-minutes: \d+$/m, s.split('\n')[0]);
+  const after = hkSteps('prune').slice(-2);
+  for (const s of after) assert.match(s, /^        if: always\(\)$/m, s.split('\n')[0]);
+});
+
+test('housekeeping: the gauge fails above 80 % and names the number', () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'gauge-'));
+  try {
+    for (const job of ['prune', 'disk-gauge']) {
+      const step = hkSteps(job).find((s) => /Root disk at or below 80 %/.test(s));
+      const script = step.slice(step.indexOf('run: |\n') + 7).split('\n').map((l) => l.replace(/^ {10}/, '')).join('\n');
+      for (const [pct, code] of [[12, 0], [80, 0], [81, 1], [100, 1]]) {
+        writeFileSync(join(tmp, 'df'), `#!/bin/sh\nprintf 'Use%%\\n ${pct}%%\\n'\n`, { mode: 0o755 });
+        let out = '', status = 0;
+        try {
+          out = execFileSync('bash', ['-e', '-c', script], { env: { ...process.env, PATH: `${tmp}:${process.env.PATH}`, GITHUB_STEP_SUMMARY: join(tmp, 'sum') }, encoding: 'utf8' });
+        } catch (e) { status = e.status; out = e.stdout; }
+        assert.equal(status, code, `${job} at ${pct}%`);
+        if (code) assert.match(out, new RegExp(`::error title=ci-runner-1 disk ${pct}%::`), `${job} at ${pct}%`);
+      }
+    }
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+});

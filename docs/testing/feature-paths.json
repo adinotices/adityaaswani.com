@@ -77,6 +77,8 @@
     "src/pages/404.astro": ["routes"],
     ".github/workflows/deploy.yml": ["deploy"],
     ".github/workflows/e2e.yml": ["deploy", "matrix"],
+    ".github/workflows/runner-housekeeping.yml": ["deploy"],
+    ".github/actionlint.yaml": ["deploy"],
     "design-previews/": ["previews"],
     "scripts/build-design-previews.mjs": ["previews"],
     "scripts/design-previews-axe.mjs": ["previews"],
