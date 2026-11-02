@@ -128,8 +128,9 @@ a:hover { color: var(--clay-ink); text-decoration-thickness: 2px; }
   clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-.wrap { width: min(100% - 2.5rem, 1080px); margin-inline: auto; }
-.wrap--narrow { width: min(100% - 2.5rem, 720px); margin-inline: auto; }
+/* Gutters and card padding are px, not rem: at 200% text a rem gutter takes the width the words need (PAGE-12). */
+.wrap { width: min(100% - 40px, 1080px); margin-inline: auto; }
+.wrap--narrow { width: min(100% - 40px, 720px); margin-inline: auto; }
 
 /* Buttons */
 .btn {

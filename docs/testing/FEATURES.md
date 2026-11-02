@@ -38,26 +38,26 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
-| 1 | Support: give flow | 44 | 30 | 4 | Money. A broken button loses a gift silently. |
+| 1 | Support: give flow | 45 | 31 | 4 | Money. A broken button loses a gift silently. |
 | 2 | Newsletter subscribe | 14 | 14 | 5 | The main call to action on three pages. It was broken in every browser (NEWS-12). |
-| 3 | Support: thank-you page | 12 | 11 | 1 | The upsell and the manage-or-cancel link after paying. |
-| 4 | Header, mobile menu, footer | 28 | 17 | 1 | Every page, every phone. |
-| 5 | Light/dark theme | 12 | 9 | 2 | Every page. A flash or a lost choice is visible at once. |
-| 6 | Page rendering and layout | 11 | 9 | 1 | Broken images, sideways scroll, fonts. |
+| 3 | Support: thank-you page | 13 | 12 | 1 | The upsell and the manage-or-cancel link after paying. |
+| 4 | Header, mobile menu, footer | 29 | 18 | 1 | Every page, every phone. |
+| 5 | Light/dark theme | 13 | 10 | 2 | Every page. A flash or a lost choice is visible at once. |
+| 6 | Page rendering and layout | 12 | 10 | 1 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 8 | 7 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 14 | 13 | 0 | First impression. |
+| 8 | Home page content | 15 | 14 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
-| 11 | /contact and /learn-meditation | 8 | 8 | 1 | Mail links and booking. |
+| 11 | /contact and /learn-meditation | 9 | 9 | 1 | Mail links and booking. |
 | 12 | Copy-email buttons | 6 | 1 | 0 | Small. |
 | 13 | Security headers and CSP | 9 | 3 | 1 | Silent breakage of other features (NEWS-12 was a CSP gap). |
 | 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 8 | 8 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 13 | 12 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 14 | 13 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 9 | 9 | 0 | Keeps this file honest. |
-| | **Total** | **230** | **173** | **24** | |
+| | **Total** | **238** | **181** | **24** | |
 
 ## Coverage by platform
 
@@ -109,6 +109,7 @@ The Give card sends `{site:'aditya', amount_cents, interval, cover_fees}` to the
 | SUP-31 | Project links | Open in a new tab with noopener | NONE | support.spec › SUP-31 |
 | SUP-32 | What a gift is (2026-11-01: the copy had no row) | "Not a charitable donation, so it isn't tax-deductible" and "Secure checkout by Stripe." are on the page | NONE | support.spec › SUP-32 |
 | SUP-33 | Live-mode money links (2026-11-01: SUP-01 only checked that the badge matches the mode, so a test-mode file would have shipped with every test green) | `mode` is `live`, no Stripe URL has `/test_`, no test badge, on the build and on prod | NONE | support.spec › SUP-33 |
+| SUP-35 | Monthly/One-time tabs with text at 200% on a 390 px phone (fresh-user pass 2026-11-01) | Both labels stay inside the pill; the tabs stack when they no longer fit side by side. **Bug found 2026-11-01:** "One-time" spilled out of the pill and over the edge of the card, on the page's main control. | NONE | support.spec › SUP-35 (Chromium and WebKit) |
 | SUP-36 | /support states Sutam's size truthfully (fresh-user pass 2026-11-01) | The Sutam line does not claim "thousands" of talks. sutam.org's own home page says "Over 1,400 Dharma talks" as read on 2026-11-01. | NONE | support.spec › SUP-36 |
 | GIVE-01 | Give: monthly preset, preset+fees, one-time preset, custom monthly, custom one-time+fees at $1000 | Exactly one POST with the base amount, the interval and cover_fees, then navigation to checkout.stripe.com | unit | support.spec › GIVE-01 (5 cases); donate.test › startCheckout success sends the right request |
 | GIVE-02 | Double click, or a click while "Opening secure checkout…" | One request. The button shows busy (`aria-busy`). | NONE | support.spec › GIVE-02 |
@@ -183,6 +184,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | THX-10 | Back from the upsell checkout | The Yes button is usable again, not stuck | NONE | thanks.spec › THX-10 |
 | THX-11 | Not in the sitemap | `/support/thanks` is absent | build | pages.spec › SEO-01; build-output.test › the sitemap lists only the public pages and no /preview page |
 | THX-12 | A refresh or second visit days later | Same page, no double charge (nothing is charged here) | NONE | NONE (stateless page; nothing to assert beyond THX-01..09) |
+| THX-13 | /support/thanks with text at 200% on a 390 px phone (2026-11-01) | Words stay whole. **Bug found 2026-11-01:** `Unconditiona / lly.` | NONE | pages.spec › THX-13 (Chromium and WebKit) |
 
 ## 4. Header, mobile menu, footer
 
@@ -220,6 +222,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | FOOT-04 | Footer on /links/ | /links has its own footer (blessing and home link) | NONE | content.spec › LINKS-03 |
 | FOOT-05 | Footer wordmark | Goes home | NONE | nav.spec › NAV-05 |
 | FOOT-06 | Footer in dark mode | Readable | NONE | pages.spec › A11Y-01 (dark) |
+| FOOT-07 | Social links with text at 200% on a 390 px phone (2026-11-01) | The row stays inside the page. Its negative margin is px and no wider than the page gutter. | NONE | pages.spec › FOOT-07 (Chromium and WebKit) |
 
 ## 5. Light/dark theme
 
@@ -243,6 +246,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | THEME-10 | Several toggles on a page (bar + menu, /links top bar) | All report the same aria-pressed | unit | theme.spec › THEME-10; theme-toggle.test › init syncs aria-pressed on every toggle; theme-toggle.test › clicking the menu toggle flips theme, persists, and syncs the bar toggle |
 | THEME-11 | An already open tab when another tab changes the theme | Keeps its theme until reloaded (there is no `storage` listener) | NONE | NONE (by design; noted, low impact) |
 | THEME-12 | Browser chrome colour in dark mode | `theme-color` stays cream (#f8f1e3) in dark mode, so the phone status bar doesn't match | NONE | NONE (known cosmetic gap, listed in the report; not a test target until a decision) |
+| THEME-13 | Menu theme button with text at 200% (2026-11-01) | Stays round. **Bug found 2026-11-01:** the Appearance row squeezed it into an oval. | NONE | pages.spec › THEME-13 (Chromium and WebKit) |
 
 ## 6. Page rendering and layout
 
@@ -259,6 +263,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-09 | Text at 200% (root 32 px; WCAG 1.4.4) on every page | No sideways scroll and no clipped text, on desktop, phone and tablet. **Bug found 2026-11-01:** on a 390 px phone every page scrolled sideways (449–505 px wide): the header's Support pill and menu button could not wrap, the /links and /thanks email fields kept a 12–14rem basis, and a product badge and long links could not break. 150% was already clean. Fixed: the phone header bar wraps, the fields shrink, text breaks. Layout at normal size is unchanged (pixel diff, audit report). | NONE | pages.spec › PAGE-09 (6 pages, Chromium and WebKit) |
 | PAGE-10 | Every page on web-tablet: iPad portrait 820x1180, iPad landscape 1180x820, Android tablet 800x1280 (touch) (2026-10-29) | Loads with its h1, no sideways scroll, no control under 24 px (WCAG 2.5.8; inline text links excepted). Controls under 44 px are listed "for review" in the log, not failed. A full-page screenshot per page per profile goes to the nightly's tablet-<stamp>/ folder. | NONE | tablet.spec › PAGE-10 (6 pages × 3 profiles) |
 | PAGE-11 | Critical bytes on `/` and /support/ (2026-11-01; PAGE-07 is a timed PSI number that can't run on a loaded box) | Bytes needed for the first screen (document, CSS, preloaded fonts, LCP image; gzipped text) stay within a budget derived from PSI Slow 4G. The portrait is not lazy. No third-party script blocks parsing. | NONE | pages.spec › PAGE-11 (Chromium) |
+| PAGE-12 | Text at 200% on a 390 px phone: words stay readable on /support/, /links/ and /learn-meditation/ (fresh-user pass 2026-11-01) | Body text, buttons and links keep their words whole. Gutters and card padding were rem, so they doubled and took the width from the text. They are px now; layout at normal size is unchanged (pixel diff, PR #61). Headings are out of scope: at 50 px and up, one long word can be wider than a phone. Inline addresses in a sentence may still wrap anywhere: a break point there would split them at normal size too. PAGE-09 could not see this: nothing overflows, the words just break. | NONE | pages.spec › PAGE-12 (Chromium and WebKit) |
 
 ## 7. Accessibility
 
@@ -291,6 +296,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
 | HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; its capture is cropped below the ticker, since the frozen site would show it again on a retake). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; product-screenshots.test › HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29); pages.spec › PAGE-01 (the images decode) |
 | HOME-17 | Smaller home links (2026-11-01: no row) | "How I teach" opens /learn-meditation/, "All essays" goes to essays.adityaaswani.com, the contact line links /contact/ and mailto | NONE | content.spec › HOME-17 |
+| HOME-18 | Home with text at 200% on a 390 px phone (2026-11-01) | Body text and links keep their words whole, and each card's screenshot still meets the card edges, because its bleed matches the card padding. | NONE | pages.spec › HOME-18 (Chromium and WebKit) |
 
 ## 9. Writing feed (build time)
 
@@ -327,6 +333,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | CONTACT-02 | Deep link #share-feedback | Scrolls into view | NONE | content.spec › CONTACT-02 |
 | CONTACT-03 | Copy buttons for both addresses | See COPY | NONE | content.spec › COPY-01 |
 | CONTACT-04 | "Through someone else" (2026-10-29: the feature had no row) | Two intermediary cards, each with a name, an outbound link (website or YouTube, new tab, noopener) and a mailto | NONE | content.spec › CONTACT-04 |
+| CONTACT-05 | /contact with text at 200% on a 390 px phone (2026-11-01) | The mail buttons break only at the @ or a dot. **Bug found 2026-11-01:** `hello@a / dityaas / wani.co / m`. | NONE | pages.spec › CONTACT-05 (Chromium and WebKit) |
 | MED-01 | Booking and questions | Two cal.com links. "Ask Questions" goes to /contact/. | NONE | content.spec › MED-01 |
 | EXT-01 | Every external link in the page bodies | target=_blank always has noopener | NONE | content.spec › EXT-01 |
 | EXT-02 | @live Link rot (desktop-chromium only; one sweep per run) | Every non-social outbound link answers below 400. Retries a 5xx or network error once after 2 s (a transient upstream 500 is not rot; Apple Podcasts, nightly 2026-10-31); a 4xx fails at once. The failure lists every bad link. | NONE | content.spec › EXT-02; link-check.test › 500 then 301 passes / 404 fails at once |

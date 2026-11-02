@@ -3,6 +3,85 @@ import AxeBuilder from '@axe-core/playwright';
 import { gzipSync } from 'node:zlib';
 import { test, expect, PAGES, PROD, expectNoHorizontalOverflow } from './fixtures.mjs';
 
+// The browser's text setting, not just a root style, is what a person with 200% text has. Root 32 px gives the same layout.
+const at200 = async (page, path) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(path);
+  await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+  await page.evaluate(() => document.fonts.ready);
+};
+
+const brokenWords = async (page, path) => {
+  await at200(page, path);
+  return page.evaluate(() => {
+    const out = [];
+    const root = document.querySelector('main') ?? document.body;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const lines = (node, start, end) => {
+      const r = document.createRange();
+      r.setStart(node, start);
+      r.setEnd(node, end);
+      return new Set([...r.getClientRects()].filter((c) => c.width > 0).map((c) => Math.round(c.top))).size;
+    };
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const el = node.parentElement;
+      // Headings are excluded: at 50 px and up, one long word can be wider than a phone.
+      if (!el.offsetParent || el.closest('.sr-only, h1, h2, h3, script, style')) continue;
+      for (const m of node.data.matchAll(/[^\s]{8,}/g)) {
+        if (/[-/@]/.test(m[0])) continue; // a hyphen, slash or inline address is a fair place to break
+        if (lines(node, m.index, m.index + m[0].length) > 1) out.push(m[0]);
+      }
+    }
+    return out;
+  });
+};
+const noFirefox = 'layout at a larger root size is covered in Chromium and WebKit';
+
+test('PAGE-12 /support/ with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/support/')).toEqual([]);
+});
+
+test('PAGE-12 /links/ with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/links/')).toEqual([]);
+});
+
+test('PAGE-12 /learn-meditation/ with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/learn-meditation/')).toEqual([]);
+});
+
+test('HOME-18 home with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/')).toEqual([]);
+});
+
+test('CONTACT-05 /contact/ with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/contact/')).toEqual([]);
+});
+
+test('THX-13 /support/thanks/ with text at 200% on a 390 px phone: words stay whole', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  expect(await brokenWords(page, '/support/thanks/?type=once')).toEqual([]);
+});
+
+test('FOOT-07 the social links stay inside the page with text at 200% on a 390 px phone', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', noFirefox);
+  await at200(page, '/contact/');
+  const right = await page.evaluate(() => document.querySelector('.socials').getBoundingClientRect().right);
+  expect(right).toBeLessThanOrEqual(390);
+});
+
+test('THEME-13 the menu theme button stays round with text at 200%', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', 'layout at a larger root size is covered in Chromium and WebKit');
+  await at200(page, '/');
+  await page.locator('.menu-toggle').click();
+  const box = await page.locator('header .theme-toggle:visible').first().boundingBox();
+  expect(Math.abs(box.width - box.height)).toBeLessThan(1);
+});
+
 for (const p of PAGES) {
   test.describe(p.path, () => {
     test(`PAGE-01 ${p.path} loads with its heading, one main landmark and no broken images`, async ({ page }) => {

@@ -382,11 +382,12 @@ const groups = [
 
   .give-card, .why {
     background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: clamp(1.25rem, 4vw, 2.2rem); margin-bottom: 2rem;
+    padding: clamp(20px, 4vw, 35.2px); margin-bottom: 2rem;
   }
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
-  .freq { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; padding: 0.25rem; border: 2px solid var(--ink-2); border-radius: 999px; background: var(--bg); margin-bottom: 1.25rem; }
+  /* Two tabs side by side until the text no longer fits (200%), then stacked (SUP-35). */
+  .freq { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(7rem, 100%), 1fr)); gap: 0.25rem; padding: 0.25rem; border: 2px solid var(--ink-2); border-radius: 999px; background: var(--bg); margin-bottom: 1.25rem; }
   .tab, .opt, .fee-label { position: relative; display: block; cursor: pointer; }
   .tab input, .opt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .tab span { display: flex; align-items: center; justify-content: center; gap: 0.4rem; min-height: 46px; border-radius: 999px; font-weight: 800; color: var(--ink); }
@@ -429,7 +430,7 @@ const groups = [
   .helper { margin: 0.1rem 0 0 calc(24px + 0.75rem); font-size: 0.9rem; color: var(--ink-2); }
 
   .give-button {
-    display: block; padding: 1rem 1.5rem; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-align: center; text-decoration: none;
+    display: block; padding: 1rem 24px; border-radius: 999px; background: var(--btn-bg); color: var(--btn-ink); text-align: center; text-decoration: none;
     font-family: var(--serif); font-variation-settings: "SOFT" 100; font-size: 1.4rem; font-weight: 600; box-shadow: 0 10px 24px -10px var(--btn-bg);
     transition: background 0.2s, transform 0.2s;
   }
@@ -454,7 +455,7 @@ const groups = [
   .group h3 { font-size: 1.2rem; margin: 0 0 0.35rem; }
   .group-intro { color: var(--ink-2); margin: 0 0 0.8rem; }
   .project-list { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
-  .project-list li { padding: 0.8rem 1.1rem; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-2); }
+  .project-list li { padding: 0.8rem 17.6px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-2); }
   .project-list a, .project-name { color: var(--ink); font-weight: 800; margin-right: 0.5rem; }
   .project-list a { text-decoration: underline; text-decoration-color: var(--clay); text-underline-offset: 3px; }
   .project-list a:hover { color: var(--clay-ink); }

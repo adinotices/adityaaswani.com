@@ -78,6 +78,23 @@ test.describe('SUP: ladder and labels', () => {
   });
 });
 
+test('SUP-35 with text at 200% on a 390 px phone both frequency tabs stay inside their pill', async ({ page, browserName }) => {
+  test.skip(browserName === 'firefox', 'layout at a larger root size is covered in Chromium and WebKit');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/support/');
+  await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+  await page.evaluate(() => document.fonts.ready);
+  const spill = await page.evaluate(() => {
+    const pill = document.querySelector('.freq').getBoundingClientRect();
+    return [...document.querySelectorAll('.freq .tab span')].flatMap((tab) => {
+      const r = document.createRange();
+      r.selectNodeContents(tab);
+      return [...r.getClientRects()].filter((c) => c.left < pill.left || c.right > pill.right).map(() => tab.textContent.trim());
+    });
+  });
+  expect(spill).toEqual([]);
+});
+
 test('SUP-36 the Sutam line does not overstate the number of talks', async ({ page }) => {
   await page.goto('/support/');
   const line = page.locator('.project-list li', { hasText: 'Sutam' });
