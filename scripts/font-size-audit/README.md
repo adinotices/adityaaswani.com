@@ -1,6 +1,6 @@
 # Font-size audit
 
-Imports resolve from the script directory, so run the copies in `~/repos/audits/font-size-tools` (identical to these). Runs in a Steel cloud browser (390 px and 1280 px, light and dark). Needs puppeteer-core + dotenv and STEEL_API_KEY; the deps live in `~/repos/audits/font-size-tools` (this repo's package.json is left alone).
+Imports resolve from the script directory, so run the copies in `~/repos/audits/font-size-tools`. `report.mjs` is identical to this one. `fontaudit.mjs` there is this script plus ops additions: a User-Agent suffix, blocked analytics event POSTs, and `navigator.webdriver` forced true on Sutam hosts. Runs in a Steel cloud browser (390 px and 1280 px, light and dark). Needs puppeteer-core + dotenv and STEEL_API_KEY; the deps live in `~/repos/audits/font-size-tools` (this repo's package.json is left alone).
 
     source ~/.nvm/nvm.sh
     cd ~/repos/audits/font-size-tools
