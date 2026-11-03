@@ -28,8 +28,15 @@ const brokenWords = async (page, path) => {
       // Headings are excluded: at 50 px and up, one long word can be wider than a phone.
       if (!el.offsetParent || el.closest('.sr-only, h1, h2, h3, script, style')) continue;
       for (const m of node.data.matchAll(/[^\s]{8,}/g)) {
-        if (/[-/@]/.test(m[0])) continue; // a hyphen, slash or inline address is a fair place to break
-        if (lines(node, m.index, m.index + m[0].length) > 1) out.push(m[0]);
+        if (m[0].includes('@')) continue; // an inline address may wrap anywhere (see PAGE-12)
+        // A hyphen or slash is a fair place to break, but the browser may not take it: Chromium kept
+        // "beginner/relatively" whole and split "relativel|y" (MED-02). So each part must stay whole.
+        let at = m.index;
+        for (const part of m[0].split(/(?<=[-/])/)) {
+          const word = part.replace(/[-/]$/, '');
+          if (word.length >= 8 && lines(node, at, at + word.length) > 1) out.push(word);
+          at += part.length;
+        }
       }
     }
     return out;
