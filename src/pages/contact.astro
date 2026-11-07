@@ -1,4 +1,5 @@
 ---
+const retreatOn = Date.now() < Date.UTC(2026, 11, 8, 5); // RETREAT-NOTE: off from 2026-12-08 00:00 ET
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -55,7 +56,10 @@ import CopyButton from '../components/CopyButton.astro';
             </svg>
           </div>
           <h2>Response Time</h2>
-          <p>I typically respond within 24-48 hours. For urgent matters, please mention it in your subject line.</p>
+          <!-- RETREAT-NOTE (2026-11-07): build-time check plus /retreat-note.js swap back to the usual line on 2026-12-08 00:00 ET; remove after. -->
+          <p data-retreat="on" hidden={!retreatOn}>I'm on a silent retreat until December 8, 2026, so replies are paused until then. Your message is saved and I'll answer it when I'm back.</p>
+          <p data-retreat="off" hidden={retreatOn}>I typically respond within 24-48 hours. For urgent matters, please mention it in your subject line.</p>
+          <script is:inline src="/retreat-note.js"></script>
         </div>
       </div>
       
