@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   MIN_CENTS, MAX_CENTS, CHECKOUT_URL, RANGE_ERROR,
-  parseAmount, feeCents, fmt, nearestLine, startCheckout, errorMessage,
+  parseAmount, feeCents, fmt, nearestLine, startCheckout, errorMessage, tierFeeErrors,
 } from '../src/scripts/donate.js';
 
 const links = JSON.parse(readFileSync(new URL('../src/data/support-links.json', import.meta.url), 'utf8'));
@@ -55,6 +55,20 @@ test('feeCents matches the contract formula across the range', () => {
 
 test('monthly preset fees equal support-links.json feeCents', () => {
   for (const t of links.monthly.tiers) assert.equal(t.cents + feeCents(t.cents), t.feeCents, String(t.cents));
+});
+
+test('SUP-08 the build guard names every tier whose feeCents disagrees with the formula', () => {
+  assert.deepEqual(tierFeeErrors(links.monthly.tiers), []);
+  const bad = links.monthly.tiers.map((t, i) => (i === 0 ? { ...t, feeCents: t.feeCents + 1 } : t));
+  const errors = tierFeeErrors(bad);
+  assert.equal(errors.length, 1);
+  assert.match(errors[0], new RegExp(`tier ${bad[0].cents}: feeCents ${bad[0].feeCents} != computed ${bad[0].feeCents - 1}`));
+});
+
+test('SUP-08 /support/ throws on the guard at build time', () => {
+  const page = readFileSync(new URL('../src/pages/support/index.astro', import.meta.url), 'utf8');
+  const fm = page.split('---')[1];
+  assert.match(fm, /const (\w+) = tierFeeErrors\(monthly\.tiers\);\s*if \(\1\.length\) throw new Error/);
 });
 
 test('fmt', () => {

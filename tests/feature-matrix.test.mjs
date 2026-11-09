@@ -196,6 +196,21 @@ test('a web row is covered on a platform only where its cited test passed in tha
   assert.deepEqual(cov.ran.sort(), ['web-desktop', 'web-tablet']);
 });
 
+test('MATRIX-10 a row whose Test cell is a manual check counts as no test, in --stats and per platform', () => {
+  const md = [
+    '| ID | Case | Expected | Was | Test |',
+    '|---|---|---|---|---|',
+    '| CONTACT-06 | Retreat note | Swaps on the date | NONE | manual: Steel check of /contact 2026-11-07 |',
+    '| CONTACT-01 | Mail links | mailto | NONE | content.spec › CONTACT-01 |',
+  ].join('\n');
+  assert.equal(stats(md, map).contact.nowNone, 1);
+  const cov = platformCoverage(md, map, [report(['CONTACT-01 mail links', 'desktop-chromium', 'expected'])]);
+  // Like NONE: a gap on every web platform, not a covered platform-independent row.
+  assert.deepEqual(cov.any, { rows: 0, covered: 0 });
+  assert.deepEqual(cov.web['web-desktop'].gaps.map((g) => g.id), ['CONTACT-06']);
+  assert.deepEqual([cov.web['web-desktop'].applicable, cov.web['web-desktop'].covered], [2, 1]);
+});
+
 test('the coverage table lists every platform and marks android and ios not applicable', () => {
   const cov = platformCoverage(mini, map, [report(['NAV-05 x', 'desktop-firefox', 'expected'])]);
   const t = coverageTable(cov, map, '2026-10-29');

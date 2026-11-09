@@ -25,6 +25,14 @@ export function feeCents(amountCents) {
   return Math.floor((num + 970) / 971) - amountCents;
 }
 
+// The build guard (FEATURES.md SUP-08): every monthly tier's feeCents in support-links.json must equal the amount
+// plus feeCents(amount), or the page would show a total that is not the Payment Link's price. Returns one message per bad tier.
+export function tierFeeErrors(tiers) {
+  return tiers
+    .filter((t) => t.cents + feeCents(t.cents) !== t.feeCents)
+    .map((t) => `support-links.json tier ${t.cents}: feeCents ${t.feeCents} != computed ${t.cents + feeCents(t.cents)}`);
+}
+
 export function fmt(cents) {
   return '$' + (cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2));
 }

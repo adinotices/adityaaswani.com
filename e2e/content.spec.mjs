@@ -275,6 +275,49 @@ test.describe('CONTACT and MED', () => {
     }
   });
 
+  // RETREAT-NOTE (delete with the note after 2026-12-08). The page carries both lines; the build hides one, and
+  // /retreat-note.js swaps them in the browser from 2026-12-08 05:00 UTC, so a build from before the cutoff still
+  // flips without a deploy. Playwright's clock fixes Date.now in the page, so both sides of the cutoff run today.
+  const RETREAT_CUTOFF = Date.UTC(2026, 11, 8, 5);
+  const retreatOn = (page) => page.locator('[data-retreat="on"]');
+  const retreatOff = (page) => page.locator('[data-retreat="off"]');
+
+  test('CONTACT-06 before 2026-12-08 05:00 UTC the Response Time card says replies are paused', async ({ page }) => {
+    test.skip(Date.now() >= RETREAT_CUTOFF, 'builds from after the cutoff hide the note at build time; tests/retreat-note-expiry.test.mjs then asks for its removal');
+    await page.clock.setFixedTime(RETREAT_CUTOFF - 1000); // 04:59:59 UTC, the last second of the note
+    await page.goto('/contact/');
+    await expect(retreatOn(page)).toBeVisible();
+    await expect(retreatOn(page)).toContainText('replies are paused until then');
+    await expect(retreatOff(page)).toBeHidden();
+  });
+
+  test('CONTACT-06 PAGE-13 from 2026-12-08 05:00 UTC /retreat-note.js brings back the 24-48 hour line', async ({ page }) => {
+    const scriptLoads = [];
+    page.on('response', (r) => { if (new URL(r.url()).pathname === '/retreat-note.js') scriptLoads.push(r.status()); });
+    await page.clock.setFixedTime(RETREAT_CUTOFF); // the first second after the retreat
+    await page.goto('/contact/');
+    await expect(retreatOff(page)).toBeVisible();
+    await expect(retreatOff(page)).toContainText('within 24-48 hours');
+    await expect(retreatOn(page)).toBeHidden();
+    // Served from the site's own origin and allowed by the CSP (the guard fixture fails the test on a CSP refusal).
+    expect(scriptLoads).toEqual([200]);
+  });
+});
+
+test.describe('CONTACT-06 PAGE-13 with JavaScript off', () => {
+  test.use({ javaScriptEnabled: false });
+  test('exactly one Response Time line shows: the build-time state', async ({ page }) => {
+    await page.goto('/contact/');
+    const on = page.locator('[data-retreat="on"]');
+    const off = page.locator('[data-retreat="off"]');
+    const shown = [await on.isVisible(), await off.isVisible()];
+    expect(shown.filter(Boolean)).toHaveLength(1);
+    // A build made before the cutoff shows the note; the weekly rebuild after it shows the usual line.
+    if (Date.now() < Date.UTC(2026, 11, 8, 5) && !process.env.E2E_BASE_URL) expect(shown).toEqual([true, false]);
+  });
+});
+
+test.describe('MED', () => {
   test('MED-01 /learn-meditation schedules on cal.com and asks questions via /contact/', async ({ page }) => {
     await page.goto('/learn-meditation/');
     await expect(page.locator('main a[href="https://cal.com/adityaa"]')).toHaveCount(2);
