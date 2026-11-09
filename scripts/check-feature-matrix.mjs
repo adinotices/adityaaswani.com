@@ -67,6 +67,10 @@ export function checkMatrix({ changed, matrixDiff, skipReason, map }) {
   return { ok: problems.length === 0, problems };
 }
 
+// A Test cell that names no automated test: NONE, or a manual check ("manual: Steel check of /contact"). A manual
+// check is evidence for the report, not a test, so it counts as no test (MATRIX-10).
+export const NO_TEST = /^(NONE|manual\b)/i;
+
 // Per-feature counts from FEATURES.md: rows, rows that had no test before the matrix ("Was" = NONE),
 // rows still without a test now ("Test" = NONE...).
 export function stats(markdown, map) {
@@ -82,7 +86,7 @@ export function stats(markdown, map) {
     const test = cells[cells.length - 2];
     out[key].rows++;
     if (/^NONE/.test(was)) out[key].wasNone++;
-    if (/^NONE/.test(test)) out[key].nowNone++;
+    if (NO_TEST.test(test)) out[key].nowNone++;
   }
   return out;
 }
@@ -133,7 +137,7 @@ export function platformCoverage(markdown, map, reports) {
   const result = { any: { rows: 0, covered: 0 }, web: {}, ran };
   for (const p of cfg.web) result.web[p] = { applicable: 0, covered: 0, gaps: [] };
   for (const row of rows(markdown, map)) {
-    const none = /^NONE/.test(row.test);
+    const none = NO_TEST.test(row.test);
     const cites = [...row.test.matchAll(/[a-z0-9-]+\.spec › ([A-Z0-9]+-[0-9]+[a-z]?)/g)].map((m) => m[1]);
     if (/fixtures\.mjs guard/.test(row.test)) cites.push('*');
     if (cfg.anyFeatures.includes(row.feature) || cfg.anyRows.includes(row.id) || (!none && cites.length === 0)) {
