@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import supportLinks from '../../data/support-links.json';
-import { feeCents, fmt } from '../../scripts/donate.js';
+import { feeCents, fmt, tierFeeErrors } from '../../scripts/donate.js';
 
 const isTest = supportLinks.mode === 'test';
 const { fees, oneTime, monthly, checkout } = supportLinks;
@@ -26,11 +26,8 @@ const impact = {
 };
 
 // Build-time guard: the fee shown for every preset must match the Payment Link tier.
-for (const t of monthly.tiers) {
-  if (t.cents + feeCents(t.cents) !== t.feeCents) {
-    throw new Error(`support-links.json tier ${t.cents}: feeCents ${t.feeCents} != computed ${t.cents + feeCents(t.cents)}`);
-  }
-}
+const tierErrors = tierFeeErrors(monthly.tiers);
+if (tierErrors.length) throw new Error(tierErrors.join('\n'));
 
 const defaultTier = monthly.tiers.find((t) => t.cents === monthly.defaultCents) ?? monthly.tiers[0];
 const defaultFee = feeCents(defaultTier.cents);

@@ -339,3 +339,18 @@ test.describe('ZOOM: without JavaScript', () => {
     await page.waitForURL(/cmu\.zoom\.us\/j\/4722169152/);
   });
 });
+
+test('SEC-09 @live prod sends HSTS for a year and every http or www address lands on https://adityaaswani.com, path kept', async ({ request }, testInfo) => {
+  // GitHub Pages owns these headers (no custom ones are possible), so this watches the platform, not our build.
+  // Plain HTTP, one lane: the same request from every project would add nothing.
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'one HTTP check, desktop-chromium only (a platform-independent row)');
+  const home = await request.get(`${PROD}/`, { maxRedirects: 0 });
+  expect(home.status()).toBe(200);
+  const hsts = home.headers()['strict-transport-security'] ?? '';
+  expect(Number(/max-age=(\d+)/.exec(hsts)?.[1] ?? 0), `strict-transport-security: "${hsts}"`).toBeGreaterThanOrEqual(31_536_000);
+  for (const from of ['http://adityaaswani.com/contact/', 'http://www.adityaaswani.com/contact/', 'https://www.adityaaswani.com/contact/']) {
+    const r = await request.get(from, { maxRedirects: 0 });
+    expect(r.status(), from).toBe(301);
+    expect(r.headers().location, from).toBe(`${PROD}/contact/`);
+  }
+});
