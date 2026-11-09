@@ -246,6 +246,10 @@ test.describe('GIVE: checkout request', () => {
 
 test.describe('GIVE: two tabs and the keyboard', () => {
   test('GIVE-08 two tabs giving at once each send their own request and open their own session', async ({ page, context, checkout }) => {
+    // Two pages, two loads of /support/, two picks and two checkouts: twice the work of a one-tab
+    // test, so twice its budget. On the starved CI WebKit runner every step passed and the last
+    // navigation landed 0.6 s after the 30 s cap (run 42574494694, attempt 2).
+    test.setTimeout(60_000);
     // The fixtures answer the first tab; the second gets the same answers, and neither Worker
     // response goes out until both requests have arrived, so the two are really in flight together.
     const tab = await context.newPage();
