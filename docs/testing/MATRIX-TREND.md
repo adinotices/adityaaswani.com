@@ -2,7 +2,7 @@
 
 One line per weekly matrix audit (`~/repos/briefs/feature-matrix-audit.md`). The report for each week is `~/repos/orchestrator-logs/REPORT-matrix-audit-adityaaswani.com-<date>.md`.
 
-- **Rows** and **No test** come from `node scripts/check-feature-matrix.mjs --stats`. **Row coverage** = rows with a test / rows.
+- **Rows** and **No test** come from `node scripts/check-feature-matrix.mjs --stats`. **Row coverage** = rows with a test / rows. From 2026-11-09 a Test cell that is only a manual check counts as no test (MATRIX-10); earlier lines counted it as a test.
 - **Per platform** = covered / applicable rows from `--summary` (e2e reports of the default and tablet lanes). android and ios are not applicable: the site has no native app.
 - **e2e** = passed tests in the full run: default lane (5 projects, `@live` included, against the fresh build) / tablet lane / against prod. Failed and flaky are counted separately.
 
