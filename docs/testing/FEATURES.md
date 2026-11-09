@@ -21,7 +21,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 - **Test** is what covers it now:
   - `x.spec › ID` is the test whose name starts with ID in `e2e/x.spec.mjs` (Playwright: Chromium, Firefox and WebKit, desktop 1280 px, Pixel 7 and iPhone 14). Web-tablet rows (iPad portrait 820x1180 and landscape 1180x820, Android tablet 800x1280) set the viewport inside the test, so they run in all five projects. Since 2026-10-29 the whole suite also runs as the **web-tablet lane**: `E2E_PROFILE=tablet` swaps the five projects for `tablet-ipad-portrait` (WebKit, 820x1180), `tablet-ipad-landscape` (WebKit, 1180x820) and `tablet-android` (Chromium, 800x1280), all touch. `E2E_PROFILE=ipad-portrait` (or `ipad-landscape`, `android-tablet`) runs one. Tests that need the phone menu key off the viewport (< 820 px), so the Android tablet gets the menu and the iPads the desktop nav;
   - `x.test › name` is in `tests/x.test.mjs`;
-  - `NONE` is a gap still open, with the reason.
+  - `NONE` is a gap still open, with the reason. A manual check (`manual: Steel check …`) is evidence for a report, not a test: since 2026-11-09 `--stats` and `--summary` count it as no test, like `NONE` (MATRIX-10).
 - `@live` rows call real third-party services. They run in the nightly box run, not in CI.
 
 **How to run:**
@@ -34,7 +34,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); checked against `--stats` on 2026-11-02. Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09. Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|

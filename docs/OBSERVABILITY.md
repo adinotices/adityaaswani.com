@@ -19,6 +19,7 @@
 
 ## Health / uptime
 - Targets are in ~/repos/monitoring/urls.yaml. The ops-dashboard uptime cron reads it every 15 minutes, and each sutam deploy builds it into the uptime cron of sutam's Worker.
+- Platform headers: GitHub Pages owns them, so the nightly (against prod) checks that `strict-transport-security` has a max-age of at least a year and that http://, http://www. and https://www. answer 301 to the same path on https://adityaaswani.com (`pages.spec › SEC-09`, `@live`, desktop-chromium only).
 - Deploy proof: every page of a deploy build carries `<meta name="build" content="<sha> <built at>">`. The nightly's `deploy-marker` step compares it with main (`scripts/check-deploy-marker.mjs`).
 
 ## Errors
