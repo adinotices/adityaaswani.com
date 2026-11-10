@@ -34,7 +34,7 @@ Every user-facing feature of the site, every state it can be in, the edge cases 
 
 ## Gaps by feature (ordered by user impact)
 
-Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09. Week-on-week numbers: docs/testing/MATRIX-TREND.md.
+Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MATRIX-06, MATRIX-07, DEPLOY-09) and 2026-10-20 run 4 (HOME-08–11, A11Y-07: web-tablet hero, AA-27); 2026-10-21 run 5 (HOME-13: product screenshots, AA-28); 2026-10-29 weekly audit (PAGE-10 tablet lane, PAGE-08 now tested, CONTACT-04, DEPLOY-10); 2026-11-01 weekly audit (see MATRIX-TREND); 2026-11-09 weekly audit (CONTACT-06, PAGE-13, SUP-08, SEC-09 now tested; MATRIX-10); checked against `--stats` on 2026-11-09; 2026-11-10 (HOME-14–16: Building card fixes and Tala, #54, rebased). Week-on-week numbers: docs/testing/MATRIX-TREND.md.
 
 | # | Feature | Rows | No test before | No test now | Why it ranks here |
 |---|---|---|---|---|---|
@@ -45,7 +45,7 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 5 | Light/dark theme | 13 | 10 | 2 | Every page. A flash or a lost choice is visible at once. |
 | 6 | Page rendering and layout | 13 | 11 | 1 | Broken images, sideways scroll, fonts. |
 | 7 | Accessibility | 8 | 7 | 1 | Contrast and labels on every page. |
-| 8 | Home page content | 15 | 14 | 0 | First impression. |
+| 8 | Home page content | 18 | 17 | 0 | First impression. |
 | 9 | Writing feed (build time) | 9 | 3 | 1 | Wrong or stale essays. Build-time only, so no visitor-facing failure mode. |
 | 10 | /links page | 6 | 6 | 1 | The social bio link. |
 | 11 | /contact and /learn-meditation | 11 | 10 | 1 | Mail links and booking. |
@@ -54,10 +54,10 @@ Counts are from `--stats` on 2026-10-13, after this run; updated 2026-10-20 (MAT
 | 14 | Search and sharing | 10 | 6 | 2 | Indexing and share cards. |
 | 15 | 404 and redirects | 5 | 4 | 0 | Stripe's return URL depends on the slash redirect. |
 | 16 | Analytics | 8 | 8 | 1 | Owner-facing only. |
-| 17 | Build and deploy | 14 | 13 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
+| 17 | Build and deploy | 15 | 14 | 0 | Owner-facing; a bad deploy is caught by the nightly. |
 | 18 | Design previews (off-site) | 4 | 3 | 2 | Off the public site. |
 | 19 | Test matrix upkeep | 10 | 10 | 0 | Keeps this file honest. |
-| | **Total** | **242** | **184** | **22** | |
+| | **Total** | **246** | **188** | **22** | |
 
 ## Coverage by platform
 
@@ -256,7 +256,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | PAGE-02 | No sideways scroll | At the device width and at 320 px, on every page | NONE | pages.spec › PAGE-02 |
 | PAGE-03 | Fonts | Nunito Sans is loaded (self-hosted woff2) | NONE | pages.spec › PAGE-03 |
 | PAGE-04 | No console errors, page errors, CSP violations or failed same-origin requests | On every test of every page (guard fixture) | NONE | fixtures.mjs guard (all e2e tests) |
-| PAGE-05 | Images are not oversized | No dist file over 1 MB. Each home product screenshot stays within its byte budget, the size of its 2026-10-11 capture (AA-28, 2026-10-21), so a retake cannot slow `/`. | build | build-output.test › no file in dist is over 1 MB (AA-24: source photos stay out of public/); product-screenshots.test › PAGE-05 every product screenshot stays under its byte budget |
+| PAGE-05 | Images are not oversized | No dist file over 1 MB. Each home product screenshot stays within its byte budget, the size of its 2026-10-11 capture (AA-28, 2026-10-21), so a retake cannot slow `/`. The two SaveTheDogs captures left public/ with their card (2026-11-01, HOME-15). | build | build-output.test › no file in dist is over 1 MB (AA-24: source photos stay out of public/); product-screenshots.test › PAGE-05 every product screenshot stays under its byte budget |
 | PAGE-06 | Internal links resolve | Every internal href/src/srcset maps to a file, with a trailing slash | build | build-output.test › every internal href/src/srcset maps to a file in dist, with no trailing-slash redirect; build-output.test › no internal link lacks its trailing slash |
 | PAGE-07 | Slow 3G / PSI | LCP under 2.5 s on mobile | NONE | NONE (PSI is the weekly audit in ~/repos/audits, not a test) |
 | PAGE-08 | Reduced motion | No transition or animation over 0.01 ms on any page, the open phone menu included; without the preference the cards do animate (2026-10-29) | NONE | pages.spec › PAGE-08 |
@@ -270,7 +270,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| A11Y-01 | axe (WCAG 2.1 A/AA + best practice) on every page, light and dark, desktop and phone | 0 violations. The thank-you page is checked with the upsell showing. | NONE | pages.spec › A11Y-01 (6 pages × 2 schemes × Chromium desktop + phone) |
+| A11Y-01 | axe (WCAG 2.1 A/AA + best practice) on every page, light and dark, desktop and phone | 0 violations. The thank-you page is checked with the upsell showing. The Personal tool badge (2026-11-01) is covered on / and /links. | NONE | pages.spec › A11Y-01 (6 pages × 2 schemes × Chromium desktop + phone) |
 | A11Y-02 | /support Other field error | Described by the error, which is aria-live; no axe violations with the error showing | NONE | pages.spec › A11Y-02 |
 | A11Y-03 | Keyboard-only giving | Tab to an amount, arrows to change, Tab to Give, Enter | NONE | support.spec › A11Y-03 (Chromium and Firefox, Safari needs Option+Tab); support.spec › GIVE-03 |
 | A11Y-04 | Copy status announced | role=status gets "Copied" | unit | content.spec › COPY-01; copy-email.test › success path writes the data-copy text, announces Copied, then resets after the timer |
@@ -283,7 +283,7 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 
 | ID | Case | Expected (and invariant) | Was | Test |
 |---|---|---|---|---|
-| HOME-01 | Product cards | 5 cards. Live ones link out over https. Coming-soon ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
+| HOME-01 | Product cards | 5 cards. Live ones link out over https. Coming-soon and personal-tool ones without a site link to #newsletter. | NONE | content.spec › HOME-01 |
 | HOME-02 | Writing section | 1–6 essays, newest first, each linking to essays.adityaaswani.com/p/… | NONE | content.spec › HOME-02 |
 | HOME-03 | Hero buttons | Scroll to Building and Writing | NONE | content.spec › HOME-03 |
 | HOME-04 | Meditation and Support sections | Book opens cal.com in a new tab. Support goes to /support/. | NONE | content.spec › HOME-04 |
@@ -294,8 +294,11 @@ Where Stripe returns the donor. The page reads `type` (`once` or `monthly`) and 
 | HOME-09 | Hero order, web-tablet portrait: iPad 820x1180, iPad mini 768x1024, Android tablet 800x1280 (AA-27) | Same order as phone up to the two-column hero at 860 px. The intro and both CTAs end above y=600 and above the portrait. Was: a ~500 px portrait between headline and intro, CTAs at y≈952. | NONE | content.spec › HOME-09 (×3 profiles) |
 | HOME-10 | Hero, web-tablet landscape (iPad 1180x820) | Two columns: text left, portrait right; both CTAs on the first screen | NONE | content.spec › HOME-10 |
 | HOME-11 | Hero, single-column tablet band (600, 768, 820, 859 px) | No sideways scroll at any of the four widths | NONE | content.spec › HOME-11 |
-| HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta or Coming soon; a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
-| HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; its capture is cropped below the ticker, since the frozen site would show it again on a retake). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; product-screenshots.test › HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29); pages.spec › PAGE-01 (the images decode) |
+| HOME-12 | Product card status and last-changed month (2026-10-21) | Badge is Live, Private beta, Coming soon or Personal tool (2026-11-01); a product with an `updated` month shows "Updated <Month YYYY>" under its pitch | NONE | content.spec › HOME-12 |
+| HOME-13 | Product card screenshots (AA-28, 2026-10-21; no dated banners, AA-29, 2026-10-29) | Every product with a site has a screenshot at `/products/<slug>-640.webp` (640x400) and `-1280.webp` (1280x800), both in public/. Its alt is non-empty, starts with the product name, quotes the hero text shown in the picture, and is unique. When a pitch changes, the screenshot is retaken (Steel, 1280x800, light) and the alt updated: the card copy and its picture must not disagree (PausePal showed "Every week." after #43). No dated banners: a capture shows no event ticker or dated call to action that can go stale (SaveTheDogs showed "Oct 23–25: Global Weekend of Action" after 10-25; that card and its capture left the site on 2026-11-01, HOME-15). | NONE | product-screenshots.test › HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product; product-screenshots.test › HOME-13 every product screenshot has a non-empty alt that names the product and quotes its hero text; pages.spec › PAGE-01 (the images decode) |
+| HOME-14 | PausePal card text matches its picture (AA-30, 2026-11-01) | The picture reads "Meditate with a buddy. On your schedule."; the pitch says "on your schedule" and never "every week" | NONE | content.spec › HOME-14 |
+| HOME-15 | Archived projects have no Building card (2026-11-01) | SaveTheDogs (archived 2026-10-20) is on neither the home Building section nor the /links build list. The /links petition card to savethedogs.io stays: the Marshall campaign is not what was archived. | NONE | content.spec › HOME-15 |
+| HOME-16 | Personal-tool card, Tala (2026-11-01) | Badge "Personal tool", no site and no screenshot, shows a motif, "Follow along" goes to the newsletter form on / and on /links | NONE | content.spec › HOME-16 |
 | HOME-17 | Smaller home links (2026-11-01: no row) | "How I teach" opens /learn-meditation/, "All essays" goes to essays.adityaaswani.com, the contact line links /contact/ and mailto | NONE | content.spec › HOME-17 |
 | HOME-18 | Home with text at 200% on a 390 px phone (2026-11-01) | Body text and links keep their words whole, and each card's screenshot still meets the card edges, because its bleed matches the card padding. | NONE | pages.spec › HOME-18 (Chromium and WebKit) |
 

@@ -10,7 +10,6 @@ const shots = products.filter((p) => p.screenshot);
 
 // Byte budgets: the sizes of the 2026-10-11 captures. A retake must fit, so PSI on / does not regress.
 const BUDGET = {
-  'savethedogs-1280': 56726, 'savethedogs-640': 23310,
   'sutam-1280': 24116, 'sutam-640': 9286,
   'pausepal-1280': 48086, 'pausepal-640': 19494,
   'amberhall-1280': 31594, 'amberhall-640': 11132,
@@ -41,9 +40,9 @@ test('webpSize reads the header of a lossy and a lossless WebP', () => {
 });
 
 test('every product with a site has a screenshot', () => {
-  // Coming-soon cards without a site (Samvara) show a motif instead.
+  // Cards without a site (Samvara, Tala) show a motif instead.
   for (const p of products) if (p.url) assert.ok(p.screenshot, `${p.slug}: has a url but no screenshot`);
-  assert.ok(shots.length >= 4);
+  assert.ok(shots.length >= 3);
 });
 
 test('HOME-13 every product screenshot exists at 640x400 and 1280x800 as WebP, named for its product', () => {
@@ -67,21 +66,6 @@ test('HOME-13 every product screenshot has a non-empty alt that names the produc
     assert.match(alt, /“[^”]+”/, `${slug}: alt should quote the hero text shown in the screenshot`);
     assert.ok(!alts.has(alt), `${slug}: alt duplicates another card's`);
     alts.add(alt);
-  }
-});
-
-test('HOME-13 no dated banner: the SaveTheDogs capture starts below the site’s red event ticker (AA-29)', async () => {
-  // savethedogs.io carries a red ticker ("Oct 23–25: Global Weekend of Action") in its top ~40 px. The site is
-  // frozen, so a retake shows it again; the capture is cropped below it. Ticker rows average about rgb(204, 4, 3).
-  const { default: sharp } = await import('sharp');
-  for (const [w, rows] of [[1280, 40], [640, 20]]) {
-    const { data, info } = await sharp(`${PUBLIC}products/savethedogs-${w}.webp`).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-    for (let y = 0; y < rows; y++) {
-      let r = 0, g = 0;
-      for (let x = 0; x < info.width; x++) { const i = (y * info.width + x) * 3; r += data[i]; g += data[i + 1]; }
-      r /= info.width; g /= info.width;
-      assert.ok(!(r > 180 && g < 60), `savethedogs-${w}.webp row ${y} is ticker red (mean R ${r.toFixed(0)}, G ${g.toFixed(0)})`);
-    }
   }
 });
 

@@ -57,7 +57,7 @@ test.describe('HOME', () => {
     for (const c of await cards.all()) {
       const badge = (await c.locator('.badge').textContent()).trim();
       const href = await c.locator('a.more').getAttribute('href');
-      if (href === '#newsletter') expect(badge).toBe('Coming soon');
+      if (href === '#newsletter') expect(['Coming soon', 'Personal tool']).toContain(badge);
       else expect(href).toMatch(/^https:\/\//);
     }
   });
@@ -79,10 +79,42 @@ test.describe('HOME', () => {
     await page.goto('/');
     const cards = page.locator('#building .card');
     const badges = (await cards.locator('.badge').allTextContents()).map((t) => t.trim());
-    for (const b of badges) expect(['Live', 'Private beta', 'Coming soon']).toContain(b);
+    for (const b of badges) expect(['Live', 'Private beta', 'Coming soon', 'Personal tool']).toContain(b);
     const updated = await cards.locator('.updated').allTextContents();
     expect(updated.length).toBeGreaterThanOrEqual(1);
     for (const u of updated) expect(u.trim()).toMatch(/^Updated (January|February|March|April|May|June|July|August|September|October|November|December) 20\d\d$/);
+  });
+
+  test('HOME-14 the PausePal card text agrees with its picture (AA-30)', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('#building .card', { has: page.locator('h3', { hasText: 'PausePal' }) });
+    await expect(card.locator('img.shot')).toHaveAttribute('alt', /On your schedule\./);
+    const pitch = await card.locator('.pitch').textContent();
+    expect(pitch).toMatch(/on your schedule/i);
+    expect(pitch).not.toMatch(/every week/i);
+  });
+
+  test('HOME-15 an archived project has no Building card; the campaign links stay', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#building .card', { has: page.locator('h3', { hasText: 'SaveTheDogs' }) })).toHaveCount(0);
+    await page.goto('/links/');
+    await expect(page.locator('.build-item', { hasText: 'SaveTheDogs' })).toHaveCount(0);
+    await expect(page.locator('a.link-card[href="https://savethedogs.io"]')).toHaveCount(1);
+  });
+
+  test('HOME-16 Tala reads as a personal tool: no site, a motif, and a follow link to the newsletter', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('#building .card', { has: page.locator('h3', { hasText: 'Tala' }) });
+    await expect(card.locator('.badge')).toHaveText('Personal tool');
+    await expect(card.locator('.motif svg')).toBeVisible();
+    await expect(card.locator('img.shot')).toHaveCount(0);
+    const more = card.locator('a.more');
+    await expect(more).toHaveText(/^Follow along/);
+    await expect(more).toHaveAttribute('href', '#newsletter');
+    await page.goto('/links/');
+    const item = page.locator('.build-item', { hasText: 'Tala' });
+    await expect(item.locator('.badge')).toHaveText('Personal tool');
+    await expect(item).toHaveAttribute('href', '/#newsletter');
   });
 
   test('HOME-03 the hero buttons scroll to their sections', async ({ page }) => {
