@@ -1,6 +1,6 @@
 # CI runner: ci-runner-1
 
-All CI for this repo runs on self-hosted runners (GitHub Actions no-spend rule: never `ubuntu-latest`). This repo's runner is `gcp-adityaaswani.com`, labels `[self-hosted, linux, gcp]`. It lives on **ci-runner-1**, one GCP VM (e2-standard-4, 96 GB root disk) that also hosts the runners of samvara-product (two), amberhall, pausepal and sutam: six runners, jobs from all of them run at the same time and share the CPU and the disk.
+CI for this repo runs on self-hosted runners (GitHub Actions no-spend rule), with one exception: pull requests from forks or bots (Dependabot) run on GitHub-hosted `ubuntu-latest`, which is free on a public repo, so untrusted code never reaches this shared, sudo-capable VM (FEATURES.md DEPLOY-15, audit 2026-11-10). This repo's runner is `gcp-adityaaswani.com`, labels `[self-hosted, linux, gcp]`. It lives on **ci-runner-1**, one GCP VM (e2-standard-4, 96 GB root disk) that also hosts the runners of samvara-product (two), amberhall, pausepal and sutam: six runners, jobs from all of them run at the same time and share the CPU and the disk.
 
 ## Why there is housekeeping
 

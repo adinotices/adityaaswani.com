@@ -25,7 +25,9 @@ concurrency:
 jobs:
   changes:
     name: Changed paths
-    runs-on: [self-hosted, linux, gcp]
+    # DEPLOY-15 (audit 2026-11-10 A1/A2): fork and bot PRs run on a throwaway GitHub-hosted VM, never on the
+    # shared, sudo-capable ci-runner-1. Same expression as deploy.yml; the jobs below reuse it (*runner).
+    runs-on: &runner ${{ (github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && !endsWith(github.event.pull_request.user.login, '[bot]') && !endsWith(github.actor, '[bot]'))) && fromJSON('["self-hosted","linux","gcp"]') || 'ubuntu-latest' }}
     timeout-minutes: 5
     outputs:
       code: ${{ steps.diff.outputs.code }}
@@ -54,7 +56,7 @@ jobs:
   matrix:
     name: Feature matrix rows
     if: github.event_name == 'pull_request'
-    runs-on: [self-hosted, linux, gcp]
+    runs-on: *runner
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -67,7 +69,9 @@ jobs:
           # below astro 7.4.2's engines (>=22.23.4, dependabot #37). Always take the newest 22.x.
           check-latest: true
       - name: Every changed feature has a new or updated FEATURES.md row
-        run: node scripts/check-feature-matrix.mjs "origin/${{ github.base_ref }}"
+        env:
+          BASE: ${{ github.base_ref }}
+        run: node scripts/check-feature-matrix.mjs "origin/$BASE"
 
   # AA-S16: on the self-hosted gcp runner the whole suite (845 tests) never finished inside 15 min,
   # so every run since #40 was cancelled. One job per engine, and WebKit split by device, keeps each
@@ -84,7 +88,7 @@ jobs:
     name: E2E (chromium)
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
-    runs-on: [self-hosted, linux, gcp]
+    runs-on: *runner
     timeout-minutes: 30
     env: { PW_ENGINE: chromium, PW_PROJECTS: '*-chromium' }
     steps: &e2e-steps
@@ -102,7 +106,9 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ env.PW_ENGINE }}-${{ hashFiles('package-lock.json') }}
+          # runner.environment (self-hosted | github-hosted): fork and bot PRs run on ubuntu-latest (DEPLOY-15) and
+          # must not restore browsers built on ci-runner-1, whose distro may differ (WebKit builds are distro-specific).
+          key: playwright-${{ runner.os }}-${{ runner.environment }}-${{ env.PW_ENGINE }}-${{ hashFiles('package-lock.json') }}
       - name: Install browsers
         run: npx playwright install --with-deps "$PW_ENGINE"
         if: steps.pw-cache.outputs.cache-hit != 'true'
@@ -130,7 +136,7 @@ jobs:
     name: E2E (firefox)
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
-    runs-on: [self-hosted, linux, gcp]
+    runs-on: *runner
     timeout-minutes: 30
     env: { PW_ENGINE: firefox, PW_PROJECTS: desktop-firefox }
     steps: *e2e-steps
@@ -139,7 +145,7 @@ jobs:
     name: E2E (desktop-webkit)
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
-    runs-on: [self-hosted, linux, gcp]
+    runs-on: *runner
     timeout-minutes: 30
     env: { PW_ENGINE: webkit, PW_PROJECTS: desktop-webkit }
     steps: *e2e-steps
@@ -148,7 +154,7 @@ jobs:
     name: E2E (phone-webkit)
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.actor != 'dependabot[bot]' }}
-    runs-on: [self-hosted, linux, gcp]
+    runs-on: *runner
     timeout-minutes: 30
     env: { PW_ENGINE: webkit, PW_PROJECTS: phone-webkit }
     steps: *e2e-steps
