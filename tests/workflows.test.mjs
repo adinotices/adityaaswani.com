@@ -162,6 +162,88 @@ test('both WebKit E2E jobs set PW_ENGINE: webkit, which the one-worker rule keys
   }
 });
 
+// DEPLOY-15 (audit 2026-11-10 A1/A2, HIGH): ci-runner-1 is persistent, shared with five private repos and
+// the `ci` user has passwordless sudo, so a fork PR or a Dependabot bump (whose npm ci runs install scripts)
+// must never run there. Pull requests from forks or bots go to GitHub's throwaway ubuntu-latest VMs (free on
+// a public repo); pushes, the schedule, manual runs and same-repo PRs by people keep the self-hosted runner.
+const workflowJobs = (f) => {
+  const yml = readFileSync(new URL(f, dir), 'utf8');
+  return Object.fromEntries(yml.slice(yml.indexOf('\njobs:\n')).split(/\n(?=  [a-z0-9-]+:\n)/).slice(1)
+    .map((block) => [block.match(/^  ([a-z0-9-]+):/)[1], block]));
+};
+const SELF_HOSTED = ['self-hosted', 'linux', 'gcp'];
+// The one runs-on expression every job a pull_request can start must use (e2e.yml: first job defines &runner).
+const runnerExpr = (f) => {
+  const m = readFileSync(new URL(f, dir), 'utf8').match(/^    runs-on: (?:&runner )?\$\{\{ (.+) \}\}$/m);
+  assert.ok(m, `${f}: no "runs-on: \${{ ... }}" line`);
+  return m[1];
+};
+// Evaluates a GitHub expression for one event: enough of the language for runs-on (==, !=, &&, ||, !,
+// endsWith, fromJSON, string literals, property access that yields null on a missing object).
+function evalExpr(expr, github) {
+  const js = expr
+    .replace(/\bgithub((?:\.[a-z_]+)+)/g, (_, path) => `github${path.replace(/\./g, '?.')}`)
+    .replace(/==/g, '===').replace(/!===/g, '!==');
+  const endsWith = (s, t) => String(s ?? '').toLowerCase().endsWith(String(t).toLowerCase());
+  return new Function('github', 'endsWith', 'fromJSON', `return (${js});`)(github, endsWith, JSON.parse);
+}
+const pr = ({ head = 'adinotices/adityaaswani.com', author = 'adinotices', actor = author } = {}) => ({
+  event_name: 'pull_request', repository: 'adinotices/adityaaswani.com', actor,
+  event: { pull_request: { head: { repo: head === null ? null : { full_name: head } }, user: { login: author } } },
+});
+const runnerCases = [
+  ['push to main', { event_name: 'push', repository: 'adinotices/adityaaswani.com', actor: 'adinotices', event: {} }, SELF_HOSTED],
+  ['weekly schedule', { event_name: 'schedule', repository: 'adinotices/adityaaswani.com', actor: 'adinotices', event: {} }, SELF_HOSTED],
+  ['manual run', { event_name: 'workflow_dispatch', repository: 'adinotices/adityaaswani.com', actor: 'adinotices', event: {} }, SELF_HOSTED],
+  ['same-repo PR by a person', pr(), SELF_HOSTED],
+  ['fork PR', pr({ head: 'stranger/adityaaswani.com', author: 'stranger' }), 'ubuntu-latest'],
+  ['fork PR whose fork was deleted', pr({ head: null, author: 'stranger' }), 'ubuntu-latest'],
+  ['Dependabot PR', pr({ author: 'dependabot[bot]' }), 'ubuntu-latest'],
+  ['Dependabot PR re-run by a person', pr({ author: 'dependabot[bot]', actor: 'adinotices' }), 'ubuntu-latest'],
+  ['same-repo PR pushed to by a bot', pr({ actor: 'github-actions[bot]' }), 'ubuntu-latest'],
+];
+
+// Literal test names: feature-matrix.test looks up the names FEATURES.md cites as plain text.
+function assertRunnerCases(f) {
+  const expr = runnerExpr(f);
+  for (const [name, github, want] of runnerCases) assert.deepEqual(evalExpr(expr, github), want, name);
+}
+function assertEveryPrJobUsesRunner(f) {
+  for (const [name, job] of Object.entries(workflowJobs(f))) {
+    const runsOn = job.match(/^    runs-on: (.+)$/m)[1];
+    if (/^    if: github\.event_name != 'pull_request'$/m.test(job)) assert.equal(runsOn, '[self-hosted, linux, gcp]', `${f} ${name}`);
+    else assert.ok(runsOn === '*runner' || runsOn.replace(/^&runner /, '') === `\${{ ${runnerExpr(f)} }}`, `${f} ${name}: ${runsOn}`);
+  }
+}
+test('deploy.yml: fork and bot PRs run on ubuntu-latest, everything else on the self-hosted runner', () => assertRunnerCases('deploy.yml'));
+test('e2e.yml: fork and bot PRs run on ubuntu-latest, everything else on the self-hosted runner', () => assertRunnerCases('e2e.yml'));
+test('deploy.yml: every job a pull_request can start uses that runner (no bare self-hosted label)', () => assertEveryPrJobUsesRunner('deploy.yml'));
+test('e2e.yml: every job a pull_request can start uses that runner (no bare self-hosted label)', () => assertEveryPrJobUsesRunner('e2e.yml'));
+
+test('the runs-on expression is the same in deploy.yml and e2e.yml', () => {
+  assert.equal(runnerExpr('deploy.yml'), runnerExpr('e2e.yml'));
+});
+
+// A3: the PR build job holds no Pages or OIDC token; only the deploy job (never run for a PR) may.
+test('deploy.yml: pages/id-token write only on the deploy job, read-only everywhere else', () => {
+  const yml = readFileSync(new URL('deploy.yml', dir), 'utf8');
+  const top = yml.slice(0, yml.indexOf('\njobs:\n'));
+  assert.match(top, /^permissions:\n  contents: read\n(?![ ])/m);
+  const jobs = workflowJobs('deploy.yml');
+  assert.match(jobs.build, /^    permissions:\n      contents: read\n      pages: read\n(?!      )/m);
+  assert.match(jobs.deploy, /^    permissions:\n      contents: read\n      pages: write\n      id-token: write\n(?!      )/m);
+  assert.match(jobs.deploy, /^    if: github\.event_name != 'pull_request'$/m);
+  assert.equal((yml.match(/: write$/gm) ?? []).length, 2);
+});
+
+// Audit A7: expressions are expanded before the shell runs, so a run: line never carries ${{ }}; values go via env.
+test('no run: line in any workflow interpolates ${{ }} directly', () => {
+  const bad = readdirSync(dir).filter((f) => /\.ya?ml$/.test(f)).flatMap((f) =>
+    readFileSync(new URL(f, dir), 'utf8').split('\n').map((l, i) => ({ where: `${f}:${i + 1}`, l }))
+      .filter(({ l }) => /^\s*(?:-\s+)?run:.*\$\{\{/.test(l)));
+  assert.deepEqual(bad.map((b) => b.where), []);
+});
+
 // DEPLOY-14: ci-runner-1's disk filled with orphaned Docker volumes on 2026-11-01/02 and all six runners
 // went offline for ~16 h. runner-housekeeping.yml prunes weekly and gauges the disk daily.
 const hk = readFileSync(new URL('runner-housekeeping.yml', dir), 'utf8');
