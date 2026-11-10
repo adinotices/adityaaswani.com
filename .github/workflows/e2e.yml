@@ -106,7 +106,9 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ env.PW_ENGINE }}-${{ hashFiles('package-lock.json') }}
+          # runner.environment (self-hosted | github-hosted): fork and bot PRs run on ubuntu-latest (DEPLOY-15) and
+          # must not restore browsers built on ci-runner-1, whose distro may differ (WebKit builds are distro-specific).
+          key: playwright-${{ runner.os }}-${{ runner.environment }}-${{ env.PW_ENGINE }}-${{ hashFiles('package-lock.json') }}
       - name: Install browsers
         run: npx playwright install --with-deps "$PW_ENGINE"
         if: steps.pw-cache.outputs.cache-hit != 'true'

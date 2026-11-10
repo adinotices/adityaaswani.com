@@ -199,7 +199,7 @@ const runnerCases = [
   ['fork PR', pr({ head: 'stranger/adityaaswani.com', author: 'stranger' }), 'ubuntu-latest'],
   ['fork PR whose fork was deleted', pr({ head: null, author: 'stranger' }), 'ubuntu-latest'],
   ['Dependabot PR', pr({ author: 'dependabot[bot]' }), 'ubuntu-latest'],
-  ['Dependabot PR re-run by a person', pr({ author: 'dependabot[bot]', actor: 'adinotices' }), 'ubuntu-latest'],
+  ['Dependabot PR with a person\'s commit pushed on top (actor is the person)', pr({ author: 'dependabot[bot]', actor: 'adinotices' }), 'ubuntu-latest'],
   ['same-repo PR pushed to by a bot', pr({ actor: 'github-actions[bot]' }), 'ubuntu-latest'],
 ];
 
@@ -234,6 +234,11 @@ test('deploy.yml: pages/id-token write only on the deploy job, read-only everywh
   assert.match(jobs.deploy, /^    permissions:\n      contents: read\n      pages: write\n      id-token: write\n(?!      )/m);
   assert.match(jobs.deploy, /^    if: github\.event_name != 'pull_request'$/m);
   assert.equal((yml.match(/: write$/gm) ?? []).length, 2);
+});
+
+// The Playwright browser cache must not cross from ci-runner-1 into GitHub-hosted jobs (different distro).
+test('e2e.yml: the Playwright cache key separates self-hosted from GitHub-hosted runners', () => {
+  assert.match(readFileSync(new URL('e2e.yml', dir), 'utf8'), /^          key: playwright-\$\{\{ runner\.os \}\}-\$\{\{ runner\.environment \}\}-/m);
 });
 
 // Audit A7: expressions are expanded before the shell runs, so a run: line never carries ${{ }}; values go via env.
