@@ -32,8 +32,7 @@ jobs:
     # user has passwordless sudo. A PR from a fork or a bot (Dependabot: npm ci runs the new packages' install
     # scripts) runs on a throwaway GitHub-hosted VM instead, free on a public repo. Pushes, the schedule, manual
     # runs and same-repo PRs by people keep the self-hosted runner. Same expression in e2e.yml.
-    # 2026-11-12: GitHub-hosted (free on this public repo) while the self-hosted GCP runner is off.
-    runs-on: ubuntu-latest
+    runs-on: ${{ (github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && !endsWith(github.event.pull_request.user.login, '[bot]') && !endsWith(github.actor, '[bot]'))) && fromJSON('["self-hosted","linux","gcp"]') || 'ubuntu-latest' }}
     permissions:
       contents: read
       pages: read
@@ -96,7 +95,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, gcp]
     permissions:
       contents: read
       pages: write
