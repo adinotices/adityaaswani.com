@@ -10,11 +10,11 @@ const SCRIPT = 'public/retreat-note.js';
 const REMOVE_BY = Date.UTC(2026, 11, 15);
 const cutoffs = (src) => [...src.matchAll(/Date\.UTC\(([\d,\s]+)\)/g)].map((m) => Date.UTC(...m[1].split(',').map(Number)));
 
-test('contact.astro and retreat-note.js switch at the same instant (2026-12-08 05:00 UTC)', (t) => {
+test('contact.astro and retreat-note.js switch at the same instant (2026-12-13 05:00 UTC)', (t) => {
   if (!existsSync(SCRIPT)) return t.skip('the retreat note has been removed');
   const page = cutoffs(readFileSync(PAGE, 'utf8'));
   const script = cutoffs(readFileSync(SCRIPT, 'utf8'));
-  assert.deepEqual(page, [Date.UTC(2026, 11, 8, 5)], `${PAGE} cutoff`);
+  assert.deepEqual(page, [Date.UTC(2026, 11, 13, 5)], `${PAGE} cutoff`);
   assert.deepEqual(script, page, `${SCRIPT} must use the same cutoff as ${PAGE}`);
 });
 
